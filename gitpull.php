@@ -14,7 +14,9 @@
 function runStep($cmd)
 {
 	$line = "\n$ ".$cmd."\n";
-	$output = shell_exec($cmd.' 2>&1');
+	// The exit status marker makes silent failures diagnosable remotely; e.g. a
+	// signal-killed npm (128+signal: 137=SIGKILL/OOM, 139=segfault) prints nothing
+	$output = shell_exec('('.$cmd.') 2>&1; echo "[exit status: $?]"');
 	file_put_contents('../gitpull.log', $line.$output, FILE_APPEND);
 	file_put_contents('./gitpull.txt', $line.$output, FILE_APPEND);
 	if( php_sapi_name() == 'cli' ) print $line.$output;
@@ -64,6 +66,8 @@ function deploy($forceAll = false)
 	// flag keeps npm out of the web user's (unwritable) home directory.
 	if( $forceAll || strpos($changedFiles, 'beta-src/') !== false )
 	{
+		// Environment snapshot; a build that dies without output is usually resources
+		runStep('free -m; df -h .; node --version; npm --version');
 		runStep('cd beta-src && npm ci --cache ../cache/npm'
 			.' && if [ -f .env.production ]; then npm run build:production; else npm run build; fi');
 	}
