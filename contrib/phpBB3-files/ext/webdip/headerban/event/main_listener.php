@@ -95,7 +95,7 @@ class main_listener implements EventSubscriberInterface
 
     /**
      * Link the viewed member's webDiplomacy profile page from their phpBB profile
-     * (rendered by styles/all/template/event/memberlist_view_user_statistics_after.html)
+     * (rendered by styles/all/template/event/memberlist_view_contact_custom_fields_after.html)
      *
      * @param \phpbb\event\data $event The event object, containing the viewed member's user row
      */
