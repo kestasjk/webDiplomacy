@@ -181,10 +181,18 @@ $Misc->write();
 
 $startTime = $currentProcessTime; // Only do ~30 sec of processing per cycle
 $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
-	WHERE processStatus='Not-processing' AND ( 
+	WHERE processStatus='Not-processing' AND (
 		processTime <= ".time()." ".
 		( count($gameIDsToProcess) > 0 ? " OR id IN ( ".implode(',',$gameIDsToProcess)." ) " : "" ). // Game IDs triggered from ready votes
-	" ) AND gameOver='No'"); // Using gameOver means one index can be used making the query much quicker
+	" ) AND gameOver='No'
+	AND NOT ( missingPlayerPolicy='Wait' AND EXISTS (
+		SELECT 1 FROM wD_Members m
+		WHERE m.gameID = wD_Games.id AND m.status='Playing'
+			AND NOT FIND_IN_SET('Completed',m.orderStatus)
+			AND NOT FIND_IN_SET('None',m.orderStatus)
+	) )"); // Using gameOver means one index can be used making the query much quicker.
+	// Wait-policy games with members yet to complete their orders can never pass needsProcess(),
+	// so they are left out here rather than being reselected and skipped every cycle until their orders arrive.
 
 $dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
@@ -196,6 +204,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 	$Game=$Variant->Game($gameRow);
 	print '<a href="board.php?gameID='.$Game->id.'">gameID='.$Game->id.': '.$Game->name.'</a>: ';
 
+	$gameUpdated = false; // Only backup / publish / wipe caches for games whose state actually changed this cycle
 	try
 	{
 		// If we have already tried and failed to process this game twice, or it has a turn over 1000 (likely indicating a bug where processing is in a loop)
@@ -205,6 +214,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			$Game = $Variant->processGame($Game->id);
 			$Game->crashed();
 			$DB->sql_put("COMMIT");
+			$gameUpdated = true;
 			print 'Crashed.';
 		}
 		elseif( $Game->needsProcess() )
@@ -212,7 +222,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
 			$DB->sql_put("COMMIT");
 			print 'Rechecking.. ';
-			// It does seem wasteful to get a Game, check if it needs processing, then get it again, 
+			// It does seem wasteful to get a Game, check if it needs processing, then get it again,
 			// but we need to increment the attempts counter before processing to avoid infinite loops,
 			// so when we commit we need to refetch the game to lock it after the commit.
 			// Perhaps an attempt counter could be in Redis instead, but best not to change.
@@ -223,22 +233,28 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			{
 				print l_t('Processing..').' ';
 				$Game->process();
+				$gameUpdated = true;
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 				$DB->sql_put("COMMIT");
 				print l_t('Processed.');
 			}
 		}
 
-		if( $Game->phaseMinutes > 3*60 && $Game->playerTypes != 'MembersVsBots' )
+		if( $gameUpdated )
 		{
-			// Take a backup of non-bot games with a phase length >3 hours to a table that can be written out without transactions
-			processGame::backupGame($Game->id, false);
-		}
+			if( $Game->phaseMinutes > 3*60 && $Game->playerTypes != 'MemberVsBots' )
+			{
+				// Take a backup of non-bot games with a phase length >3 hours to a table that can be written out without transactions
+				processGame::backupGame($Game->id, false);
+			}
 
-		$Redis->trigger("private-game" . $Game->id, 'overview', 'processed');
+			$Redis->trigger("private-game" . $Game->id, 'overview', 'processed');
+		}
 	}
 	catch(Exception $e)
 	{
+		$gameUpdated = true; // The game may have been part-changed before the exception; wipe the cache below to be safe
+
 		if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
 		{
 			$DB->sql_put("COMMIT");
@@ -251,9 +267,12 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		}
 	}
 
-	// Wipe the whole cache; regenerating game maps used to be a big drain on performance but these days locking is more of a concern,
-	// and disabling locking on map generation might mean that a user loads half the units up
-	Game::wipeCache($Game->id);
+	if( $gameUpdated )
+	{
+		// Wipe the whole cache; regenerating game maps used to be a big drain on performance but these days locking is more of a concern,
+		// and disabling locking on map generation might mean that a user loads half the units up
+		Game::wipeCache($Game->id);
+	}
 
 	$Redis->delete('processing'.$Game->id);
 	

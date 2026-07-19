@@ -21,7 +21,9 @@ let countryID = 0; // This will be set when the first game is subscribed to, so 
 // Set next reconnect time to now + 30 seconds:
 let nextReconnectTime = new Date(); // In case of a connection issue this variable will trigger a reconnection
 nextReconnectTime.setSeconds(nextReconnectTime.getSeconds() + 30);
-let isEventSourceReconnecting = false; // Set when a new SSE connection has been established, so reconnections should halt
+let isEventSourceReconnecting = false; // Set while a reconnection is in progress, so the watchdog doesn't stack reconnections
+// The single reconnect watchdog timer; kept module-level so reconnects replace it rather than adding another
+let reconnectWatchdogTimer: ReturnType<typeof setInterval> | undefined;
 // This will hold all event callbacks, keyed by event name
 type EventCallback = (...args: any[]) => void;
 const eventCallbacks: { [key: string]: EventCallback[] } = {};
@@ -74,6 +76,12 @@ const client = {
           );
           eventSource.onopen = () => {
             sseDebugLog("Connected to SSE server");
+            // The connection is up again, so let the watchdog fire for the next timeout,
+            // and give the server the full timeout period before that can happen:
+            isEventSourceReconnecting = false;
+            const newReconnectTime = new Date();
+            newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
+            nextReconnectTime = newReconnectTime;
             // Callback all connected subscribers:
             if (eventCallbacks.connected) {
               eventCallbacks.connected.forEach((callback) => callback());
@@ -96,8 +104,10 @@ const client = {
               );
             }
           };
-          // Every 5 seconds check if we need to reconnect:
-          setInterval(() => {
+          // Periodically check if we need to reconnect. Each reconnection replaces the
+          // previous watchdog so long-lived tabs don't accumulate timers:
+          if (reconnectWatchdogTimer) clearInterval(reconnectWatchdogTimer);
+          reconnectWatchdogTimer = setInterval(() => {
             const now = new Date();
             if (!isEventSourceReconnecting && now >= nextReconnectTime) {
               sseDebugLog(
@@ -145,7 +155,7 @@ const client = {
                   );
                 }
               } else if (data.message && data.message.includes("ping")) {
-                if (eventCallbacks["pusher:pong]"]) {
+                if (eventCallbacks["pusher:pong"]) {
                   eventCallbacks["pusher:pong"].forEach((callback) =>
                     callback(),
                   );
@@ -158,6 +168,8 @@ const client = {
         })
         .catch((error) => {
           console.error("Failed to authenticate SSE connection:", error);
+          // Allow the watchdog to attempt another reconnection:
+          isEventSourceReconnecting = false;
           if (eventCallbacks["pusher:subscription_error"]) {
             eventCallbacks["pusher:subscription_error"].forEach((callback) =>
               callback(error),

@@ -41,8 +41,8 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build && rm -rf ../beta && mv build ../beta",
+    "start": "REACT_APP_ADSENSE_VER=dev react-scripts start",
+    "build": "REACT_APP_ADSENSE_VER=$(md5sum ../javascript/adsense.js | cut -c1-8) react-scripts build && rm -rf ../beta && mv build ../beta",
     "build:local": "env-cmd -f .env.local npm run build",
     "build:production": "env-cmd -f .env.production npm run build",
     "build:test": "env-cmd -f .env.test npm run build",

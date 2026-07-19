@@ -34,8 +34,9 @@
       gtag('config', 'G-MC45SZ2JEC');
     </script>
     <!-- Google AdSense - External script for easy modification.
-      Bump ?ver= whenever adsense.js changes so cached copies are refreshed. -->
-    <script defer src="%PUBLIC_URL%/../javascript/adsense.js?ver=2"></script>
+      ?ver= is stamped by the build script with a hash of adsense.js, so cached copies
+      are refreshed automatically whenever the file changes. -->
+    <script defer src="%PUBLIC_URL%/../javascript/adsense.js?ver=%REACT_APP_ADSENSE_VER%"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
