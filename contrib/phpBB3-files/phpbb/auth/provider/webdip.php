@@ -13,7 +13,7 @@
 
 namespace phpbb\auth\provider;
 
-define("IN_CODE", true);
+if (!defined("IN_CODE")) define("IN_CODE", true);
 
 // webDiplomacy authentication, registered in config/default/container/services_auth.yml
 

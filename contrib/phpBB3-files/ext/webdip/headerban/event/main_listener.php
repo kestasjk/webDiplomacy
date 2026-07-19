@@ -60,7 +60,8 @@ class main_listener implements EventSubscriberInterface
 		$this->misc = array();
 		
 		if( file_exists($this->RELATIVEPATH.'config.php') ) {
-			define('IN_CODE',true);
+			// May already be defined by the webdip auth provider, which also loads config.php
+			if( !defined('IN_CODE') ) define('IN_CODE',true);
 			require_once($this->RELATIVEPATH.'config.php');
 			// Ensure certain values do not remain in memory, in case phpBB leaks data
 			\Config::$database_username='';
@@ -70,7 +71,6 @@ class main_listener implements EventSubscriberInterface
 			\Config::$gameMasterSecret='';
 			\Config::$jsonSecret='';
 			\Config::$mailerConfig=array();
-			define('IN_CODE',false);
 			$this->disableExt = false;
 		}
 		else
