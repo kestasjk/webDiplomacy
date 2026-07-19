@@ -43,3 +43,7 @@ ads.txt
 backup.flag
 beta/adsense.js
 beta/
+# Ignore working-notes markdown docs, but keep the READMEs and CLAUDE.md
+*.md
+!README.md
+!CLAUDE.md
