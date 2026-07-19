@@ -45,7 +45,18 @@ function deploy($forceAll = false)
 
 	$changedFiles = '';
 	if( $oldHead != '' && $newHead != '' && $oldHead != $newHead )
+	{
 		$changedFiles = ''.shell_exec('git diff --name-only '.$oldHead.' '.$newHead.' 2>&1');
+
+		// A [force-deploy] marker in any pulled commit message forces the build and
+		// overlay steps below even when the pull didn't touch their paths, allowing a
+		// full redeploy to be triggered remotely with an empty commit
+		if( !$forceAll && strpos(''.shell_exec('git log --format=%B '.$oldHead.'..'.$newHead), '[force-deploy]') !== false )
+		{
+			runStep('echo Force deploy requested by commit message');
+			$forceAll = true;
+		}
+	}
 
 	// Rebuild the beta React app when its source changed.
 	// npm ci rather than npm install so package-lock.json is never rewritten,
