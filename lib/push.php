@@ -134,9 +134,11 @@ class libPush
 				array('libPush', 'isEnabledForUser')));
 			if( count($userIDs) == 0 ) return;
 
-			// The web-push library's dependencies raise deprecation notices on newer PHP versions;
-			// with display_errors on those would be printed into the middle of API JSON responses
-			$errorReporting = error_reporting(error_reporting() & ~E_DEPRECATED);
+			// The web-push library's dependencies raise deprecation notices on newer PHP versions
+			// (guzzle/psr7 raises them via trigger_error as E_USER_DEPRECATED, not E_DEPRECATED).
+			// The site error handler treats any unmasked notice as fatal and exits, which would kill
+			// the caller (e.g. the gamemaster before it publishes the 'processed' SSE event), so mask both.
+			$errorReporting = error_reporting(error_reporting() & ~(E_DEPRECATED | E_USER_DEPRECATED));
 
 			$subscriptions = array();
 			$tabl = $DB->sql_tabl("SELECT endpointHash, endpoint, p256dh, auth

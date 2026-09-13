@@ -206,6 +206,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 	print '<a href="board.php?gameID='.$Game->id.'">gameID='.$Game->id.': '.$Game->name.'</a>: ';
 
 	$gameUpdated = false; // Only backup / publish / wipe caches for games whose state actually changed this cycle
+	$gameProcessed = false; // Set when a turn actually processed and committed, so players can be push-notified at the end
 	try
 	{
 		// If we have already tried and failed to process this game twice, or it has a turn over 1000 (likely indicating a bug where processing is in a loop)
@@ -238,21 +239,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 				$DB->sql_put("COMMIT");
 				print l_t('Processed.');
-
-				// The turn has processed and committed; notify the players via Web Push. This must
-				// stay after the COMMIT (a rolled-back turn must never notify), and inside this
-				// branch only: the 'processed' Redis trigger below fires for every game examined,
-				// not just games which actually processed.
-				try
-				{
-					$pushUserIDs = array();
-					foreach($Game->Members->ByCountryID as $member)
-						if( $member->status == 'Playing' ) $pushUserIDs[] = $member->userID;
-					libPush::sendToUsers($pushUserIDs, $Game->name,
-						l_t('A new phase has started: %s',$Game->datetxt($Game->turn).', '.$Game->phase),
-						'/board.php?gameID='.$Game->id, 'game-'.$Game->id);
-				}
-				catch(\Throwable $e) { print ' (push notify failed)'; }
+				$gameProcessed = true; // Web Push is sent at the end of this iteration, after the SSE publish and cache wipe
 			}
 		}
 
@@ -291,7 +278,26 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 	}
 
 	$Redis->delete('processing'.$Game->id);
-	
+
+	if( $gameProcessed )
+	{
+		// The turn has processed and committed; notify the players via Web Push. This stays after the
+		// COMMIT (a rolled-back turn must never notify) and is deliberately the last step for this game:
+		// the push library can raise notices which the site error handler turns into a fatal exit, and
+		// nothing the players rely on (the 'processed' SSE publish, cache wipe, processing-key cleanup)
+		// should be lost because a push notification failed.
+		try
+		{
+			$pushUserIDs = array();
+			foreach($Game->Members->ByCountryID as $member)
+				if( $member->status == 'Playing' ) $pushUserIDs[] = $member->userID;
+			libPush::sendToUsers($pushUserIDs, $Game->name,
+				l_t('A new phase has started: %s',$Game->datetxt($Game->turn).', '.$Game->phase),
+				'/board.php?gameID='.$Game->id, 'game-'.$Game->id);
+		}
+		catch(\Throwable $e) { print ' (push notify failed)'; }
+	}
+
 	print '<br />';
 }
 
