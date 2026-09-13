@@ -51,10 +51,15 @@ class panelMembersHome extends panelMembers
 		{
 			for($countryID = 1; $countryID <= count($this->Game->Variant->countries); $countryID++)
 			{
+				// A country can be left without a member row (e.g. removed by an admin); skip it rather than error
+				if( !isset($this->ByCountryID[$countryID]) )
+					continue;
 				$Member = $this->ByCountryID[$countryID];
 				$membersList[] = $Member->memberColumn();
 			}
 		}
+		if( count($membersList) == 0 )
+			return '';
 		// print countries with members > $maxPerRow on multiple rows on home page
 		$buf = '<table class="homeMembersTable">';
 		$memberNum = count($membersList);

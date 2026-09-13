@@ -74,6 +74,9 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 	if ( $errline )
 		$error .= 'Line: "'.$errline."\"\n";
 
+	// Identifies this kind of error for de-duplication; must use the message as raised, before it is decorated below
+	$signature = libError::signature($errstr, $errfile, $errline);
+
 	if ( isset($User) and $User instanceof User )
 	{
 		$error .= 'userID = '.$User->id;
@@ -143,7 +146,9 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 	$User = null;
 	if ( is_object($DB) )
 	{
-		$DB->sql_put("ROLLBACK");
+		// Must not raise another error while handling this one (e.g. if the connection has gone away),
+		// so roll back without going through the checked sql_put()
+		$DB->rollbackQuietly();
 		$DB = null;
 	}
 
@@ -181,15 +186,39 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		libHTML::error("Error log directory not ready; does not exist, or no protective index file");
 	}
 
-	$errorlogFile = $errorlogDirectory.'/'.time().'.txt';
-	error_log("Error logged to $errorlogFile");
-	if ( @file_put_contents($errorlogFile, $error) )
+	/*
+	 * One file per error, named <unix time>_<pid>.txt, so that errors raised in the same second by different
+	 * processes don't overwrite each other (the old <unix time>.txt naming kept only the last one).
+	 *
+	 * Repeats of the same error (same message with numbers masked, file and line) within libError::DEDUP_WINDOW
+	 * seconds of the first are counted in <log dir>/.dedup/<signature>.json instead of being written out in
+	 * full, so a crawler or a bot hitting the same bug in a loop produces one trace and a count rather than
+	 * thousands of identical files. The admin status list shows the counts next to the log files.
+	 */
+	$errorlogFile = libError::newLogFile($errorlogDirectory);
+	$occurrence = libError::recordOccurrence($errorlogDirectory, $signature, basename($errorlogFile));
+
+	if( $occurrence['duplicate'] )
 	{
-		$message .= 'The details of this error have been successfully logged and will be attended to by a developer.';
+		error_log("Error signature $signature repeated: occurrence ".$occurrence['count']." since ".date('c', $occurrence['first']).", trace in ".$occurrence['file']);
+		$message .= 'The details of this error have already been logged recently and will be attended to by a developer.';
 	}
 	else
 	{
-		$message .= 'This error could not be logged! Please contact the administrator about this error.';
+		$header = 'Signature: '.$signature."\n";
+		if( $occurrence['previous'] )
+			$header .= 'Previously: '.$occurrence['previous']['count'].' occurrence(s) between '.date('c', $occurrence['previous']['first']).
+				' and '.date('c', $occurrence['previous']['last']).', trace in '.$occurrence['previous']['file']."\n";
+
+		error_log("Error logged to $errorlogFile");
+		if ( @file_put_contents($errorlogFile, $header.$error) )
+		{
+			$message .= 'The details of this error have been successfully logged and will be attended to by a developer.';
+		}
+		else
+		{
+			$message .= 'This error could not be logged! Please contact the administrator about this error.';
+		}
 	}
 	$message .= '</p>';
 	
@@ -202,9 +231,161 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 
 class libError
 {
+	/**
+	 * Errors with the same signature within this many seconds of the first are counted, not logged in full
+	 */
+	const DEDUP_WINDOW = 3600;
+
+	/**
+	 * Files in the log directory matching this are error logs; capture 1 is the unix time the error was logged.
+	 * Matches both the current <time>_<pid>.txt naming and the old <time>.txt naming.
+	 */
+	const LOG_FILE_PATTERN = '/^(\d+)(?:_\d+)*\.txt$/';
+
 	public static function isLoggingEnabled()
 	{
 		return !( false === Config::errorlogDirectory() );
+	}
+
+	/**
+	 * A hash identifying a kind of error, for de-duplication. Numbers in the message are masked so that
+	 * e.g. different game IDs or SQL LIMIT offsets in otherwise identical messages share a signature.
+	 *
+	 * @return string
+	 */
+	public static function signature($errstr, $errfile, $errline)
+	{
+		return md5(preg_replace('/\d+/', '#', (string)$errstr).'|'.$errfile.'|'.$errline);
+	}
+
+	/**
+	 * Choose a name for a new error log file in $dir which no other process will pick in the same second
+	 *
+	 * @return string Full path
+	 */
+	public static function newLogFile($dir)
+	{
+		$base = $dir.'/'.time().'_'.getmypid();
+		$file = $base.'.txt';
+		for( $i = 1; file_exists($file); $i++ )
+			$file = $base.'_'.$i.'.txt';
+		return $file;
+	}
+
+	/**
+	 * Record that an error with $signature has just occurred, in $dir/.dedup/<signature>.json.
+	 *
+	 * @param string $dir The error log directory
+	 * @param string $signature From signature()
+	 * @param string $logFile Basename of the file the trace will be written to if this is not a duplicate
+	 * @return array duplicate => true if the error was already logged within DEDUP_WINDOW (only the count was
+	 *   updated); count => occurrences in the current window; first => start of the window; file => basename
+	 *   of the file holding the trace for this window; previous => the expired window's entry
+	 *   (count/first/last/file) if a new window has just started, else null
+	 */
+	public static function recordOccurrence($dir, $signature, $logFile)
+	{
+		$now = time();
+		$result = array('duplicate' => false, 'count' => 1, 'first' => $now, 'file' => $logFile, 'previous' => null);
+
+		// This runs inside the error handler, so warnings from the file operations below (e.g. a race
+		// creating the directory) must not reach it and trigger an error-within-error
+		set_error_handler(function() { return true; });
+		try
+		{
+			$indexDir = $dir.'/.dedup';
+			if( !is_dir($indexDir) && !mkdir($indexDir) && !is_dir($indexDir) )
+				return $result; // Can't de-duplicate; log everything as before
+
+			$fh = fopen($indexDir.'/'.$signature.'.json', 'c+');
+			if( !$fh )
+				return $result;
+
+			flock($fh, LOCK_EX);
+			$entry = json_decode((string)stream_get_contents($fh), true);
+
+			if( is_array($entry) && isset($entry['first'], $entry['count'], $entry['file']) && ($now - $entry['first']) < self::DEDUP_WINDOW )
+			{
+				$entry['count']++;
+				$entry['last'] = $now;
+				$result = array('duplicate' => true, 'count' => $entry['count'], 'first' => $entry['first'], 'file' => $entry['file'], 'previous' => null);
+			}
+			else
+			{
+				if( is_array($entry) && isset($entry['first'], $entry['count'], $entry['file']) )
+					$result['previous'] = $entry;
+				$entry = array('count' => 1, 'first' => $now, 'last' => $now, 'file' => $logFile);
+			}
+
+			ftruncate($fh, 0);
+			rewind($fh);
+			fwrite($fh, json_encode($entry));
+			fflush($fh);
+			flock($fh, LOCK_UN);
+			fclose($fh);
+		}
+		finally
+		{
+			restore_error_handler();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * The error log files in the log directory, newest first
+	 *
+	 * @return array basename => unix time the error was logged
+	 */
+	public static function files()
+	{
+		if ( !libError::isLoggingEnabled() )
+			return array();
+
+		static $files;
+		if ( isset($files) ) return $files;
+
+		$dir = self::directory();
+
+		if ( ! ( $handle = @opendir($dir) ) )
+		{
+			libHTML::error("Could not open error log directory");
+		}
+
+		$files = array();
+		while ( false !== ( $file = readdir($handle) ) )
+		{
+			if( preg_match(self::LOG_FILE_PATTERN, $file, $match) )
+				$files[$file] = (int)$match[1];
+		}
+		closedir($handle);
+
+		arsort($files, SORT_NUMERIC);
+
+		return $files;
+	}
+
+	/**
+	 * Occurrence counts from the de-duplication index
+	 *
+	 * @return array log file basename => array(count, first, last, file)
+	 */
+	public static function counts()
+	{
+		$counts = array();
+
+		if ( !libError::isLoggingEnabled() )
+			return $counts;
+
+		foreach( glob(self::directory().'/.dedup/*.json') ?: array() as $indexFile )
+		{
+			if( !is_file($indexFile) ) continue;
+			$entry = json_decode((string)file_get_contents($indexFile), true);
+			if( is_array($entry) && isset($entry['file'], $entry['count']) )
+				$counts[$entry['file']] = $entry;
+		}
+
+		return $counts;
 	}
 
 	public static function directory()
@@ -248,6 +429,11 @@ class libError
 		return $count.' error log files'.($count>0?', last error log at '.libTime::text($errorTimes[0]):'');
 	}
 
+	/**
+	 * The times of the error log files, newest first. Also updates the cached count in $Misc->ErrorLogs.
+	 *
+	 * @return int[]
+	 */
 	public static function errorTimes()
 	{
 		global $Misc;
@@ -255,29 +441,7 @@ class libError
 		if ( !libError::isLoggingEnabled() )
 			return array();
 
-		static $errorTimes;
-		if ( isset($errorTimes) ) return $errorTimes;
-
-		$dir = self::directory();
-
-		if ( ! ( $handle = @opendir($dir) ) )
-		{
-			libHTML::error("Could not open error log directory");
-		}
-
-		$errorTimes = array();
-		while ( false !== ( $file = readdir($handle) ) )
-		{
-			list($timestamp) = explode('.', $file);
-
-			if ( intval($timestamp) < 1000 ) continue;
-			else $errorTimes[] = intval($timestamp);
-
-		}
-		closedir($handle);
-
-		sort($errorTimes, SORT_NUMERIC);
-		$errorTimes = array_reverse($errorTimes);
+		$errorTimes = array_values(self::files());
 
 		$Misc->ErrorLogs = count($errorTimes);
 
@@ -293,10 +457,11 @@ class libError
 
 		$dir = self::directory();
 
-		$times = self::errorTimes();
+		foreach( array_keys(self::files()) as $file )
+			unlink($dir.'/'.$file);
 
-		foreach($times as $time)
-			unlink($dir.'/'.$time.'.txt');
+		foreach( glob($dir.'/.dedup/*.json') ?: array() as $indexFile )
+			unlink($indexFile);
 
 		$Misc->ErrorLogs = 0;
 	}

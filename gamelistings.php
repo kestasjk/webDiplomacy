@@ -188,7 +188,7 @@ $maxPage = 0;
 $totalResults = 0;
 $tournamentID = 0;
 
-if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
+if ( isset($_REQUEST['pagenum'])) { $pagenum=max(1, (int)$_REQUEST['pagenum']); } // < 1 would give a negative LIMIT offset
 
 
 if ($tab == 'My games')

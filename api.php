@@ -49,53 +49,14 @@ require_once('variants/install.php');
 require_once('gamemaster/gamemaster.php');
 global $DB;
 
-// Use MetricsDatabase for API calls to track performance
-$DB = new MetricsDatabase();
+// $DB was created by header.php as a MetricsDatabase; its counters are reset with resetMetrics() just before the
+// API call runs. (Creating a second MetricsDatabase here opened, and immediately closed, an extra MySQL
+// connection on every API request, which contributed to "Too many connections" errors under load.)
 
-/**
- * Exception class - missing credentials (API key).
- */
-class ClientUnauthorizedException extends Exception {
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-}
-
-/**
- * Exception class - access denied for request sender.
- */
-class ClientForbiddenException extends Exception {
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-}
-
-/**
- * Exception class - server internal error.
- */
-class ServerInternalException extends Exception {
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-}
-
-/**
- * Exception class - request is not implemented.
- */
-class NotImplementedException extends Exception {
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-}
-
-/**
- * Exception class - bad request.
- */
-class RequestException extends Exception {
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-}
+// The API exception classes (RequestException, ClientForbiddenException, ...) are defined in
+// global/exceptions.php (loaded by header.php) so that library code shared with the classic web pages
+// can throw them too and have api.php map them to 4xx responses instead of logging them as server errors.
+require_once('global/exceptions.php');
 
 /**
  * Handles an error (user or server) in an API request.
@@ -1320,7 +1281,7 @@ class JoinGame extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$User = new User($userID);
 
-		if ( !$User->type['User'] ) throw new Exception("Only users can join games");
+		if ( !$User->type['User'] ) throw new ClientForbiddenException("Only users can join games");
 
 		$args = $this->getArgs();
 		$gameID = (int)$args['gameID'];
@@ -1361,7 +1322,7 @@ class LeaveGame extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$User = new User($userID);
 
-		if ( !$User->type['User'] ) throw new Exception("Only users can join games");
+		if ( !$User->type['User'] ) throw new ClientForbiddenException("Only users can join games");
 
 		$args = $this->getArgs();
 		$gameID = (int)$args['gameID'];
@@ -1375,7 +1336,7 @@ class LeaveGame extends ApiEntry {
 		$reason=$Game->Members->cantLeaveReason();
 
 		if($reason)
-			throw new Exception(l_t("Can't leave game; %s.",$reason));
+			throw new RequestException(l_t("Can't leave game; %s.",$reason));
 		else
 			$Game->Members->ByUserID[$User->id]->leave();
 
@@ -1435,9 +1396,14 @@ class SetOrders extends ApiEntry {
 		// Getting frequent deadlocks when getting the game and locking wmembers for update, perhaps because the permission check has to query members.
 		// So commit and begin to release anything locked and start over
 		$DB->sql_put("COMMIT");
-		$DB->sql_put("BEGIN");
-		// Lock the member record for update, as this will be updated but the game will not be
-		$DB->sql_row("SELECT id FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." FOR UPDATE");
+		// Lock the member record for update, as this will be updated but the game will not be.
+		// Taking this lock is where most deadlocks / lock wait timeouts surface (contention with the gamemaster and
+		// other order submissions for the same game). Nothing has been written yet at this point, so it is safe to
+		// roll back and retry the lock a few times before giving up.
+		$DB->withRetry(function() use ($DB, $gameID, $countryID) {
+			$DB->sql_put("BEGIN");
+			$DB->sql_row("SELECT id FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." FOR UPDATE");
+		});
 		$game = $this->getAssociatedGame();
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
@@ -2247,8 +2213,9 @@ catch (ServerInternalException $exc) {
 	trigger_error($exc->getMessage());
 }
 catch (NotImplementedException $exc) {
-	handleAPIError($exc->getMessage(), 501);
-    trigger_error($exc->getMessage());
+	// Unknown route: a client error (bots polling routes that don't exist, injection probes), not a server
+	// error, so it is not written to the error log. The web server access log records the request.
+	handleAPIError($exc->getMessage(), 404);
 }
 catch (Exception $exc) {
 	handleAPIError("Internal error: ".$exc->getMessage(), 501);

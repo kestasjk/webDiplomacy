@@ -279,14 +279,15 @@ class Member
 			throw new Exception("Unnecessary call to markBackFromLeft, member is ".$this->status.". These calls lock the database so should be avoided.");
 		}
 		
+		// These are the user's problem, not a bug: ClientForbiddenException makes api.php answer 403 without logging
 		if ( $this->Game->Members->isTempBanned() )
 		{
-			throw new Exception("You are blocked from rejoining your games.");
+			throw new ClientForbiddenException("You are blocked from rejoining your games.");
 		}
 		
 		if ( $User->reliabilityRating < $this->Game->minimumReliabilityRating )
 		{
-			throw new Exception("Your reliability rating is too low to rejoin this game.");
+			throw new ClientForbiddenException("Your reliability rating is too low to rejoin this game.");
 		}
 
 		unset($this->Game->Members->ByStatus[$this->status][$this->id]);
@@ -327,9 +328,19 @@ class Member
 		
 		// Reset the min bet so that the game no longer appears in open games searches. 
 		require_once(l_r('gamemaster/game.php'));
+		// Constructing a Game object makes it the global $Game (see Game::__construct). When called from
+		// board.php (via userMember) the global is the panelGameBoard being rendered, and the page went on
+		// to call mapHTML() on this processGame instead, so put the previous global back afterwards.
+		$previousGame = isset($GLOBALS['Game']) ? $GLOBALS['Game'] : null;
 		$Variant=libVariant::loadFromGameID($this->gameID);
 		$ProcessGame = $Variant->processGame($this->gameID);
 		$ProcessGame->resetMinimumBet();
+		unset($ProcessGame);
+		if( $previousGame !== null )
+		{
+			unset($GLOBALS['Game']);
+			$GLOBALS['Game'] = $previousGame;
+		}
 	}
 }
 ?>

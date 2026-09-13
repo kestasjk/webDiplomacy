@@ -39,22 +39,30 @@ if( $User->type['Admin'] )
 	print '<p><strong>Script to extract the count of errors by type:</strong> cat *.txt | perl -ne \'m/^(Error)/ and s/\n// and $e=$_; m/^(Raised)/ and s/\n// and $r=$_; m/^(Line)/ and print $e.$r.$_;\' | sort | uniq -c | less </p>';
 
 	$dir =  libError::directory();
-	$errorlogs = libError::errorTimes();
+	$errorlogs = libError::files();
+	$counts = libError::counts();
 
 	print '<TABLE class="modTools">';
 	print "<tr>";
     print '<th class= "modTools">Time</th>';
+	print '<th class= "modTools">Repeats</th>';
 	print '<th class= "modTools">Details</th>';
 	print "</tr>";
 
 	$loopCounter = 0;
-	foreach ( $errorlogs as $errorlog )
+	foreach ( $errorlogs as $errorlogFile => $errorlogTime )
 	{
 		if((!isset($_REQUEST['full'])) and ($loopCounter > 49 ))
 			break;
 
-		print '<tr><td class="modTools">'.libTime::text($errorlog).'</td>';
-		print '<td class="modTools"><a class="modTools" href="admincp.php?viewErrorLog='.$errorlog.'">Open</a></td></tr>';
+		// Repeats of this error within libError::DEDUP_WINDOW were counted rather than logged as separate files
+		$repeats = '';
+		if( isset($counts[$errorlogFile]) && $counts[$errorlogFile]['count'] > 1 )
+			$repeats = '&times;'.$counts[$errorlogFile]['count'].', last '.libTime::text($counts[$errorlogFile]['last']);
+
+		print '<tr><td class="modTools">'.libTime::text($errorlogTime).'</td>';
+		print '<td class="modTools">'.$repeats.'</td>';
+		print '<td class="modTools"><a class="modTools" href="admincp.php?viewErrorLog='.substr($errorlogFile, 0, -4).'">Open</a></td></tr>';
 		$loopCounter = $loopCounter + 1;
 	}
 

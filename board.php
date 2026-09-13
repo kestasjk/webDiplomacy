@@ -157,6 +157,12 @@ try
 		libHTML::$footerScript[] = 'makeFormsSafe();';
 	}
 }
+catch(ClientForbiddenException $e)
+{
+	// The game loaded but the user may not do what they asked, e.g. rejoin from civil disorder with too low a
+	// reliability rating; tell them why rather than claiming the game couldn't be loaded
+	libHTML::error($e->getMessage());
+}
 catch(Exception $e)
 {
 	// Couldn't load game

@@ -164,6 +164,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input[$assignment] = $cleanedInput;
 		}
 
+		// Reject assignments which leave nothing to create; the INSERT below would have no VALUES otherwise
+		$scCount = 0;
+		foreach($input['scAssignments'] as $terrIDs)
+			$scCount += count($terrIDs);
+		if( $scCount == 0 )
+			throw new Exception(l_t("No supply centers were assigned; at least one supply center must be given to a country."));
+
 		// All sanitized and ready, now create the game:
 
 		// Create Game record & object
@@ -189,8 +196,10 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			foreach($terrIDs as $terrID)
 				$scInserts[] = "(".$Game->id.", ".$countryID.", '".$terrID."')";
 
-		$DB->sql_put("INSERT INTO wD_TerrStatus ( gameID, countryID, terrID ) VALUES ".implode(', ', $scInserts));
-		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, terrID, type ) VALUES ".implode(', ', $unitInserts));
+		if( count($scInserts) > 0 )
+			$DB->sql_put("INSERT INTO wD_TerrStatus ( gameID, countryID, terrID ) VALUES ".implode(', ', $scInserts));
+		if( count($unitInserts) > 0 ) // A sandbox may legitimately start with no units on the board
+			$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, terrID, type ) VALUES ".implode(', ', $unitInserts));
 
 		// Reassign terr status unit occupations:
 		$adj = $Game->Variant->adjudicatorPreGame();

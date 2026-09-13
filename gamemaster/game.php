@@ -296,12 +296,12 @@ class processGame extends Game
 	{
 		global $DB;
 
-		if( !$this->canMoveTurnBack() ) throw new Exception(l_t("You do not have permission to move this game back a turn, or it is on the first turn."));
+		if( !$this->canMoveTurnBack() ) throw new ClientForbiddenException(l_t("You do not have permission to move this game back a turn, or it is on the first turn."));
 
 		// - Check that the game is still active and can be turned back
 		if ( $this->turn < 1 )
 		{
-			throw new Exception(l_t('This game cannot be turned back; it is new or is finished.'));
+			throw new RequestException(l_t('This game cannot be turned back; it is new or is finished.'));
 		}
 
 		// - Delete current turn values

@@ -54,7 +54,11 @@ if ( $User->type['Moderator'] && isset($_REQUEST['viewOrderLogGame']) && isset($
 
 if ( $User->type['Admin'] && isset($_REQUEST['viewErrorLog']) )
 {
-	$log=(int)$_REQUEST['viewErrorLog'];
+	$log=basename((string)$_REQUEST['viewErrorLog']);
+	if( !preg_match('/^\d+(_\d+)*$/', $log) )
+	{
+		trigger_error(l_t("Invalid error log name."));
+	}
 	if( !($data=file_get_contents(Config::errorlogDirectory().'/'.$log.'.txt')) )
 	{
 		trigger_error(l_t("Couldn't open file %s.txt",$log));

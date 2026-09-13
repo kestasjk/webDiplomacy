@@ -46,6 +46,7 @@ if( !defined('IN_CODE') )
 require_once('config.php');
 
 require_once('global/definitions.php');
+require_once('global/exceptions.php');
 
 // Initialize page timing for metrics collection
 global $pageStartTime;

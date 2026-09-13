@@ -474,18 +474,19 @@ class processMembers extends Members
 		// If we're not locked for UPDATE we can't keep things consistant
 		assert('$this->Game->lockMode == UPDATE');
 
+		// These are the user's problem, not a bug: the Client*/Request exceptions make api.php answer 4xx without logging
 		if ( $this->Game->private and md5($password) != $this->Game->password and $password != $this->Game->password )
-			throw new Exception(l_t("The invite code you supplied is incorrect, please try again."));
+			throw new ClientForbiddenException(l_t("The invite code you supplied is incorrect, please try again."));
 
 		if ( !$this->Game->isJoinable() )
-			throw new Exception(l_t("You cannot join this game."));
+			throw new ClientForbiddenException(l_t("You cannot join this game."));
 
 		if ( !($this->Game->minimumReliabilityRating <= $User->reliabilityRating) )
-			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
+			throw new ClientForbiddenException(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
 				$User->reliabilityRating, $this->Game->minimumReliabilityRating));
 
 		if ( $User->userIsTempBanned() )
-			throw new Exception("You are blocked from joining new games.");
+			throw new ClientForbiddenException("You are blocked from joining new games.");
 
 		// We can join, the only question is how?
 
@@ -511,16 +512,16 @@ class processMembers extends Members
 		{
 			// Taking over from CD: Valid countryID to take over? Got enough points?
 			if ( 0>=$countryID || count($this->Game->Variant->countries)<$countryID )
-				throw new Exception(l_t("You haven't specified which countryID you want to take over."));
+				throw new RequestException(l_t("You haven't specified which countryID you want to take over."));
 
 			$CD = $this->ByCountryID[$countryID];
 
 			if ( $CD->status != 'Left' )
-				throw new Exception(l_t('The player selected is not in civil disorder.'));
+				throw new RequestException(l_t('The player selected is not in civil disorder.'));
 
 			$bet = $CD->pointsValueInTakeover();
 			if ( $User->points < $bet )
-				throw new Exception(l_t("You do not have enough points to take over that countryID."));
+				throw new ClientForbiddenException(l_t("You do not have enough points to take over that countryID."));
 
 			$CD->setTakenOver(); // Refund its points if required, and send it a message
 

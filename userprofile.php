@@ -1145,7 +1145,7 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
 if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
-if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
+if ( isset($_REQUEST['pagenum'])) { $pagenum=max(1, (int)$_REQUEST['pagenum']); } // < 1 would give a negative LIMIT offset
 
 $SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$UserProfile->id;
 $SQLCounter = "SELECT count(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$UserProfile->id;

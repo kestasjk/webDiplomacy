@@ -32,7 +32,7 @@ $maxPage = 0;
 $totalResults = 0;
 $msgFilter = -1;
 
-if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
+if ( isset($_REQUEST['pagenum'])) { $pagenum=max(1, (int)$_REQUEST['pagenum']); } // < 1 would give a negative LIMIT offset
 if ( isset($_REQUEST['msgFilter'])) { $msgFilter=(int)$_REQUEST['msgFilter']; }
 
 $SQLCounter = "SELECT COUNT(*) FROM wD_GameMessages WHERE gameID = ".$Game->id." AND ";
@@ -57,6 +57,8 @@ list($totalResults) = $DB->sql_row($SQLCounter);
 
 $maxPage = ceil($totalResults / $resultsPerPage);
 $remainder = ($maxPage * $resultsPerPage) - $totalResults;
+// Pages past the end would give a negative LIMIT offset below
+if ($pagenum > $maxPage) $pagenum = max(1, $maxPage);
 
 if ($pagenum == $maxPage)
 {

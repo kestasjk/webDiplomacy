@@ -23,6 +23,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 // TODO: Use MySQLi prepared statements rather than the old MySQL style functions
 
 /**
+ * Thrown by Database::sql_tabl()/sql_put() while inside Database::withRetry() when a query fails
+ * because of a deadlock or a lock wait timeout, so that the caller can roll back and try again.
+ */
+class DatabaseLockException extends Exception { }
+
+/**
  * A MySQL DB interaction object.
  *
  * @package Base
@@ -72,25 +78,160 @@ class Database {
 	}
 
 	/**
+	 * MySQL error numbers which this class handles specially
+	 */
+	const ERR_TOO_MANY_CONNECTIONS = 1040;
+	const ERR_TOO_MANY_USER_CONNECTIONS = 1203;
+	const ERR_LOCK_WAIT_TIMEOUT = 1205;
+	const ERR_DEADLOCK = 1213;
+
+	/**
+	 * How many times to try to connect when the server reports that it is out of connections, and the
+	 * base delay between attempts (multiplied by the attempt number)
+	 */
+	const CONNECT_ATTEMPTS = 3;
+	const CONNECT_RETRY_DELAY_MS = 100;
+
+	/**
 	 * Initialize the database connection
 	 */
 	public function __construct()
-    {
-      $this->link = mysqli_connect(Config::$database_socket,
-				Config::$database_username, Config::$database_password);
+	{
+		// Turn off mysqli error reporting so that failures are returned to, and checked by, this wrapper
+		// class rather than thrown as mysqli_sql_exception (the default since PHP 8.1). This has to be
+		// set before connecting, or a failed connection is an uncaught exception instead of a checked error.
+		mysqli_report(MYSQLI_REPORT_OFF);
+
+		$this->link = self::connect();
 
 		if( ! $this->link )
-			trigger_error(l_t("Couldn't connect to the MySQL server, if this problem persists please inform the admin."));
+			trigger_error(l_t("Couldn't connect to the MySQL server, if this problem persists please inform the admin.")
+				.' ('.mysqli_connect_error().')');
 
 		if( ! mysqli_select_db($this->link,Config::$database_name) )
 			trigger_error(l_t("Connected to the MySQL server, but couldn't access the specified database. ".
 						"If this problem persists please inform the admin."));
 
 		$this->enableTransactions();
+	}
 
-		// Turn off error reporting to prevent exceptions being thrown; webDiplomacy checks for errors
-		// within this wrapper class.
-		mysqli_report(MYSQLI_REPORT_OFF);
+	/**
+	 * Connect to the MySQL server, retrying briefly if the server is out of connections (a transient
+	 * condition during traffic spikes). Any other failure is returned immediately.
+	 *
+	 * The warning mysqli raises on a failed connection is swallowed while trying, because the site
+	 * error handler would otherwise halt the script on the first attempt.
+	 *
+	 * @return mysqli|false
+	 */
+	private static function connect()
+	{
+		for( $attempt = 1; $attempt <= self::CONNECT_ATTEMPTS; $attempt++ )
+		{
+			set_error_handler(function() { return true; }, E_WARNING);
+			try
+			{
+				$link = mysqli_connect(Config::$database_socket, Config::$database_username, Config::$database_password);
+			}
+			finally
+			{
+				restore_error_handler();
+			}
+
+			if( $link )
+				return $link;
+
+			$errno = mysqli_connect_errno();
+			if( $errno != self::ERR_TOO_MANY_CONNECTIONS && $errno != self::ERR_TOO_MANY_USER_CONNECTIONS )
+				break;
+
+			if( $attempt < self::CONNECT_ATTEMPTS )
+				usleep(self::CONNECT_RETRY_DELAY_MS * 1000 * $attempt);
+		}
+
+		return false;
+	}
+
+	/**
+	 * While > 0, a deadlock or lock wait timeout in sql_tabl()/sql_put() is thrown as a DatabaseLockException
+	 * (so that withRetry() can roll back and retry) instead of halting the script via trigger_error().
+	 * @var int
+	 */
+	private $lockRetryDepth = 0;
+
+	/**
+	 * Called when mysqli_query() fails: halts via the site error handler, unless we are inside withRetry()
+	 * and the failure is a lock conflict which can be retried.
+	 */
+	private function queryFailed()
+	{
+		$errno = mysqli_errno($this->link);
+		$error = mysqli_error($this->link);
+
+		if( $this->lockRetryDepth > 0 && ( $errno == self::ERR_DEADLOCK || $errno == self::ERR_LOCK_WAIT_TIMEOUT ) )
+			throw new DatabaseLockException($error, $errno);
+
+		trigger_error($error);
+	}
+
+	/**
+	 * Run $callback, running it again if it fails with a deadlock or lock wait timeout.
+	 *
+	 * The callback must be safe to run again from the start: on a lock failure the current transaction is
+	 * rolled back (InnoDB has already rolled back at least the failing statement) before the next attempt,
+	 * so the callback should contain the BEGIN and the locking statements, and nothing which must not be
+	 * repeated. If the last attempt fails the error is raised via trigger_error() like any other query error.
+	 *
+	 * @param callable $callback
+	 * @param int $attempts Total number of attempts
+	 * @return mixed The callback's return value
+	 */
+	public function withRetry(callable $callback, $attempts = 3)
+	{
+		for( $attempt = 1; ; $attempt++ )
+		{
+			$this->lockRetryDepth++;
+			try
+			{
+				return $callback();
+			}
+			catch( DatabaseLockException $e )
+			{
+				// Handled below, once the retry depth has been restored
+			}
+			finally
+			{
+				$this->lockRetryDepth--;
+			}
+
+			$this->sql_put("ROLLBACK");
+
+			if( $attempt >= $attempts )
+			{
+				trigger_error($e->getMessage().' (giving up after '.$attempt.' attempts)');
+				throw $e; // Not reached; trigger_error() halts the script
+			}
+
+			// Back off for 50-150ms, scaled by the attempt number, to let the competing transaction finish
+			usleep(random_int(50, 150) * 1000 * $attempt);
+		}
+	}
+
+	/**
+	 * Roll back the current transaction without halting the script if that fails (e.g. the connection has
+	 * gone away). Used by the error handler, which must not raise a second error while handling the first.
+	 */
+	public function rollbackQuietly()
+	{
+		try
+		{
+			if( $this->link instanceof mysqli )
+				mysqli_query($this->link, "ROLLBACK");
+		}
+		catch( Throwable $t )
+		{
+			// Ignored; there is nothing more that can be done with this connection
+		}
 	}
 
 	public function enableTransactions()
@@ -145,7 +286,7 @@ class Database {
 	 */
 	public function __destruct()
 	{
-		if ( ! mysqli_close($this->link) )
+		if ( $this->link && ! mysqli_close($this->link) )
 		{
 			// This function may be called after/before the other objects are around.
 			die(l_t("Could not successfully close connection to database."));
@@ -232,7 +373,7 @@ class Database {
 
 		if ( ! ( $resource = mysqli_query($this->link, $sql ) ) )
 		{
-			trigger_error(mysqli_error($this->link));
+			$this->queryFailed();
 		}
 
 		if( Config::$debug )
@@ -403,7 +544,7 @@ class Database {
 
 		if(! mysqli_query($this->link,$sql) )
 		{
-			trigger_error(mysqli_error($this->link));
+			$this->queryFailed();
 		}
 
 		if( Config::$debug )

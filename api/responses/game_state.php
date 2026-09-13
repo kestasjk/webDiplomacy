@@ -279,7 +279,7 @@ class GameState {
 		// Loading game state
 		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes, anon FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
-			throw new \Exception("Unknown game ID.");
+			throw new \RequestException("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
 		$this->potType = $gameRow['potType'];
 		$this->turn = intval($gameRow['turn']);
@@ -552,8 +552,10 @@ class GameState {
 				// This sometimes gives an undefined key array error, but it is not clear why. Probably due to the
 				// game being processed/finishing while being fetched. TODO: Wrap this in a transaction, and cache it
 				// in redis for performance.
+				// A RequestException so that the client gets the message with a 4xx and the (known, transient) condition
+				// isn't written to the error log on every occurrence.
 				if (!isset($inGameCenters[$centerTurn]))
-                    throw new \Exception("Game state error: no centers found for turn $turn, phase $phaseName.");
+                    throw new \RequestException("Game state error: no centers found for turn $turn, phase $phaseName.");
 				else
 					$centers = $inGameCenters[$centerTurn];
 			}
