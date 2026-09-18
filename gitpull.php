@@ -27,6 +27,12 @@ function deploy($forceAll = false)
 {
 	chdir(__DIR__);
 
+	// The web server can run this with no PATH at all (e.g. PHP-FPM's clear_env). The shell still finds npm on
+	// its built-in default path, but npm only puts node_modules/.bin on a PATH that exists, so npm scripts then
+	// can't run package binaries ("husky: not found" from the beta's prepare script). Runs from a shell are fine.
+	if( getenv('PATH') === false || getenv('PATH') === '' )
+		putenv('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
+
 	// Keep deploying even after github closes the webhook connection; the
 	// beta build can take a few minutes
 	ignore_user_abort(true);
