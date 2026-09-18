@@ -361,6 +361,8 @@ class processGame extends Game
 
 		$DB->sql_put("COMMIT");
 
+		Game::cacheTurnPhase($this->id, $lastTurn, 'Diplomacy'); // For the SSE server
+
 		// - Remove the invalid maps in the mapstore
 		$this->load();
 		Game::wipeCache($this->id);
@@ -1160,6 +1162,9 @@ class processGame extends Game
 		$DB->sql_put("UPDATE wD_Games SET phase='".$phase."' ".$turn.$gameOver." WHERE id=".$this->id);
 
 		$this->phase = $phase;
+
+		// For the SSE server. This is before the change is committed, so gamemaster.php wipes it if it rolls back
+		Game::cacheTurnPhase($this->id, $this->turn, $this->phase);
 
 		return ($turn != '');
 	}

@@ -88,7 +88,8 @@ function deleteSandbox(gameID)
         );
     }
 }
-var configureSSE = function(gameID, countryID, turn, phase, renderTime) {
+// auth is the token the page was given for the SSE server, and authTime when that was (both unset to request one)
+var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, authTime) {
 
     const overviewChannel = 'private-game' + gameID;
     const messageChannel = 'private-game' + gameID + '-country'+countryID;
@@ -108,9 +109,10 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime) {
         }
     };
 
-    // Events published while not connected are lost (the SSE server keeps no history), so whenever the
-    // connection opens, or the server says it may have missed some, check whether the game has moved on
-    // from this page or has newer messages, and if so show the notices an event would have shown.
+    // Events published while not connected are lost (the SSE server keeps no history). The SSE server is told
+    // the turn, phase and time of this page when connecting, and sends the events this page missed, then a
+    // catchup event. This does the same check here, for when it can't: it asked for a resync as it couldn't
+    // tell (or had lost its Redis connection), or no catchup event came as it is an older SSE server.
     // Messages must be strictly newer than the page, as a message sent from this page re-renders it in
     // the same second.
     var checkForMissedUpdates = function() {
@@ -130,89 +132,117 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime) {
         });
     };
 
+    if( auth && authTime === undefined ) authTime = new Date();
+
+    var connect = function (auth, authTime) {
+        console.log("Connecting to SSE server");
+
+        var channels = overviewChannel;
+        if( countryID > 0 ) channels = channels + ',' + messageChannel;
+
+        // http is fine; nothing sensitive is sent over this connection
+        var sseURL = `/events?auth=${encodeURIComponent(auth)}&channelList=${encodeURIComponent(channels)}`;
+        if( turn !== undefined )
+            sseURL += `&turn=${encodeURIComponent(turn)}&phase=${encodeURIComponent(phase)}&since=${encodeURIComponent(renderTime)}`;
+
+        var eventSource = new EventSource(sseURL);
+        var hasOpened = false;
+        var catchupTimer = null;
+        eventSource.onopen = () => {
+            console.log('Connected to SSE server');
+            hasOpened = true;
+            // The SSE server should now send anything this page missed and then a catchup event
+            catchupTimer = setTimeout(() => {
+                console.log('No catchup event from the SSE server; checking for missed updates');
+                checkForMissedUpdates();
+            }, 5000);
+        };
+
+        // Set next reconnect time to now + 30 seconds:
+        var nextReconnectTime = new Date();
+        nextReconnectTime.setSeconds(nextReconnectTime.getSeconds() + 30);
+
+        eventSource.onerror = (e) => {
+            console.log('Connection error or closed. Will attempt reconnection in 5 seconds.');
+            eventSource.close();
+            nextReconnectTime = new Date();
+            // If it never connected the token may have been refused, so request a new one
+            if( !hasOpened ) auth = undefined;
+        };
+
+        // Every 5 seconds check if we need to reconnect:
+        setInterval(() => {
+            var now = new Date();
+            if( eventSource != null && now >= nextReconnectTime )
+            {
+                console.log('Nothing received from server in reconnect timeout period. Reconnecting');
+                eventSource.close();
+                if( catchupTimer ) clearTimeout(catchupTimer);
+
+                eventSource = null; // Ensure this timer won't keep reconnecting
+
+                // Tokens are accepted for a day, so request a new one when this one is getting close to that
+                if( auth && (now - authTime) > 23*60*60*1000 ) auth = undefined;
+
+                configureSSE(gameID, countryID, turn, phase, renderTime, auth, authTime); // Reconfigure SSE connection
+            }
+        }, 5000);
+
+        eventSource.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                // If message starts with "overview", it's an overview message:
+                // Message = set-vote|processed|message
+
+                console.log(`Message received via SSE: ${e.data}`);
+
+                // Update the next reconnect time to 30 seconds from now:
+                var newReconnectTime = new Date();
+                newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
+                nextReconnectTime = newReconnectTime;
+
+                if (data.channel === 'resync') {
+                    // The SSE server can't tell what this page missed: a key it checks wasn't set, or it lost
+                    // its Redis connection
+                    console.log(`Resync requested`);
+                    checkForMissedUpdates();
+                } else if (data.channel === 'catchup') {
+                    console.log(`SSE server has sent anything this page missed`);
+                    if( catchupTimer ) clearTimeout(catchupTimer);
+                // If data.message contains "message":
+                } else if (data.message && data.message.includes("message")) {
+                    console.log(`New game message received`);
+                    showMessageSentNotice();
+                } else if (data.message && data.message.includes("set-vote")) {
+                    console.log(`Vote cast in game.. ignore`);
+                } else if (data.message && data.message.includes("processed")) {
+                    console.log(`Game processed`);
+                    showGameProcessedNotice();
+                }
+                else if (data.message && data.message.includes("ping")) {
+                    console.log(`Ping received`);
+                }
+            } catch {
+                console.log(`Raw message: ${e.data}`);
+            }
+        };
+    };
+
     // Wait a few seconds before doing this, as unless the user is staying on this page they won't need to get notifications:
     setTimeout(() => {
+        if( auth )
+        {
+            connect(auth, authTime);
+            return;
+        }
+        // The page had no token, or the one it had expired or was refused
         apiCall(
         'sse/authentication',
         'JSON',
         { channel_name: messageChannel, gameID },
         function (response) {
             console.log("sse/authentication: Successfully authenticated");
-            var auth = response.responseJSON.data.auth;
-            console.log("sse/authentication: Auth: ");
-            console.log(auth);
-            console.log("sse/authentication: Connecting to SSE server with auth");
-
-            var channels = overviewChannel;
-            if( countryID > 0 ) channels = channels + ',' + messageChannel;
-            
-            // http is fine; nothing sensitive is sent over this connection
-            var sseURL = `/events?auth=${encodeURIComponent(auth)}&channelList=${encodeURIComponent(channels)}`;
-            
-            var eventSource = new EventSource(sseURL);
-            eventSource.onopen = () => {
-                console.log('Connected to SSE server');
-                checkForMissedUpdates();
-            };
-
-            // Set next reconnect time to now + 30 seconds:
-            var nextReconnectTime = new Date();
-            nextReconnectTime.setSeconds(nextReconnectTime.getSeconds() + 30);
-
-            eventSource.onerror = (e) => {
-                console.log('Connection error or closed. Will attempt reconnection in 5 seconds.');
-                eventSource.close();
-                nextReconnectTime = new Date();
-            };
-
-            // Every 5 seconds check if we need to reconnect:
-            setInterval(() => {
-                var now = new Date();
-                if( eventSource != null && now >= nextReconnectTime )
-                {
-                    console.log('Nothing received from server in reconnect timeout period. Reconnecting');
-                    eventSource.close();
-
-                    eventSource = null; // Ensure this timer won't keep reconnecting
-                    
-                    configureSSE(gameID, countryID, turn, phase, renderTime); // Reconfigure SSE connection
-                }
-            }, 5000);
-
-            eventSource.onmessage = (e) => {
-                try {
-                    const data = JSON.parse(e.data);
-                    // If message starts with "overview", it's an overview message:
-                    // Message = set-vote|processed|message
-                    
-                    console.log(`Message received via SSE: ${e.data}`);
-
-                    // Update the next reconnect time to 30 seconds from now:
-                    var newReconnectTime = new Date();
-                    newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
-                    nextReconnectTime = newReconnectTime;
-
-                    if (data.channel === 'resync') {
-                        // The SSE server lost its Redis connection, so events may have been missed
-                        console.log(`Resync requested`);
-                        checkForMissedUpdates();
-                    // If data.message contains "message":
-                    } else if (data.message && data.message.includes("message")) {
-                        console.log(`New game message received`);
-                        showMessageSentNotice();
-                    } else if (data.message && data.message.includes("set-vote")) {
-                        console.log(`Vote cast in game.. ignore`);
-                    } else if (data.message && data.message.includes("processed")) {
-                        console.log(`Game processed`);
-                        showGameProcessedNotice();
-                    }
-                    else if (data.message && data.message.includes("ping")) {
-                        console.log(`Ping received`);
-                    }
-                } catch {
-                    console.log(`Raw message: ${e.data}`);
-                }
-            };
+            connect(response.responseJSON.data.auth, new Date());
         },
         function (response) {
             console.error("sse/authentication: Got error authenticating against sse/authentication: " + response);

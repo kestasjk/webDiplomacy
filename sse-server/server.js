@@ -93,6 +93,53 @@ subscriber.on('error', (err) => {
   console.error('Redis subscriber error:', err);
 });
 
+// A board's page may be out of date by the time it has subscribed: anything published between the page
+// being generated and the subscription starting is lost, as is anything published while a client was
+// reconnecting. So a client can say what it has when it connects (turn, phase and since, the time of the
+// newest message it could have), and this checks that against what PHP keeps in Redis and sends the
+// client the events it would have received:
+// - gameTurnPhase_{gameID}: "turn|phase", set whenever a game's turn or phase changes (Game::cacheTurnPhase)
+// - lastmsgtime_{gameID}_{countryID}: when the country's newest message was sent (libGameMessage::send)
+// If either is missing it can't tell, so it sends a resync and the client checks for itself; for the old
+// board that is a game/pulse request, which sets both keys again. A catchup event always ends the check,
+// which tells the client that this server does it; a client which doesn't get one checks for itself.
+// The events are in the format PHP publishes them in (RedisInterface::trigger).
+async function sendMissedEvents(write, overviewChannel, countryChannel, query) {
+  const hasTurnPhase = query.turn !== undefined && query.phase !== undefined;
+  const since = parseInt(query.since, 10);
+  let resync = false;
+
+  try {
+    const match = countryChannel.match(/^private-game(\d+)-country(\d+)$/);
+    if (!match) throw new Error(`Unexpected country channel ${countryChannel}`);
+    const [, gameID, countryID] = match;
+
+    const [turnPhase, lastMessageTime] = await Promise.all([
+      hasTurnPhase ? redisClient.get(`gameTurnPhase_${gameID}`) : null,
+      !isNaN(since) ? redisClient.get(`lastmsgtime_${gameID}_${countryID}`) : null,
+    ]);
+
+    if (hasTurnPhase) {
+      if (turnPhase === null) resync = true;
+      else if (turnPhase !== `${parseInt(query.turn, 10)}|${query.phase}`) {
+        write(overviewChannel, JSON.stringify({ event: 'overview', data: 'processed' }));
+      }
+    }
+    if (!isNaN(since)) {
+      if (lastMessageTime === null) resync = true;
+      else if (parseInt(lastMessageTime, 10) > since) {
+        write(countryChannel, JSON.stringify({ event: 'message', data: 'messageSent' }));
+      }
+    }
+  } catch (err) {
+    console.error('Checking for missed events failed:', err);
+    resync = true;
+  }
+
+  if (resync) write('resync', 'resync');
+  write('catchup', 'catchup');
+}
+
 // Open SSE responses and the channels each is subscribed to, so they can all be told to resync after a
 // Redis reconnect, and for the stats logged every minute
 const openClients = new Map();
@@ -225,6 +272,16 @@ app.get('/events', async (req, res) => {
   if (closed) {
     // The client disconnected while we were subscribing
     subscriber.unsubscribe(channels, listener).catch(() => {});
+    return;
+  }
+
+  // Now that nothing new can be missed, send what was missed before this point. Clients from before this
+  // was added don't say what they have, and check for themselves.
+  if (req.query.turn !== undefined || req.query.since !== undefined) {
+    const overviewChannel = channels.find(c => !c.includes('country')) || countryChannel[0].replace(/-country\d+$/, '');
+    await sendMissedEvents((channel, message) => {
+      if (!closed) listener(message, channel);
+    }, overviewChannel, countryChannel[0], req.query);
   }
 });
 

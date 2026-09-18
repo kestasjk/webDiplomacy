@@ -63,6 +63,55 @@ class Game
 		return $folder.'/'.$filename;
 	}
 
+	/**
+	 * The Redis key holding a game's "turn|phase". A board tells the SSE server the turn and phase it shows when
+	 * it connects, and the SSE server compares them with this to tell whether the board missed the game being
+	 * processed while it wasn't connected (sse-server/server.js sendMissedEvents). It is set whenever a game's
+	 * turn or phase changes, and game/pulse sets it when it is missing.
+	 */
+	public static function turnPhaseCacheKey($gameID)
+	{
+		return 'gameTurnPhase_'.intval($gameID);
+	}
+
+	/**
+	 * @param bool $onlyIfMissing Leave a value which is already cached alone. For callers which have only read the
+	 *	game and so may hold an older turn and phase than a process which has just changed and cached them.
+	 */
+	public static function cacheTurnPhase($gameID, $turn, $phase, $onlyIfMissing=false)
+	{
+		global $Redis;
+
+		try
+		{
+			if( !isset($Redis) ) return;
+
+			$value = intval($turn).'|'.$phase;
+			// Expires so that finished games' keys don't build up; game/pulse sets it again if it is needed
+			if( $onlyIfMissing )
+				$Redis->setIfMissing(self::turnPhaseCacheKey($gameID), $value, 30*24*60*60);
+			else
+				$Redis->set(self::turnPhaseCacheKey($gameID), $value, 30*24*60*60);
+		}
+		catch(Exception $e) { }
+	}
+
+	/**
+	 * For when the cached turn and phase may be wrong, e.g. a change to them was rolled back. Boards connecting to
+	 * the SSE server are told to check the game themselves until it is set again.
+	 */
+	public static function wipeTurnPhaseCache($gameID)
+	{
+		global $Redis;
+
+		try
+		{
+			if( isset($Redis) )
+				$Redis->delete(self::turnPhaseCacheKey($gameID));
+		}
+		catch(Exception $e) { }
+	}
+
 	public static function wipeCache($gameID, $turn=false)
 	{
 		global $Redis;

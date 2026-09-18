@@ -1,5 +1,6 @@
 import { postGameApiRequest } from "../utils/api";
 import ApiRoute from "../enums/ApiRoute";
+import { store } from "../state/store";
 
 /*
 Pusher is a lot for what webDip needs; instant notification from the server to the client when an 
@@ -28,8 +29,38 @@ let reconnectWatchdogTimer: ReturnType<typeof setInterval> | undefined;
 type EventCallback = (...args: any[]) => void;
 const eventCallbacks: { [key: string]: EventCallback[] } = {};
 
-// Events published while the connection was down are lost (the server keeps no history), so after a
-// reconnect, or when the server says it may have missed some, refetch everything an event would have.
+// Tokens for the SSE server are accepted for a day
+const TOKEN_MAX_AGE_SECONDS = 23 * 60 * 60;
+
+// The token is "hash_timestamp", the timestamp being the server's time when it was made
+function tokenTime(auth: string): number {
+  return parseInt(auth.split("_")[1], 10);
+}
+
+// The game overview gives members a token for the SSE server, so it only needs requesting from
+// sse/authentication if that one has expired (a tab left open) or was refused
+function getOverviewToken(): string | null {
+  const auth = store.getState().game.overview.user?.sseAuth;
+  if (!auth) return null;
+  const age = Math.abs(Date.now() / 1000 - tokenTime(auth));
+  return age < TOKEN_MAX_AGE_SECONDS ? auth : null;
+}
+
+// What this page has, which the SSE server compares against the game when the connection opens, sending
+// the events this page would have received if it missed the game being processed or a message
+function getCatchupParams(auth: string): string {
+  const { overview, messages } = store.getState().game;
+  // Until the messages have been fetched, any message since the overview was (when the token was made)
+  const since = messages.time || tokenTime(auth);
+  return `&turn=${overview.turn}&phase=${encodeURIComponent(
+    overview.phase,
+  )}&since=${since}`;
+}
+
+// Events published while the connection was down are lost (the server keeps no history). The SSE server
+// sends the processed and message events which were missed when the connection opens, then a catchup
+// event; this refetches everything an event would have, for when it can't tell what was missed (a resync
+// request) or no catchup event came as it is an older SSE server.
 function refetchAfterGap(reason: string) {
   sseDebugLog(`Refetching game state after ${reason}`);
   if (eventCallbacks.overview) {
@@ -66,30 +97,45 @@ const client = {
     }
     gameID = newGameID;
     countryID = newCountryID;
-    // The first connection comes just after the page loaded the game, so only reconnections refetch
     let hasConnectedBefore = false;
-    const reconnect = () => {
+    // Set if a connection fails before opening, as the token may have been refused
+    let overviewTokenRefused = false;
+    let catchupTimer: ReturnType<typeof setTimeout> | undefined;
+    const getToken = (): Promise<string> => {
+      const overviewToken = overviewTokenRefused ? null : getOverviewToken();
+      if (overviewToken) return Promise.resolve(overviewToken);
       sseDebugLog(
         `Authorizing SSE connection for game ${gameID} with country ${countryID}`,
       );
-      postGameApiRequest(ApiRoute.SSE_AUTHENTICATION, {
+      return postGameApiRequest(ApiRoute.SSE_AUTHENTICATION, {
         channel_name: `private-game${gameID}${
           countryID > 0 ? `-country${countryID}` : ""
         }`,
         gameID: gameID.toString(),
-      })
-        .then((response) => {
-          if (response.status !== 200) {
-            throw new Error("Failed to authenticate SSE connection");
-          }
-          if (!response.data || !response.data.data.auth) {
-            throw new Error("No authentication token received from SSE server");
-          }
+      }).then((response) => {
+        if (response.status !== 200) {
+          throw new Error("Failed to authenticate SSE connection");
+        }
+        if (!response.data || !response.data.data.auth) {
+          throw new Error("No authentication token received from SSE server");
+        }
+        return response.data.data.auth;
+      });
+    };
+    const reconnect = () => {
+      getToken()
+        .then((auth) => {
+          const isReconnection = hasConnectedBefore;
+          let hasOpened = false;
           eventSource = new EventSource(
-            `/events?channelList=private-game${gameID},private-game${gameID}-country${countryID}&auth=${response.data.data.auth}`,
+            `/events?channelList=private-game${gameID},private-game${gameID}-country${countryID}&auth=${auth}${getCatchupParams(
+              auth,
+            )}`,
           );
           eventSource.onopen = () => {
             sseDebugLog("Connected to SSE server");
+            hasOpened = true;
+            overviewTokenRefused = false;
             // The connection is up again, so let the watchdog fire for the next timeout,
             // and give the server the full timeout period before that can happen:
             isEventSourceReconnecting = false;
@@ -105,9 +151,13 @@ const client = {
                 (callback) => callback(),
               );
             }
-            if (hasConnectedBefore) {
-              refetchAfterGap("reconnecting");
-            }
+            // The SSE server should now send the events this page missed, then a catchup event. The
+            // first connection comes just after the page loaded the game, so without one only
+            // reconnections refetch.
+            if (catchupTimer) clearTimeout(catchupTimer);
+            catchupTimer = setTimeout(() => {
+              if (isReconnection) refetchAfterGap("reconnecting");
+            }, 5000);
             hasConnectedBefore = true;
           };
           eventSource.onerror = (e) => {
@@ -115,6 +165,7 @@ const client = {
               "Connection error or closed. Will attempt reconnection in 5 seconds.",
             );
             eventSource.close();
+            if (!hasOpened) overviewTokenRefused = true;
             nextReconnectTime = new Date(); // Trigger a reconnection
             if (eventCallbacks["pusher:subscription_error"]) {
               eventCallbacks["pusher:subscription_error"].forEach((callback) =>
@@ -154,8 +205,18 @@ const client = {
               nextReconnectTime = newReconnectTime;
 
               if (data.channel === "resync") {
-                // The SSE server lost its Redis connection, so events may have been missed
+                // The SSE server can't tell what was missed: a key it checks wasn't set, or it lost
+                // its Redis connection
                 refetchAfterGap("a resync request");
+              } else if (data.channel === "catchup") {
+                // Missed processed and message events have been sent. Votes aren't covered, so
+                // refetch the overview if any could have been missed.
+                if (catchupTimer) clearTimeout(catchupTimer);
+                if (isReconnection && eventCallbacks.overview) {
+                  eventCallbacks.overview.forEach((callback) =>
+                    callback("reconnecting"),
+                  );
+                }
               } else if (data.message && data.message.includes("message")) {
                 sseDebugLog(`New game message received`);
                 if (eventCallbacks.message) {

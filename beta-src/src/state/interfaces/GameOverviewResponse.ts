@@ -34,6 +34,8 @@ interface GameOverviewResponse {
   turn: number;
   user?: {
     member: MemberData;
+    // Token for connecting to the SSE server as this member; null if there is no SSE server
+    sseAuth?: string | null;
   };
   variant: {
     id: number;

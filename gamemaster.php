@@ -281,6 +281,8 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		{
 			$gameMetricsPart = 'GAMEMASTER_GAME_FAILED';
 			$DB->sql_put("ROLLBACK");
+			// Processing may have cached a new turn and phase for the SSE server before it failed
+			Game::wipeTurnPhaseCache($gameRow['id']);
 			print l_t('Crashed: "%s".',$e->getMessage());
 		}
 	}

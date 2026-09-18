@@ -39,6 +39,23 @@ class libAuth
 		$randInput = explode('_',$token)[1];
 		return $token === (md5($randInput.$inputData.Config::$salt.Config::$secret.'generateToken').'_'.$randInput);
 	}
+	/**
+	 * A token which lets the player of a country subscribe to their game's events on the SSE server, which
+	 * validates it against the country's channel name (sse-server/server.js validateAuth). The caller must have
+	 * checked that the current user plays this country. Tokens are accepted for a day.
+	 *
+	 * @return string|null Null if no SSE server is configured
+	 */
+	public static function sseToken($gameID, $countryID)
+	{
+		if( empty(Config::$sseSecret) ) return null;
+		return self::sseChannelToken('private-game'.intval($gameID).'-country'.intval($countryID));
+	}
+	public static function sseChannelToken($channelName)
+	{
+		$timestamp = time();
+		return md5($channelName.Config::$sseSecret.$timestamp.'generateToken').'_'.$timestamp;
+	}
 	public static function resourceLimiter($name, $seconds)
 	{
 		global $User;

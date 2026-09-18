@@ -62,6 +62,16 @@ class RedisInterface
         }
     }
 
+    /**
+     * Set a key only if it doesn't already have a value.
+     *
+     * @return mixed False if the key already had a value
+     */
+    public function setIfMissing($key, $value, $expirySeconds): mixed
+    {
+        return $this->redis->set($key, $value, array('nx', 'ex' => (int)$expirySeconds));
+    }
+
     public function get($key): mixed
     {
         return $this->redis->get($key);

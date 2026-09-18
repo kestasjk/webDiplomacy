@@ -646,10 +646,12 @@ class SSEAuthentication extends ApiEntry {
 			}
 		}
 
-		$timestamp = time(); // The token will expire every day to prevent reusing on games that the user has since left		
-		$token = md5($channelName.Config::$sseSecret.$timestamp.'generateToken').'_'.$timestamp;
+		// The token will expire every day to prevent reusing on games that the user has since left.
 		// This token is passed to any validated by the SSE server, but the info it gives is not very useful, 
 		// just who is receiving messages when.
+		// board.php and game/overview give members this token with the page, so this is only needed once that
+		// one has expired.
+		$token = libAuth::sseChannelToken($channelName);
 		
 		return $this->JSONResponse(
 			"User was successfully authenticated for this channel",
@@ -880,6 +882,11 @@ class GetGamePulse extends ApiEntry {
 			} catch (Exception $e) { /* ignore; next call will fall back again */ }
 		}
 
+		// Boards only call this when the SSE server couldn't tell them whether they had missed anything, as one of
+		// the keys it checks was missing (the message time above, or this), so make sure this one is set too.
+		// Only if it's missing: this turn and phase may have been read before a process that has since cached newer.
+		Game::cacheTurnPhase($gameID, $gameRow['turn'], $gameRow['phase'], true);
+
 		return $this->JSONResponse('Game pulse', '', true, array(
 			'gameID' => $this->gameIDToMultiplexedGameID($gameID),
 			'countryID' => $countryID,
@@ -1064,6 +1071,10 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 			'year' => $year,
 		], (new GetGameMembers)->getData($userID)); // This calls getArgs which will make it set its own gameID to the multiplexed one.
+		if (isset($game->Members->ByUserID[$userID])) {
+			// Lets the board connect to the SSE server without a sse/authentication request
+			$payload['user']['sseAuth'] = libAuth::sseToken($gameID, $game->Members->ByUserID[$userID]->countryID);
+		}
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }

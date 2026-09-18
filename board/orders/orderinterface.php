@@ -330,13 +330,16 @@ class OrderInterface
 
 		if( isset(Config::$sseSecret) )
 		{
-			// The turn, phase and time this page shows, so the page can tell if it missed an update while not connected
+			// The turn, phase and time this page shows, so the SSE server can tell if it missed an update while not
+			// connected, and the token which lets this member connect (only the member playing this country is given
+			// an order interface, so it doesn't need requesting from sse/authentication)
 			libHTML::$footerScript[] = "configureSSE(".
 				$this->gameID.",".
 				$this->countryID.",".
 				$this->turn.",".
 				"'".$this->phase."',".
-				time().
+				time().",".
+				json_encode(libAuth::sseToken($this->gameID, $this->countryID)).
 			");";
 		}
 	}
