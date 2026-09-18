@@ -24,6 +24,7 @@
  */
 
  require_once('header.php');
+require_once(l_r('lib/metrics.php'));
 
 libHTML::starthtml();
 
@@ -368,6 +369,8 @@ $pageEndpoints = array(
 	'BOTSTATUS', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS',
 	'GAMEMASTER', 'GAMELISTINGS'
 );
+// The parts of each gamemaster.php run, which are also counted in PAGE_GAMEMASTER
+$gamemasterParts = libMetrics::gamemasterParts();
 $metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
 					
 // Handle clearing API metrics if requested
@@ -400,6 +403,15 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 				if ($type == 'BOTCOUNT') continue; // PAGE doesn't have bot counts
 				$key = 'METRICS_PAGE_' . $endpoint . '_' . $type;
 				if ($Redis->delete($key)) {
+					$clearedCount++;
+				}
+			}
+		}
+		// Clear gamemaster part metrics
+		foreach ($gamemasterParts as $part) {
+			foreach ($metricTypes as $type) {
+				if ($type == 'BOTCOUNT') continue;
+				if ($Redis->delete('METRICS_' . $part . '_' . $type)) {
 					$clearedCount++;
 				}
 			}
@@ -526,6 +538,50 @@ try
 		print round($totalTime / 1000, 2) . ' seconds total time, ';
 		print $totalDbGet . ' DB fetches, ';
 		print $totalDbPut . ' DB writes</p>';
+	}
+
+	// The gamemaster.php runs counted above, split into their parts. Sorted by total time, as that's where
+	// optimizing would pay off.
+	$gamemasterMetrics = array();
+	foreach ($gamemasterParts as $part) {
+		$count = intval($Redis->get('METRICS_' . $part . '_COUNT'));
+		if ($count > 0) {
+			$gamemasterMetrics[$part] = array(
+				'count' => $count,
+				'time_ms' => (float)$Redis->get('METRICS_' . $part . '_TIME_MS'),
+				'db_get' => (float)$Redis->get('METRICS_' . $part . '_DB_GET'),
+				'db_put' => (float)$Redis->get('METRICS_' . $part . '_DB_PUT'),
+				'db_time_ms' => (float)$Redis->get('METRICS_' . $part . '_DB_TIME_MS'),
+			);
+		}
+	}
+	if (!empty($gamemasterMetrics)) {
+		uasort($gamemasterMetrics, function($a, $b) {
+			return $b['time_ms'] <=> $a['time_ms'];
+		});
+		print '<h4>'.l_t('gamemaster.php by part:').'</h4>';
+		print '<TABLE class="modTools">';
+		print '<tr>';
+		print '<th class="modTools">Part</th>';
+		print '<th class="modTools">Hits</th>';
+		print '<th class="modTools">Total Time (s)</th>';
+		print '<th class="modTools">Avg Time (ms)</th>';
+		print '<th class="modTools">Avg DB GET/hit</th>';
+		print '<th class="modTools">Avg DB PUT/hit</th>';
+		print '<th class="modTools">Avg DB Time (ms)</th>';
+		print '</tr>';
+		foreach ($gamemasterMetrics as $part => $data) {
+			print '<tr>';
+			print '<td class="modTools">'.strtolower(substr($part, strlen('GAMEMASTER_'))).'</td>';
+			print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
+			print '<td class="modTools" style="text-align:right">'.round($data['time_ms'] / 1000, 1).'</td>';
+			print '<td class="modTools" style="text-align:right">'.round($data['time_ms'] / $data['count'], 2).'</td>';
+			print '<td class="modTools" style="text-align:right">'.round($data['db_get'] / $data['count'], 2).'</td>';
+			print '<td class="modTools" style="text-align:right">'.round($data['db_put'] / $data['count'], 2).'</td>';
+			print '<td class="modTools" style="text-align:right">'.round($data['db_time_ms'] / $data['count'], 2).'</td>';
+			print '</tr>';
+		}
+		print '</TABLE>';
 	}
 } catch (Exception $e) {
 	print '<p class="notice">'.l_t('Could not connect to Redis: ').$e->getMessage().'</p>';

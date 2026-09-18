@@ -27,6 +27,7 @@ require_once('header.php');
 require_once(l_r('gamemaster/game.php'));
 require_once(l_r('gamemaster/misc.php'));
 require_once(l_r('lib/push.php'));
+require_once(l_r('lib/metrics.php'));
 
 if ( $Misc->Panic )
 {
@@ -141,6 +142,7 @@ $DB->sql_put("BEGIN");
 /*
 We have permissions and everything is locked, now look for games that need processing
 */
+$setupMetricsStart = libMetrics::start();
 
 // Now apply any votes that need to be applied, and get any votes to process now:
 print l_t('Finding and applying votes');
@@ -195,9 +197,16 @@ $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
 	// Wait-policy games with members yet to complete their orders can never pass needsProcess(),
 	// so they are left out here rather than being reselected and skipped every cycle until their orders arrive.
 
+libMetrics::record('GAMEMASTER_SETUP', $setupMetricsStart);
+
 $dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
+$gamesChecked = 0; // For telling idle runs apart in the metrics
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 {
+	$gameMetricsStart = libMetrics::start();
+	$gameMetricsPart = 'GAMEMASTER_GAME_CHECKED'; // Changed below if the game is processed, crashes or fails
+	$gamesChecked++;
+
 	// This is used by drawMap.php / map.php
 	$Redis->set('processing'.$gameRow['id'], time(), expirySeconds: 10); // Set a hint that nothing should be saved/cached for this game as it's being processed
 
@@ -217,6 +226,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			$Game->crashed();
 			$DB->sql_put("COMMIT");
 			$gameUpdated = true;
+			$gameMetricsPart = 'GAMEMASTER_GAME_CRASHED';
 			print 'Crashed.';
 		}
 		elseif( $Game->needsProcess() )
@@ -234,6 +244,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			if( $Game->needsProcess() )
 			{
 				print l_t('Processing..').' ';
+				$gameMetricsPart = libMetrics::gamemasterGamePart($Game->phase, $Game->playerTypes);
 				$Game->process();
 				$gameUpdated = true;
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
@@ -265,6 +276,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		}
 		else
 		{
+			$gameMetricsPart = 'GAMEMASTER_GAME_FAILED';
 			$DB->sql_put("ROLLBACK");
 			print l_t('Crashed: "%s".',$e->getMessage());
 		}
@@ -299,10 +311,15 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 	}
 
 	print '<br />';
+
+	libMetrics::record($gameMetricsPart, $gameMetricsStart);
 }
 
 require_once(l_r('gamemaster/backgroundTasks.php'));
-libBackgroundTasks::run();
+$tasksRun = libBackgroundTasks::run();
+
+if( $gamesChecked == 0 && $tasksRun == 0 )
+	libMetrics::record('GAMEMASTER_IDLE', libMetrics::requestStart());
 
 if( defined('RUNNINGFROMCLI') ) 
 {

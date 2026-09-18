@@ -39,10 +39,30 @@ class libBackgroundTasks
         if( $time === false ) return 0;
         return (int)$time;
     }
+
+    /**
+     * The number of background tasks run by run()
+     * @var int
+     */
+    private static $tasksRun = 0;
+
+    /**
+     * Record a finished task's time and queries under its own metrics (METRICS_GAMEMASTER_TASK_<name>_*)
+     * @param string $name
+     * @param array $start The marker from libMetrics::start() when the task began
+     */
+    private static function taskDone($name, $start)
+    {
+        self::$tasksRun++;
+        libMetrics::record('GAMEMASTER_TASK_'.$name, $start);
+    }
+
     /**
      * Run the background tasks; most are on a timer. Background tasks that are important and have to know when they were
      * last run use $Misc to save that data, ad-hoc tasks that just need to be run occasionally use Redis to store the last
      * run time.
+     *
+     * @return int The number of tasks that ran
      */
     public static function run()
     {
@@ -56,14 +76,17 @@ class libBackgroundTasks
         */
         if( self::getRedisTimestamp('lastSessionTableUpdate') < (time() - 60*7) )
         {
+            $taskStart = libMetrics::start();
             print l_t('Updating session table').'<br />';
             libGameMaster::updateSessionTable();
 
             $Redis->set('lastSessionTableUpdate', time());
+            self::taskDone('SESSIONS', $taskStart);
         }
 
         if( self::getRedisTimestamp('lastOnlineUsersUpdate') < (time() - 60*7) )
         {
+            $taskStart = libMetrics::start();
             print l_t('Updating online users list').'<br />';
             
             $statsDir=libCache::dirName('stats');
@@ -76,11 +99,13 @@ class libBackgroundTasks
             file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
 
             $Redis->set('lastOnlineUsersUpdate', time());
+            self::taskDone('ONLINEUSERS', $taskStart);
         }
 
         //- Update misc values (if running as admin/mod)
         if( $Misc->LastStatsUpdate < (time() - 60*7) )
         {
+            $taskStart = libMetrics::start();
             miscUpdate::errorLog();
             miscUpdate::forum();
             miscUpdate::game();
@@ -103,20 +128,24 @@ class libBackgroundTasks
             }
 
             $Misc->LastStatsUpdate = time();
+            self::taskDone('MISCSTATS', $taskStart);
         }
 
         if( $Misc->LastReliabilityRatingsUpdate < (time() - 60*60*(3 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             // Do an incremental update of the reliability ratings every few hours:
             print l_t('Updating user phase/year counts and reliability ratings').'<br />';
             libGameMaster::updateReliabilityRatings();
             $Misc->LastReliabilityRatingsUpdate = time();
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('RELIABILITY', $taskStart);
         }
 
         if( $Misc->LastReliabilityRatingsRefresh < (time() - 60*60*24*(3 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             // Update the reliability ratings from scratch every few days:
             // TODO: Diagnose why this is needed, incremental updates should do
             print l_t('Updating user phase/year counts and reliability ratings').'<br />';
@@ -124,10 +153,12 @@ class libBackgroundTasks
             $Misc->LastReliabilityRatingsRefresh = time();
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('RELIABILITYREFRESH', $taskStart);
         }
 
         if( false && $Misc->LastNMRWarningUpdate < (time() - 60*7) )
         {
+            $taskStart = libMetrics::start();
             print "Generating NMR warnings\n";
             
             $nmrWarningUpdateTime = time();
@@ -193,11 +224,13 @@ class libBackgroundTasks
             $Misc->LastNMRWarningUpdate = $nmrWarningUpdateTime;
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('NMRWARNINGS', $taskStart);
         }
 
         // Update relationship groups every couple of days
         if( $Misc->LastGroupUpdate < (time() - 60*60*6*(2 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             $groupUpdateTime = time();
             print "Running group relationship updates\n";
         
@@ -208,10 +241,12 @@ class libBackgroundTasks
             $Misc->LastGroupUpdate = $groupUpdateTime;
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('GROUPS', $taskStart);
         }
 
         if( $Misc->LastUserConnectionsUpdate < (time() - 60*60*(3 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             $connectionUpdateTime = time();
 
             print "Running user connection updates\n";
@@ -225,20 +260,24 @@ class libBackgroundTasks
             $Misc->LastUserConnectionsUpdate = $connectionUpdateTime;
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('USERCONNECTIONS', $taskStart);
         }
 
         if( $Misc->LastTidyWatchedGamesUpdate < (time() - 60*60*24*(7 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             print l_t('Clearing old watched game records').'<br />';
             $DB->sql_put("DELETE wg FROM wD_WatchedGames wg LEFT JOIN wD_Games g ON g.id = wg.gameID WHERE g.id IS NULL OR g.phase = 'Finished' OR g.gameOver <> 'No'");
 
             $Misc->LastTidyWatchedGamesUpdate = time();
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('WATCHEDGAMES', $taskStart);
         }
 
         if( $Misc->LastPointsCheckUpdate < (time() - 60*60*24*(4 + rand(0,100)/100.0)) )
         {
+            $taskStart = libMetrics::start();
             $pointsCheckUpdateTime = time();
 
             print l_t('Ensuring all users have the minimum 100 points available').'<br />';
@@ -259,11 +298,13 @@ class libBackgroundTasks
             $Misc->LastPointsCheckUpdate = $pointsCheckUpdateTime;
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('POINTSCHECK', $taskStart);
         }
 
         // Anonymous bot games are abandoned quickly, so prune them hourly rather than with the 17 hour cleanup below
         if( self::getRedisTimestamp('lastAnonBotGameCleanup') < (time() - 60*60) )
         {
+            $taskStart = libMetrics::start();
             print "Cleaning up anonymous bot games\n";
 
             // Cancel bot games that haven't been used for an hour if they are anonymous:
@@ -271,11 +312,13 @@ class libBackgroundTasks
             $DB->sql_put("COMMIT");
 
             $Redis->set('lastAnonBotGameCleanup', time());
+            self::taskDone('ANONBOTGAMES', $taskStart);
         }
 
         // Clean up old bot games every 17 hours, ensuring there aren't lots of sandbox etc games clogging things up
         if( $Misc->LastBotGameCleanup < (time() - 60*60*17) )
         {
+            $taskStart = libMetrics::start();
             print "Cleaning up old bot games\n";
             
             $botGameCleanupTime = time();
@@ -301,12 +344,14 @@ class libBackgroundTasks
             $Misc->LastBotGameCleanup = $botGameCleanupTime;
             $Misc->write();
             $DB->sql_put("COMMIT");
+            self::taskDone('BOTGAMECLEANUP', $taskStart);
         }
 
         // Backup from wD_Backup_* to json files every 37 minutes, as MySQL doesn't allow backups without going offline
         // In case of failure this will at least mean games are not ruined
         if( $Misc->LastBackupUpdate < (time() - 60*37) )
         {
+            $taskStart = libMetrics::start();
             // Restore with RESTOREGAMES RESTOREGAMEIDS=1234,1235,1236. This will output SQL which can be restored to the backup directory
             print "Backing up games<br />\n";
 
@@ -370,6 +415,9 @@ class libBackgroundTasks
                 $Misc->write();
                 $DB->sql_put("COMMIT");
             }
+            self::taskDone('BACKUP', $taskStart);
         }
+
+        return self::$tasksRun;
     }
 }
