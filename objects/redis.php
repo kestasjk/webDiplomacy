@@ -47,7 +47,10 @@ class RedisInterface
             throw new Exception('Redis PHP extension is not installed');
         }
         $this->redis = new Redis();
-        $this->redis->connect($host, $port);
+        // Persistent connection, reused by each PHP-FPM worker across requests instead of opening a new
+        // TCP connection for every page load / API call. This is only safe because nothing here changes
+        // connection state (SELECT, AUTH, MULTI, SUBSCRIBE, etc) that would carry over into the next request.
+        $this->redis->pconnect($host, $port);
     }
 
     public function set($key, $value, $expirySeconds = null): mixed

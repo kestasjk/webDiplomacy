@@ -82,6 +82,40 @@ redisClient.on('error', (err) => {
 });
 redisClient.connect();
 
+// A single Redis subscriber shared by every SSE client, rather than one Redis connection per client.
+// node-redis keeps a set of listeners per channel on this one connection: it only sends SUBSCRIBE when
+// a channel gets its first listener and UNSUBSCRIBE when its last listener is removed, and after a
+// reconnect it resubscribes every channel before emitting 'ready'.
+const subscriber = Redis.createClient({
+  socket: { host: redisHost, port: redisPort }
+});
+subscriber.on('error', (err) => {
+  console.error('Redis subscriber error:', err);
+});
+
+// Open SSE responses, so they can all be told to resync after a Redis reconnect
+const openClients = new Set();
+
+// Redis pub/sub keeps no history, so anything published while the subscriber was disconnected is lost.
+// By the time 'ready' fires after a reconnect every channel is subscribed again, so tell the open
+// clients to refetch their state; nothing published from this point on will be missed.
+let subscriberConnectedBefore = false;
+subscriber.on('ready', () => {
+  if (subscriberConnectedBefore) {
+    console.log(`Redis subscriber reconnected; sending resync to ${openClients.size} clients`);
+    const data = JSON.stringify({ channel: 'resync', message: 'resync' });
+    for (const client of openClients) {
+      try {
+        client.write(`event: message\ndata: ${data}\n\n`);
+      } catch (e) {
+        console.error('SSE resync write failed:', e);
+      }
+    }
+  }
+  subscriberConnectedBefore = true;
+});
+subscriber.connect();
+
 app.get('/events', async (req, res) => {
 
   const auth = req.query.auth;
@@ -118,9 +152,11 @@ app.get('/events', async (req, res) => {
 
   // Authenticated and ready
 
-  // Record client connection timestamp
-  console.log(`Client connected. Setting SSE_LASTCLIENTCONNECT in Redis`);
-  await redisClient.set('SSE_LASTCLIENTCONNECT', Date.now().toString());
+  // Record client connection timestamp (not awaited; it is only for status.php and shouldn't delay the client)
+  console.log(`Client connected (${openClients.size + 1} open). Setting SSE_LASTCLIENTCONNECT in Redis`);
+  redisClient.set('SSE_LASTCLIENTCONNECT', Date.now().toString()).catch((err) => {
+    console.error('SSE_LASTCLIENTCONNECT write failed:', err);
+  });
 
   // Set headers for SSE
   res.writeHead(200, {
@@ -133,19 +169,17 @@ app.get('/events', async (req, res) => {
   // Send initial comment to keep connection alive in some browsers
   res.write(`: connected to channels: ${channels.join(',')}\n\n`);
 
-  // Create a Redis subscriber client with redisHost and redisPort
-  const subscriber = Redis.createClient(
-    {
-      socket: {
-        host: redisHost,
-        port: redisPort,
-      },
+  // Forwards messages on this client's channels. This runs inside the shared subscriber's reply parser,
+  // so it must never throw, or the parser would be reset for every client.
+  const listener = (message, channel) => {
+    try {
+      const data = JSON.stringify({ channel, message });
+      res.write(`event: message\n`);
+      res.write(`data: ${data}\n\n`);
+    } catch (e) {
+      console.error('SSE write failed:', e);
     }
-  );
-  subscriber.on('error', (err) => {
-    console.error('Redis error:', err);
-  });
-  await subscriber.connect();
+  };
 
   // Send keep-alive comment and ping every 13 seconds
   const keepAliveInterval = setInterval(() => {
@@ -156,28 +190,47 @@ app.get('/events', async (req, res) => {
     res.write(`data: ${data}\n\n`);
   }, 13000);
 
-  // Subscribe to requested channels
-  await subscriber.subscribe(channels, (message, channel) => {
-    const data = JSON.stringify({ channel, message });
-    console.info(`Received message on channel ${channel}:`, data);
-    res.write(`event: message\n`);
-    res.write(`data: ${data}\n\n`);
+  // Cleanup on client disconnect. This is attached before anything is awaited, so a client that
+  // disconnects while subscribing can't be missed. The listener is only removed here once subscribing
+  // has finished; if it is still in progress the code after the await below removes it instead.
+  // (Unsubscribing a listener that isn't registered yet could unsubscribe the channel in Redis while
+  // another client's subscribe to it is still in flight.)
+  let closed = false;
+  let subscribed = false;
+  openClients.add(res);
+  res.on('close', () => {
+    closed = true;
+    openClients.delete(res);
+    clearInterval(keepAliveInterval);
+    if (subscribed) {
+      subscriber.unsubscribe(channels, listener).catch(() => {}); // ignore errors on cleanup
+    }
   });
 
-  // Cleanup on client disconnect
-  req.on('close', async () => {
-    clearInterval(keepAliveInterval);
-    try {
-      await subscriber.unsubscribe(channels);
-      await subscriber.quit();
-    } catch (e) {
-      // ignore errors on cleanup
-    }
+  // Subscribe to requested channels
+  try {
+    await subscriber.subscribe(channels, listener);
+  } catch (err) {
+    // End the response so the client reconnects and tries again
+    console.error('Redis subscribe failed:', err);
     res.end();
-  });
+    return;
+  }
+  subscribed = true;
+  if (closed) {
+    // The client disconnected while we were subscribing
+    subscriber.unsubscribe(channels, listener).catch(() => {});
+  }
 });
 
-app.listen(ssePort, () => {
+app.listen(ssePort, (err) => {
+  // Express 5 passes a failed listen (e.g. the port still held by an old instance) to this callback rather
+  // than throwing. Exit instead of carrying on, as otherwise this process would serve nothing while still
+  // writing SSE_HEALTHCHECK, so status.php would report it as healthy.
+  if (err) {
+    console.error(`SSE server could not listen on port ${ssePort}:`, err);
+    process.exit(1);
+  }
   console.log(`SSE server listening at http://localhost:${ssePort}/events`);
 });
 
