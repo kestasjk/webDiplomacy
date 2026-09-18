@@ -136,8 +136,8 @@ class libPush
 
 			// The web-push library's dependencies raise deprecation notices on newer PHP versions
 			// (guzzle/psr7 raises them via trigger_error as E_USER_DEPRECATED, not E_DEPRECATED).
-			// The site error handler treats any unmasked notice as fatal and exits, which would kill
-			// the caller (e.g. the gamemaster before it publishes the 'processed' SSE event), so mask both.
+			// The site error handler only logs deprecations, but masking them keeps library notices
+			// we can't fix out of the error logs.
 			$errorReporting = error_reporting(error_reporting() & ~(E_DEPRECATED | E_USER_DEPRECATED));
 
 			$subscriptions = array();
@@ -155,7 +155,9 @@ class libPush
 					'publicKey' => Config::$vapidPublicKey,
 					'privateKey' => Config::$vapidPrivateKey
 				)),
-				array('TTL' => 3600),
+				// A string: web-push copies TTL into the request headers as given, and guzzle/psr7 2.11+
+				// raises a deprecation notice for any header value that isn't a string
+				array('TTL' => '3600'),
 				10 // Overall client timeout in seconds; a slow push service can't hang the caller for long
 			);
 

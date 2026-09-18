@@ -576,6 +576,8 @@ class GameState {
 		// If the game is unfinished, don't compute the last phase, it was already filled in above.
 		// If the game is finished, then also compute data the last phase.
 		$finalPhaseIdx = $gameIsOver ? $nbFinalPhases - 1 : $nbFinalPhases - 2;
+		// The board is reset on each Diplomacy phase below; this covers a history that starts on a Retreats or Builds phase
+		$gameBoard = new GameBoard();
 		for ($i = 0; $i <= $finalPhaseIdx; ++$i) {
 
 		    // Resetting game board on movement phase

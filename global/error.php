@@ -53,6 +53,22 @@ function exception_handler( $exception)
 function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcontext=false)
 {
 	global $DB, $User, $Game;
+
+	// PHP calls this handler even for errors that error_reporting() masks, including ones silenced with @, and
+	// leaves the check to the handler. Libraries rely on it: symfony's trigger_deprecation() raises its notices
+	// silenced (guzzle/psr7 does on every Web Push send), and lib/push.php masks deprecations while it sends.
+	// Returning false hands them to PHP's own handler, which ignores them but still sets error_get_last().
+	if( !(error_reporting() & $errno) )
+		return false;
+
+	// A deprecation warns that the code will break in some future PHP or library version, it doesn't mean
+	// anything has gone wrong now, so it is logged without ending the request
+	if( $errno == E_DEPRECATED || $errno == E_USER_DEPRECATED )
+	{
+		libError::logDeprecation($errstr, $errfile, $errline);
+		return true;
+	}
+
 	if ( defined('ERROR') )
 		define('ERRORINERROR',true);
 	else
@@ -270,6 +286,46 @@ class libError
 		for( $i = 1; file_exists($file); $i++ )
 			$file = $base.'_'.$i.'.txt';
 		return $file;
+	}
+
+	/**
+	 * Log a deprecation notice without ending the request. It is written out like an error, including the
+	 * de-duplication, but at most once per request for each kind, and nothing here may end the request.
+	 */
+	public static function logDeprecation($errstr, $errfile, $errline)
+	{
+		static $logged = array();
+
+		if( !self::isLoggingEnabled() )
+			return;
+
+		$signature = self::signature($errstr, $errfile, $errline);
+		if( isset($logged[$signature]) )
+			return;
+		$logged[$signature] = true;
+
+		$dir = Config::errorlogDirectory();
+		if( !is_dir($dir) || !is_writable($dir) )
+			return;
+
+		$logFile = self::newLogFile($dir);
+		$occurrence = self::recordOccurrence($dir, $signature, basename($logFile));
+		if( $occurrence['duplicate'] )
+			return;
+
+		$log = 'Signature: '.$signature."\n";
+		if( $occurrence['previous'] )
+			$log .= 'Previously: '.$occurrence['previous']['count'].' occurrence(s) between '.date('c', $occurrence['previous']['first']).
+				' and '.date('c', $occurrence['previous']['last']).', trace in '.$occurrence['previous']['file']."\n";
+		$log .= 'Error: "'.$errstr."\"\n";
+		$log .= "Deprecation notice; logged only, the request carried on\n";
+		if( $errfile )
+			$log .= 'Raised: "'.$errfile."\"\n";
+		if( $errline )
+			$log .= 'Line: "'.$errline."\"\n";
+		$log .= "Trace:\n".(new Exception())->getTraceAsString()."\n";
+
+		@file_put_contents($logFile, $log);
 	}
 
 	/**

@@ -92,9 +92,12 @@ class processSandboxGame extends processGame
 
 		if( !$User->type['User'] ) throw new Exception("Non-users cannot create sandbox games.");
 
-		list($name, $variantID, $turn, $phase) = $DB->sql_row("SELECT name, variantID, turn, phase FROM wD_Games WHERE id = ".$gameID);
-		
-		if( $turn == 0 && $phase == 'Pre-game' ) throw new Exception("You cannot create a sandbox game from a game which hasn't started yet.");
+		// RequestException: these are the user's mistakes, so the API returns a 400 and doesn't log them as errors
+		$row = $DB->sql_row("SELECT name, variantID, turn, phase FROM wD_Games WHERE id = ".(int)$gameID);
+		if( !$row ) throw new RequestException("Game ".(int)$gameID." can't be copied to a sandbox because it wasn't found; it may have been cancelled or deleted.");
+		list($name, $variantID, $turn, $phase) = $row;
+
+		if( $turn == 0 && $phase == 'Pre-game' ) throw new RequestException("You cannot create a sandbox game from a game which hasn't started yet.");
 		$name = $DB->escape($name);
 		$Game = self::createGameMemberRecords($variantID, 'SB_'.$name, $turn, $phase);
 		
