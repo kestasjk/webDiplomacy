@@ -1,4 +1,29 @@
-botgamecreate.php
+# A crawler follows only the most specific User-agent group that matches it, so a group
+# for a named crawler must repeat any rules below that should still apply to it.
 
+User-agent: *
+# On play.webdiplomacy.net every visit to this page creates an account and a new bot game.
+Disallow: /botgamecreate.php
+# Profiles and user search
+Disallow: /profile.php
+Disallow: /userprofile.php
+Disallow: /search.php
+# Game archives and rendered maps
+Disallow: /board.php?*viewArchive
+Disallow: /map.php
+# The JSON API; also stops crawlers that render the beta board from calling it
+Disallow: /api.php
+# phpBB forum
+Disallow: /contrib/phpBB3/
+
+# SEO backlink crawlers send no visitors but were most of the profile and forum traffic.
+User-agent: DotBot
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: MJ12bot
+Disallow: /
+
+# Google's ad crawlers ignore the * group; they may fetch any page ads could be shown on.
 User-agent: Mediapartners-Google
 User-agent: Google-Display-Ads-Bot
+Disallow:
