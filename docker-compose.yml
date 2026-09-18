@@ -87,6 +87,12 @@ services:
       - "./:/application"
     ports:
       - "43003:3306"
+    # Default buffer pool is 128MB, which makes large dump imports do a random
+    # disk read per row once an index outgrows it. 4G holds the working set.
+    # This may not be necessary on small installations (e.g. a fresh install
+    # without a large dump imported); remove it or lower it if RAM is limited.
+    command:
+      - --innodb-buffer-pool-size=4G
 
   webserver:
     profiles: ["core"]
