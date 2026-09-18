@@ -44,8 +44,9 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     }
   };
 
+  // No fetch here: App's loadGame fetches the overview, which is what sets gameID. After that it is
+  // only refetched when the server says it changed.
   useEffect(() => {
-    dispatchFetchOverview();
     if (overview.gameID > 0) {
       const overviewChannel = client.subscribe(
         `private-game${overview.gameID}`,

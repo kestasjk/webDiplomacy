@@ -128,7 +128,7 @@ const client = {
             try {
               const data = JSON.parse(e.data);
               // If message starts with "overview", it's an overview message:
-              // Message = vote-sent|processed|message
+              // Message = set-vote|processed|message
               sseDebugLog(`Message received via SSE: ${e.data}`);
               // Update the next reconnect time to 30 seconds from now:
               const newReconnectTime = new Date();
@@ -140,11 +140,11 @@ const client = {
                 if (eventCallbacks.message) {
                   eventCallbacks.message.forEach((callback) => callback());
                 }
-              } else if (data.message && data.message.includes("vote-sent")) {
-                sseDebugLog(`New vote-sent message received`);
+              } else if (data.message && data.message.includes("set-vote")) {
+                sseDebugLog(`New set-vote message received`);
                 if (eventCallbacks.overview) {
                   eventCallbacks.overview.forEach((callback) =>
-                    callback("vote-sent"),
+                    callback("set-vote"),
                   );
                 }
               } else if (data.message && data.message.includes("processed")) {

@@ -145,7 +145,7 @@ var configureSSE = function(gameID, countryID) {
                 try {
                     const data = JSON.parse(e.data);
                     // If message starts with "overview", it's an overview message:
-                    // Message = vote-sent|processed|message
+                    // Message = set-vote|processed|message
                     
                     console.log(`Message received via SSE: ${e.data}`);
 
@@ -162,7 +162,7 @@ var configureSSE = function(gameID, countryID) {
                         {
                             messageSentArea.innerHTML = "New message received: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
                         }
-                    } else if (data.message && data.message.includes("vote-sent")) {
+                    } else if (data.message && data.message.includes("set-vote")) {
                         console.log(`Vote cast in game.. ignore`);
                     } else if (data.message && data.message.includes("processed")) {
                         console.log(`Game processed`);
