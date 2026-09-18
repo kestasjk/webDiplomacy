@@ -368,10 +368,13 @@ $cacheHTML=libCache::dirName('forum').'/page_'.$forumPager->currentPage.'.html';
 if( file_exists($cacheHTML) )
 	print $cacheHTML;
 
+// The page's threads are picked using the (type, latestReplySent) index alone, and only those threads are then
+// joined to their messages, authors and silences. A deep page skips index entries, not whole joined rows.
+// (id DESC matches the order the index gives threads with the same latestReplySent.)
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
-		u.username as fromusername, u.points as points, f.latestReplySent, 0 as online, u.type as userType, 
-		f.likeCount as likeCount, 
+		u.username as fromusername, u.points as points, f.latestReplySent, 0 as online, u.type as userType,
+		f.likeCount as likeCount,
 		f.silenceID,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
@@ -380,12 +383,16 @@ $tabl = $DB->sql_tabl("SELECT
 		silence.startTime as silenceStartTime,
 		silence.length as silenceLength,
 		silence.reason as silenceReason
-	FROM wD_ForumMessages f
+	FROM (
+		SELECT id FROM wD_ForumMessages
+		WHERE type = 'ThreadStart'
+		ORDER BY latestReplySent DESC, id DESC
+		".$forumPager->SQLLimit()."
+	) page
+	INNER JOIN wD_ForumMessages f ON ( f.id = page.id )
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
-	WHERE f.type = 'ThreadStart'
-	ORDER BY f.latestReplySent DESC
-	".$forumPager->SQLLimit());
+	ORDER BY f.latestReplySent DESC, f.id DESC");
 
 /*
  * If it's a new post, jump to it
