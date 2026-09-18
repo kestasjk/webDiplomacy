@@ -92,6 +92,73 @@ class RedisInterface
         return $this->redis->del($key);
     }
 
+    /**
+     * Append to a list, then trim it to its newest $maxLength entries so a list nothing is reading from can't grow
+     * without limit. The pipeline only batches the commands on the client side.
+     */
+    public function listPush($key, $value, $maxLength): mixed
+    {
+        $pipeline = $this->redis->pipeline();
+        $pipeline->rPush($key, $value);
+        $pipeline->lTrim($key, -$maxLength, -1);
+        return $pipeline->exec();
+    }
+
+    /**
+     * Remove and return up to $count entries from the front of a list. It's a script so the read and removal are
+     * atomic without a MULTI, which would leave state on the persistent connection if it failed part way.
+     *
+     * @return array
+     */
+    public function listPopMany($key, $count): array
+    {
+        $items = $this->redis->eval("local items = redis.call('LRANGE', KEYS[1], 0, ARGV[1] - 1)
+            redis.call('LTRIM', KEYS[1], ARGV[1], -1)
+            return items", array($key, (int)$count), 1);
+        return is_array($items) ? $items : array();
+    }
+
+    public function listLength($key): int
+    {
+        return (int)$this->redis->lLen($key);
+    }
+
+    /**
+     * Take a lock which expires after $seconds if it isn't released first.
+     *
+     * @return string|false A token to pass to releaseLock(), or false if the lock is already held
+     */
+    public function acquireLock($key, $seconds): string|false
+    {
+        $token = bin2hex(random_bytes(8));
+        return $this->redis->set($key, $token, array('nx', 'ex' => (int)$seconds)) ? $token : false;
+    }
+
+    /**
+     * Release a lock, but only if it's still held with this token; if it expired it may now belong to someone else.
+     */
+    public function releaseLock($key, $token): mixed
+    {
+        return $this->redis->eval("if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) end
+            return 0", array($key, $token), 1);
+    }
+
+    public function setAddMany($key, array $members): mixed
+    {
+        return $this->redis->sAdd($key, ...array_values($members));
+    }
+
+    /**
+     * Remove and return up to $count members of a set, in no particular order.
+     *
+     * @return array
+     */
+    public function setPopMany($key, $count): array
+    {
+        $members = $this->redis->sPop($key, (int)$count);
+        return is_array($members) ? $members : array();
+    }
+
     public function publish($channel, $message): mixed
     {
         return $this->redis->publish($channel, $message);

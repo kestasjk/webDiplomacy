@@ -347,6 +347,12 @@ class libBackgroundTasks
             self::taskDone('BOTGAMECLEANUP', $taskStart);
         }
 
+        // Apply the results of sending push notifications (see libPush::drain()) on every run; this is two Redis
+        // requests when there's nothing to do
+        $taskStart = libMetrics::start();
+        if( libPush::applySendResults() > 0 )
+            self::taskDone('PUSHRESULTS', $taskStart);
+
         // Backup from wD_Backup_* to json files every 37 minutes, as MySQL doesn't allow backups without going offline
         // In case of failure this will at least mean games are not ruined
         if( $Misc->LastBackupUpdate < (time() - 60*37) )

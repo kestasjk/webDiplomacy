@@ -1478,8 +1478,13 @@ class libHTML
 			self::$footerIncludes[] = l_j('mute.js');
 			self::$footerScript[] = l_jf('muteAll').'();';
 
-			// Web Push (PWA) notification registration; does nothing unless enabled for this user
-			self::$footerIncludes[] = l_j('push.js');
+			// Web Push (PWA) notifications: offers them, and keeps this browser's subscription current
+			$pushConfigScript = libPush::pageConfigScript($User->id);
+			if( $pushConfigScript !== '' )
+			{
+				$buf .= $pushConfigScript;
+				self::$footerIncludes[] = l_j('push.js');
+			}
 
 			// Participated threads
 			$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$User->id).'/readThreads.js';

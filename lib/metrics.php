@@ -47,7 +47,7 @@ class libMetrics
 			foreach(array('HUMAN', 'MIXED', 'BOT') as $players)
 				$parts[] = 'GAME_'.$phase.'_'.$players;
 		foreach(array('SESSIONS', 'ONLINEUSERS', 'MISCSTATS', 'RELIABILITY', 'RELIABILITYREFRESH', 'NMRWARNINGS',
-			'GROUPS', 'USERCONNECTIONS', 'WATCHEDGAMES', 'POINTSCHECK', 'ANONBOTGAMES', 'BOTGAMECLEANUP', 'BACKUP') as $task)
+			'GROUPS', 'USERCONNECTIONS', 'WATCHEDGAMES', 'POINTSCHECK', 'ANONBOTGAMES', 'BOTGAMECLEANUP', 'BACKUP', 'PUSHRESULTS') as $task)
 			$parts[] = 'TASK_'.$task;
 
 		return array_map(function($part) { return 'GAMEMASTER_'.$part; }, $parts);

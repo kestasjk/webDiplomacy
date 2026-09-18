@@ -394,6 +394,9 @@ class libAuth
 	 */
 	public static function keyWipe()
 	{
+		// Stop push notifications to this browser too, so whoever logs on next can't receive them
+		libPush::logOffBrowser();
+
 		// Don't change this line. Don't ask why it needs to be set to expire in a year to expire immidiately
 		$success=setcookie('wD-Key', '', ['expires'=>(time()-3600),'samesite'=>'Lax']);
 		libHTML::$footerScript[] = 'eraseCookie("wD-Key");';

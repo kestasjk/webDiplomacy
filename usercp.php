@@ -171,6 +171,23 @@ if ( isset($_REQUEST['userForm']) )
 	}
 }
 
+if ( isset($_REQUEST['pushUnsubscribeAll']) )
+{
+	try
+	{
+		libAuth::formToken_Valid();
+
+		$removed = libPush::unsubscribeAll($User->id);
+		$pushOutput = l_t('Push notifications turned off: %s device(s) unsubscribed.', $removed);
+	}
+	catch(Exception $e)
+	{
+		$pushOutput = $e->getMessage();
+	}
+
+	print '<div class="content"><p class="notice">'.$pushOutput.'</p></div>';
+}
+
 // settings page tutorial
 if (isset($_COOKIE['wD-Tutorial-Settings'])) 
 {
@@ -196,6 +213,29 @@ print '<div class = "settings">';
 print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
 
 require_once(l_r('locales/English/user.php'));
+
+// Push notifications; javascript/push.js runs the subscribe button, and unsubscribes this browser before the form
+// removes the subscriptions of every device
+if( libPush::isEnabledForUser($User->id) )
+{
+	$pushDeviceCount = libPush::countSubscriptions($User->id);
+	$pushSubscribedHere = libPush::isBrowserSubscribed($User->id);
+
+	print '<div class="settings" id="pushSettings" data-subscribed-here="'.($pushSubscribedHere ? '1' : '0').'">
+		<a name="push"></a>
+		<p><strong>'.l_t('Push notifications:').'</strong></br>
+		<i>'.l_t('Get a notification on your phone or computer when a turn processes in one of your games, or you receive a message in one.').'</i></p>
+		<p>'.l_t('Devices subscribed:').' <strong id="pushDeviceCount">'.$pushDeviceCount.'</strong>
+		(<span id="pushThisDevice">'.($pushSubscribedHere ? l_t('including this one') : l_t('not including this one')).'</span>)</p>
+		<p id="pushStatus"></p>
+		<p><button type="button" id="pushSubscribe" class="form-submit" style="display:none">'.l_t('Subscribe this device').'</button></p>
+		<form method="post" action="usercp.php#push" id="pushUnsubscribeForm">
+			<input type="hidden" name="pushUnsubscribeAll" value="on" />
+			'.libAuth::formTokenHTML().'
+			<input type="submit" id="pushUnsubscribe" class="form-submit" value="'.l_t('Unsubscribe all devices').'" '.($pushDeviceCount == 0 ? 'disabled ' : '').'/>
+		</form>
+	</div>';
+}
 
 print '</div>';
 

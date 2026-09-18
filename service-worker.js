@@ -1,7 +1,7 @@
 // webDiplomacy root service worker.
 //
 // Served from the site root so its scope ('/') covers both the classic PHP pages and the React
-// app under /beta/. Registered by javascript/push.js (classic UI) and the beta app's pushSync.
+// app under /beta/. Registered by javascript/push.js when the user subscribes.
 //
 // This worker only handles Web Push notifications; it deliberately has no fetch handler and does
 // no offline caching, so it cannot interfere with normal page loads. If a service worker is ever
@@ -51,9 +51,11 @@ self.addEventListener('notificationclick', function (event) {
 	);
 });
 
-// The push service can invalidate a subscription and issue a replacement; re-register it
-// server-side if possible. If the session cookie is gone this fails silently, and the
-// per-page-load re-sync in push.js will repair the subscription next time the user visits.
+// The push service can invalidate a subscription and issue a replacement; register the replacement
+// in place of the old one if possible. resync means the site only accepts it if this browser's old
+// subscription is still registered, so a browser unsubscribed from another device stays unsubscribed.
+// If the session cookie is gone this fails silently, and push.js registers the replacement the next
+// time the user visits.
 self.addEventListener('pushsubscriptionchange', function (event) {
 	var resubscribe = self.registration.pushManager
 		.subscribe(event.oldSubscription ? event.oldSubscription.options : { userVisibleOnly: true })
@@ -66,7 +68,8 @@ self.addEventListener('pushsubscriptionchange', function (event) {
 				body: JSON.stringify({
 					endpoint: json.endpoint,
 					p256dh: json.keys.p256dh,
-					auth: json.keys.auth
+					auth: json.keys.auth,
+					resync: 1
 				})
 			});
 		})

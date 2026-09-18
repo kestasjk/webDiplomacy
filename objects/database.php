@@ -282,6 +282,20 @@ class Database {
 	}
 
 	/**
+	 * Close the database connection before the request ends, so that work done after the response has gone out
+	 * (see libPush::drainAfterResponse()) doesn't hold a connection, or any locks, while it runs. Anything
+	 * uncommitted is rolled back, as it would be at the end of the request.
+	 */
+	public function disconnect()
+	{
+		if( $this->link )
+		{
+			mysqli_close($this->link);
+			$this->link = null;
+		}
+	}
+
+	/**
 	 * Close the database connection
 	 */
 	public function __destruct()

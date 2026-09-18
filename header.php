@@ -156,6 +156,7 @@ require_once('lib/cache.php');
 require_once('lib/time.php');
 require_once('lib/group.php');
 require_once('lib/html.php');
+require_once('lib/push.php');
 
 require_once('locales/layer.php');
 

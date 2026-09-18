@@ -26,7 +26,6 @@ require_once('header.php');
 
 require_once(l_r('gamemaster/game.php'));
 require_once(l_r('gamemaster/misc.php'));
-require_once(l_r('lib/push.php'));
 require_once(l_r('lib/metrics.php'));
 
 if ( $Misc->Panic )
@@ -126,6 +125,10 @@ if( !defined('RUNNINGFROMCLI') )
 }
 
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
+
+// Send queued push notifications once this run's response has gone out: those for the turns processed below, and
+// any left over from earlier drains
+libPush::scheduleDrain(true);
 
 //- Check last process time, pause processing/save current process time
 if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
@@ -293,17 +296,16 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 
 	if( $gameProcessed )
 	{
-		// The turn has processed and committed; notify the players via Web Push. This stays after the
-		// COMMIT (a rolled-back turn must never notify) and is deliberately the last step for this game:
-		// the push library can raise notices which the site error handler turns into a fatal exit, and
-		// nothing the players rely on (the 'processed' SSE publish, cache wipe, processing-key cleanup)
-		// should be lost because a push notification failed.
+		// The turn has processed and committed; queue a Web Push notification for the players, sent once
+		// this run's response has gone out. This stays after the COMMIT (a rolled-back turn must never
+		// notify) and is deliberately the last step for this game, so nothing the players rely on (the
+		// 'processed' SSE publish, cache wipe, processing-key cleanup) can be lost if queueing fails.
 		try
 		{
 			$pushUserIDs = array();
 			foreach($Game->Members->ByCountryID as $member)
 				if( $member->status == 'Playing' ) $pushUserIDs[] = $member->userID;
-			libPush::sendToUsers($pushUserIDs, $Game->name,
+			libPush::queue($pushUserIDs, $Game->name,
 				l_t('A new phase has started: %s',$Game->datetxt($Game->turn).', '.$Game->phase),
 				'/board.php?gameID='.$Game->id, 'game-'.$Game->id);
 		}
