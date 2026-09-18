@@ -72,6 +72,21 @@ class RedisInterface
         return $this->redis->append($key, $value);
     }
 
+    /**
+     * Add to several integer counters in one round trip. INCRBY is atomic, so unlike a GET followed by a SET
+     * concurrent requests can't lose each other's increments. A pipeline only batches the commands on the
+     * client side, so it leaves no state on the persistent connection.
+     *
+     * @param array $increments Key => amount to add
+     */
+    public function incrementMany(array $increments): mixed
+    {
+        $pipeline = $this->redis->pipeline();
+        foreach ($increments as $key => $amount)
+            $pipeline->incrBy($key, (int)$amount);
+        return $pipeline->exec();
+    }
+
     public function delete($key): mixed
     {
         return $this->redis->del($key);

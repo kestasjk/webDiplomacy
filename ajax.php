@@ -202,16 +202,13 @@ if ($Redis !== null && $DB instanceof MetricsDatabase) {
 		$dbMetrics = $DB->getMetrics();
 
 		// Increment counters and add times in Redis for AJAX calls
-		$Redis->set('METRICS_AJAX_' . $ajaxRoute . '_COUNT',
-			($Redis->get('METRICS_AJAX_' . $ajaxRoute . '_COUNT') ?: 0) + 1);
-		$Redis->set('METRICS_AJAX_' . $ajaxRoute . '_TIME_MS',
-			($Redis->get('METRICS_AJAX_' . $ajaxRoute . '_TIME_MS') ?: 0) + $ajaxTimeMs);
-		$Redis->set('METRICS_AJAX_' . $ajaxRoute . '_DB_GET',
-			($Redis->get('METRICS_AJAX_' . $ajaxRoute . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
-		$Redis->set('METRICS_AJAX_' . $ajaxRoute . '_DB_PUT',
-			($Redis->get('METRICS_AJAX_' . $ajaxRoute . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
-		$Redis->set('METRICS_AJAX_' . $ajaxRoute . '_DB_TIME_MS',
-			($Redis->get('METRICS_AJAX_' . $ajaxRoute . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+		$Redis->incrementMany(array(
+			'METRICS_AJAX_' . $ajaxRoute . '_COUNT' => 1,
+			'METRICS_AJAX_' . $ajaxRoute . '_TIME_MS' => $ajaxTimeMs,
+			'METRICS_AJAX_' . $ajaxRoute . '_DB_GET' => $dbMetrics['db_get'],
+			'METRICS_AJAX_' . $ajaxRoute . '_DB_PUT' => $dbMetrics['db_put'],
+			'METRICS_AJAX_' . $ajaxRoute . '_DB_TIME_MS' => $dbMetrics['db_time_ms'],
+		));
 	} catch (Exception $e) {
 		// Silently ignore Redis errors to not break the AJAX
 	}
