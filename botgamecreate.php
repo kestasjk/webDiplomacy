@@ -40,6 +40,15 @@ if ( $Misc->Panic )
 
 if( defined('PLAYNOW') )
 {
+	// The anonymous account and its game are only created for a POST from a start button, so crawlers and link
+	// prefetchers which follow a link here don't create them.
+	if( $_SERVER['REQUEST_METHOD'] !== 'POST' )
+	{
+		libHTML::notice(l_t('Play Diplomacy against AI opponents'),
+			l_t('Start a new game of Diplomacy against six AI opponents. No account is needed.').'<br /><br />'.
+			libHTML::playNowButton());
+	}
+
 	libAuth::configurePlayNowUser();
 	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
 }

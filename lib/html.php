@@ -59,9 +59,21 @@ class libHTML
 
 	public static function playNowButton()
 	{
-		return '<button onclick="window.location.href=\''.(defined("PLAYNOW") ? "botgamecreate.php" : "https://play.webdiplomacy.net/botgamecreate.php").'\';" '.
-			' class="green-Submit" style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;">
-			Click here to start a new game of webDiplomacy against AI opponents!
+		$buttonStyle = 'class="green-Submit" style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;"';
+		$buttonText = 'Click here to start a new game of webDiplomacy against AI opponents!';
+
+		// On the play-now site botgamecreate.php only creates the anonymous account and game for a POST, so this
+		// button posts to it. From the main site it links to the play-now site's start page instead: a cross-site
+		// POST wouldn't carry a returning player's (SameSite=Lax) log-on cookie, so they'd get a new account.
+		if( defined("PLAYNOW") )
+			return '<form method="post" action="botgamecreate.php" style="display:inline">
+			<button type="submit" name="playNow" value="1" '.$buttonStyle.'>
+			'.$buttonText.'
+		</button></form>';
+
+		return '<button onclick="window.location.href=\'https://play.webdiplomacy.net/botgamecreate.php\';" '.
+			' '.$buttonStyle.'>
+			'.$buttonText.'
 		</button>';
 	}
 
