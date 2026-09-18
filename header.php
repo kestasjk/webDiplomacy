@@ -212,6 +212,26 @@ if( !defined('AJAX') )
 	global $User;
 	$User = libAuth::auth();
 
+	// Guests get the same page for the same URL, so let their browsers reuse a page for 5 minutes. This is decided
+	// as the headers go out, after the page has run (and after session_start() has re-sent no-cache headers), so
+	// errors, redirects and any response that logs someone on or off (log-on, password reset, play-now account
+	// creation) stay uncacheable. "private" keeps shared caches from storing it, and "Vary: Cookie" makes the
+	// browser refetch once the viewer's cookies change, e.g. after logging on.
+	if( $User->id == GUESTID && !defined('IN_API') && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' )
+	{
+		header_register_callback(function() {
+			if( defined('ERROR') || http_response_code() != 200 ) return;
+
+			foreach( headers_list() as $header )
+				if( stripos($header, 'Set-Cookie: wD-Key=') === 0 ) return;
+
+			header('Cache-Control: private, max-age=300');
+			header('Expires: '.gmdate('D, d M Y H:i:s', time()+300).' GMT');
+			header_remove('Pragma');
+			header('Vary: Cookie');
+		});
+	}
+
 	if ( $User->type['Admin'] )
 	{
 		Config::$debug=true;
