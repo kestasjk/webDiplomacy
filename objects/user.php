@@ -971,13 +971,47 @@ class User {
 		$DB->sql_put("UPDATE wD_Users SET tempBanReason = '".$reason."', tempBan = ". ( time() + ($days * 5*24*60*60) )." WHERE id=".$userID);
 	}
 
+	/**
+	 * Run a query returning a single count, and cache the result in Redis for a few minutes. For ranks and player
+	 * counts on page views: a rank counts every higher-ranked player, so its cost grows with the rank, but it
+	 * doesn't need to be exact to the second. Many users share a points value or rating, so the key should be the
+	 * query's inputs rather than the user.
+	 *
+	 * @param string $cacheKey Identifies the query and its inputs
+	 * @param string $sql A query returning one value
+	 * @return string The value
+	 */
+	public static function cachedRankQuery($cacheKey, $sql)
+	{
+		global $DB, $Redis;
+
+		try
+		{
+			$value = $Redis->get('rank_'.$cacheKey);
+			if( $value !== false )
+				return $value;
+		}
+		catch(Exception $e) { }
+
+		list($value) = $DB->sql_row($sql);
+
+		try
+		{
+			$Redis->set('rank_'.$cacheKey, $value, 10*60);
+		}
+		catch(Exception $e) { }
+
+		return $value;
+	}
+
 	public function rankingDetails()
 	{
 		global $DB, $Misc;
 
 		$rankingDetails = array();
 
-		list($rankingDetails['position']) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$this->points);
+		$rankingDetails['position'] = self::cachedRankQuery('points_'.intval($this->points),
+			"SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".intval($this->points));
 
 		list($rankingDetails['worth']) = $DB->sql_row( "SELECT SUM(bet) FROM wD_Members WHERE userID = ".$this->id." AND status = 'Playing'");
 
@@ -1500,14 +1534,21 @@ class User {
 		global $DB;		
 		$ghostRatingCategories = array();
 
+		// rating+0e0 is the exact rating, for the cache key; the rating as returned is rounded to 6 digits, which
+		// different ratings can share
 		$tabl = $DB->sql_tabl(
-				"SELECT g.categoryID, g.rating, g.peakRating, 
-				(select count(1)+1 from wD_GhostRatings g1 where g1.categoryID = g.categoryID and g1.rating > g.rating) as position 
+				"SELECT g.categoryID, g.rating, g.peakRating, g.rating+0e0 AS exactRating
 				FROM wD_GhostRatings g WHERE g.userID = ".$this->id
 			);
 
-		while ( list($categoryID, $rating, $peakRating, $position) = $DB->tabl_row($tabl) )
+		while ( list($categoryID, $rating, $peakRating, $exactRating) = $DB->tabl_row($tabl) )
 		{
+			$position = self::cachedRankQuery('gr_'.$categoryID.'_'.$exactRating,
+				"SELECT COUNT(1)+1 FROM wD_GhostRatings g1
+				WHERE g1.categoryID = ".$categoryID." AND g1.rating > (
+					SELECT g.rating FROM wD_GhostRatings g WHERE g.userID = ".$this->id." AND g.categoryID = ".$categoryID." LIMIT 1
+				)");
+
 			$categoryName = Config::$grCategories[$categoryID]["name"];
 
 			$ghostRatingCategories[$categoryName]['Rating'] = $rating; 

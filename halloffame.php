@@ -37,7 +37,9 @@ print'<div class="advancedSearchContent">';
 
 if ( $User->type['User'] && $User->points > 100 )
 {
-	list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$User->points);
+	// The ranks and player counts on this page are cached for a few minutes; see User::cachedRankQuery()
+	$position = User::cachedRankQuery('points_'.intval($User->points),
+		"SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".intval($User->points));
 	$players = $Misc->RankingPlayers;
 
 	print '<p class = "hof">'.l_t('You are ranked %s out of %s players with over 100%s','<a href="#me" class="light">#'.$position.'</a>',$players,libHTML::points()).
@@ -90,9 +92,11 @@ $sixMonths = time() - 15552000;
 
 if ( $User->type['User'] && $User->points > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
-	list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$User->points." AND timeLastSessionEnded > ".$sixMonths);
+	$position = User::cachedRankQuery('pointsActive_'.intval($User->points),
+		"SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".intval($User->points)." AND timeLastSessionEnded > ".$sixMonths);
 
-	list($playersSixMonths) = $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE points > 100  AND timeLastSessionEnded > ".$sixMonths);
+	$playersSixMonths = User::cachedRankQuery('pointsActivePlayers',
+		"SELECT COUNT(1) FROM wD_Users WHERE points > 100  AND timeLastSessionEnded > ".$sixMonths);
 
 	print '<p class = "hof">'.l_t('You are ranked %s out of %s players with over 100%s who have been active in the last six months','<a href="#me" class="light">#'.$position.'</a>',$playersSixMonths,libHTML::points()).
 		l_t('. For more stats on your ranking visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
@@ -146,8 +150,10 @@ list ($currentRating) = $DB->sql_row("SELECT peakRating FROM wD_GhostRatings WHE
 
 if ( $User->type['User'] && $currentRating > 0 )
 {
-	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
-	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and peakRating  > 100");
+	$position = User::cachedRankQuery('grPeak_'.$currentRating,
+		"SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
+	$players = User::cachedRankQuery('grPeakPlayers',
+		"SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and peakRating  > 100");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100').
 		l_t('. For more stats on your ranking, visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
@@ -201,10 +207,12 @@ $sixMonths = time() - 15552000;
 
 if ( $User->type['User'] && $currentRating > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
-	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
+	$position = User::cachedRankQuery('grPeakActive_'.$currentRating,
+		"SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID
 									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating > ".$currentRating);
 
-	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
+	$players = User::cachedRankQuery('grPeakActivePlayers',
+		"SELECT COUNT(1) FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID
 									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating  > 100");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100 who have been active in the last six months').
