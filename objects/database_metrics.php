@@ -86,33 +86,8 @@ class MetricsDatabase extends Database {
 		return $result;
 	}
 
-	/**
-	 * Override sql_row to track fetch operations
-	 */
-	public function sql_row($sql) {
-		$startTime = microtime(true);
-		$result = parent::sql_row($sql);
-		$endTime = microtime(true);
-
-		$this->metricsFetchCount++;
-		$this->metricsFetchTime += ($endTime - $startTime);
-
-		return $result;
-	}
-
-	/**
-	 * Override sql_hash to track fetch operations
-	 */
-	public function sql_hash($sql) {
-		$startTime = microtime(true);
-		$result = parent::sql_hash($sql);
-		$endTime = microtime(true);
-
-		$this->metricsFetchCount++;
-		$this->metricsFetchTime += ($endTime - $startTime);
-
-		return $result;
-	}
+	// sql_row and sql_hash aren't overridden: Database implements both via $this->sql_tabl(), which is counted
+	// above, so counting them here too would count every row fetch twice.
 
 	/**
 	 * Override sql_put to track put operations

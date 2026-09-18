@@ -427,6 +427,18 @@ class processGame extends Game
 				$unique = true;
 
 			}
+			elseif ( $i == 1 )
+			{
+				// Popular names ("test", "Bot", ...) have tens of thousands of numbered copies, so rather than trying
+				// name-2, name-3, ... one query at a time, jump past the highest numbered copy. This is only a starting
+				// point; the check above still confirms the name is free.
+				list($maxSuffix) = $DB->sql_row("SELECT MAX(CAST(SUBSTRING(name, CHAR_LENGTH('".$name."')+2) AS UNSIGNED))
+					FROM wD_Games
+					WHERE name LIKE '".addcslashes($name,'%_')."-%'
+						AND SUBSTRING(name, CHAR_LENGTH('".$name."')+2) REGEXP '^[0-9]{1,9}\$'");
+				$i = max(2, (int)$maxSuffix + 1);
+				$name = substr($name,0,50-strlen('-'.$i));
+			}
 			else
 			{
 				$i++;

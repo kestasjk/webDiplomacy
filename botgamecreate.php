@@ -214,21 +214,21 @@ if ($userBotGameCount > $limit - 1)
     }
 }
 
-// Limit the number of simultaneous play now / anonymous bot games to 60
+// Limit the number of simultaneous play now / anonymous bot games to 200, and other no-press bot games to 600
 if( defined('PLAYNOW') )
 {
-	list($nopressBotGameCount) = $Misc->BotGamesActiveNoPress_Anonymous;
+	$nopressBotGameCount = $Misc->BotGamesActiveNoPress_Anonymous;
 	if( $nopressBotGameCount > 199 )
 	{
-		libHTML::notice(l_t('Anonymous bot game limit reached'), l_t('Anonymous bot game limit '.$nopressBotGameCount.'/100 reached: Apologies, the anonymous bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later, or create an account on the community page.'));
+		libHTML::notice(l_t('Anonymous bot game limit reached'), l_t('Anonymous bot game limit '.$nopressBotGameCount.'/200 reached: Apologies, the anonymous bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later, or create an account on the community page.'));
 	}
 }
 else
 {
-	list($nopressBotGameCount) = $Misc->BotGamesActiveNoPress;
+	$nopressBotGameCount = $Misc->BotGamesActiveNoPress;
 	if( $nopressBotGameCount > 599 )
 	{
-		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/600 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later.'));
+		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/600 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of no-press bot games. Please try again later.'));
 	}
 }
 

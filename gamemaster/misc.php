@@ -142,23 +142,21 @@ class miscUpdate
 		global $DB,$Misc;
 
 		// TODO: The SB_ method of identifying sandbox games is not ideal.
+		// Counts games, not member rows: a sandbox game has one human member per country.
 		list($Misc->BotGamesActiveNoPress_Anonymous, $Misc->BotGamesActiveNoPress, $Misc->BotGamesActiveFullPress, $Misc->SandboxGamesActive) = $DB->sql_row(
-			"SELECT 
-				SUM(IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NULL AND u.username LIKE 'diplonow_%',1,0)) NoPressAnon, 
-				SUM(IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NULL AND u.username LIKE 'diplonow_%',0,1)) NoPressUser,
-				SUM(IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NOT NULL,1,0)) FullPress,
-				SUM(IF(g.name LIKE 'SB_%',1,0)) Sandbox
-			FROM wD_Games g 
-			INNER JOIN wD_Members m ON m.gameID = g.id 
-			INNER JOIN wD_Users u ON u.id = m.userID 
-			LEFT JOIN wD_BotGameQueue bq ON bq.gameID = g.id 
-			WHERE NOT u.type LIKE '%Bot%' 
-				AND g.gameOver = 'No' 
-				AND g.playerTypes = 'MemberVsBots' 
-			GROUP BY g.id, u.username"
+			"SELECT
+				COUNT(DISTINCT IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NULL AND u.username LIKE 'diplonow_%', g.id, NULL)) NoPressAnon,
+				COUNT(DISTINCT IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NULL AND NOT u.username LIKE 'diplonow_%', g.id, NULL)) NoPressUser,
+				COUNT(DISTINCT IF(NOT g.name LIKE 'SB_%' AND bq.gameID IS NOT NULL, g.id, NULL)) FullPress,
+				COUNT(DISTINCT IF(g.name LIKE 'SB_%', g.id, NULL)) Sandbox
+			FROM wD_Games g
+			INNER JOIN wD_Members m ON m.gameID = g.id
+			INNER JOIN wD_Users u ON u.id = m.userID
+			LEFT JOIN wD_BotGameQueue bq ON bq.gameID = g.id
+			WHERE NOT u.type LIKE '%Bot%'
+				AND g.gameOver = 'No'
+				AND g.playerTypes = 'MemberVsBots'"
 		);
-
-		// SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%'
 	}
 }
 ?>
