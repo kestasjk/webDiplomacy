@@ -101,6 +101,13 @@ class Territory {
 	var $coastParentID;
 
 	/**
+	 * The map's territory rows by ID, loaded with one query the first time a territory is loaded by ID. Saving
+	 * orders loads a unit territory and a target territory for every order, and the map doesn't change.
+	 * @var array[]
+	 */
+	private static $rowsByMapID = array();
+
+	/**
 	 * @param int/array The array of territory data or the territory ID
 	 */
 	function __construct($row)
@@ -108,7 +115,17 @@ class Territory {
 		global $DB;
 
 		if( !is_array($row) )
-			$row = $DB->sql_hash("SELECT * FROM wD_Territories WHERE id=".intval($row)." AND mapID=".MAPID);
+		{
+			if( !isset(self::$rowsByMapID[MAPID]) )
+			{
+				self::$rowsByMapID[MAPID] = array();
+				$tabl = $DB->sql_tabl("SELECT * FROM wD_Territories WHERE mapID=".MAPID);
+				while( $territoryRow = $DB->tabl_hash($tabl) )
+					self::$rowsByMapID[MAPID][$territoryRow['id']] = $territoryRow;
+			}
+
+			$row = self::$rowsByMapID[MAPID][intval($row)] ?? false; // false, as the single-row query gave for an unknown ID
+		}
 
 		foreach ($row as $name=>$value)
 			$this->{$name} = $value;

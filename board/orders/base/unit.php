@@ -70,6 +70,13 @@ class Unit {
 	var $Territory;
 
 	/**
+	 * Unit rows by ID. The first unit loaded by ID loads every unit in its game with one query, as loading orders
+	 * loads each order's unit. Units don't change while orders are being entered, only when the game is processed.
+	 * @var array[]
+	 */
+	private static $rowsByID = array();
+
+	/**
 	 * Initialize a unit
 	 *
 	 * @param int $id Unit ID
@@ -79,7 +86,17 @@ class Unit {
 		global $DB;
 
 		if( !is_array($row) )
-			$row = $DB->sql_hash("SELECT * FROM wD_Units WHERE id = ".$row);
+		{
+			$id = intval($row);
+			if( !isset(self::$rowsByID[$id]) )
+			{
+				$tabl = $DB->sql_tabl("SELECT * FROM wD_Units WHERE gameID = (SELECT gameID FROM wD_Units WHERE id = ".$id.")");
+				while( $unitRow = $DB->tabl_hash($tabl) )
+					self::$rowsByID[$unitRow['id']] = $unitRow;
+			}
+
+			$row = self::$rowsByID[$id] ?? false; // false, as the single-row query gave for an unknown ID
+		}
 
 		foreach ( $row as $name=>$value )
 			$this->{$name} = $value;

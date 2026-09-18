@@ -382,11 +382,23 @@ abstract class userOrder extends order
 	{
 		global $DB;
 
+		// Results by query, as the same check can be run more than once in a request (the API revalidates after
+		// dropping invalid orders, and viaConvoyCheck() reruns moveToTerrCheck()). The borders don't change and
+		// the units and territory statuses don't change while orders are entered.
+		static $results = array();
+		if( isset($results[$sql]) )
+			return $results[$sql];
+
 		$tabl=$DB->sql_tabl($sql);
 
-		while($row=$DB->tabl_row($tabl)) return true; // The selection was found
+		$results[$sql] = false;
+		while($row=$DB->tabl_row($tabl))
+		{
+			$results[$sql] = true; // The selection was found
+			break;
+		}
 
-		return false;
+		return $results[$sql];
 	}
 
 	protected $hasChanged=true;
