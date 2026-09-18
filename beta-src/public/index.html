@@ -24,17 +24,29 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>webDiplomacy Game Map</title>
-    <!-- Google tag (gtag.js) TODO: Make this dynamic -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MC45SZ2JEC"></script>
+    <!-- Google tag (gtag.js). The build takes the measurement IDs from config.php, the tag the PHP pages use
+      (scripts/ga-measurement-id.php), so the beta reports to the same GA property as the rest of its site.
+      A build without an ID, e.g. in development, still defines gtag() but loads and sends nothing. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      // The same logged_in / user_type user properties the PHP pages send (see libHTML::analyticsUserProperties).
-      // This page is static, so being logged on is judged by the wD-Key cookie, and the type is the one the last
-      // PHP page stored.
       (function () {
+        // The PHP pages use Config::isOnPlayNowDomain(); the play-now domain is play.webdiplomacy.net
+        var site = /^play\./.test(location.hostname) ? "play" : "main";
+        var gaId = site === "play" ? "%REACT_APP_GA_ID_PLAY%" : "%REACT_APP_GA_ID_MAIN%";
+        if (!/^G-[A-Z0-9]+$/.test(gaId)) return;
+
+        var tag = document.createElement("script");
+        tag.async = true;
+        tag.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+        document.head.appendChild(tag);
+
+        gtag('js', new Date());
+
+        // The same logged_in / user_type user properties the PHP pages send (see libHTML::analyticsUserProperties).
+        // This page is static, so being logged on is judged by the wD-Key cookie, and the type is the one the last
+        // PHP page stored.
         var loggedIn = /(^|;\s*)wD-Key=/.test(document.cookie);
         var userType = "guest";
         if (loggedIn) {
@@ -42,11 +54,10 @@
           if (userType === "guest") userType = "user";
         }
         gtag('set', 'user_properties', { logged_in: loggedIn ? "yes" : "no", user_type: userType });
-        // The PHP pages use Config::isOnPlayNowDomain(); the play-now domain is play.webdiplomacy.net
-        gtag('set', { site: /^play\./.test(location.hostname) ? "play" : "main" });
-      })();
+        gtag('set', { site: site });
 
-      gtag('config', 'G-MC45SZ2JEC');
+        gtag('config', gaId);
+      })();
     </script>
     <!-- Google AdSense - External script for easy modification.
       ?ver= is stamped by the build script with a hash of adsense.js, so cached copies

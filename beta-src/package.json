@@ -44,7 +44,7 @@
   },
   "scripts": {
     "start": "REACT_APP_ADSENSE_VER=dev react-scripts start",
-    "build": "REACT_APP_ADSENSE_VER=$(md5sum ../javascript/adsense.js | cut -c1-8) react-scripts build && rm -rf ../beta && mv build ../beta",
+    "build": "REACT_APP_ADSENSE_VER=$(md5sum ../javascript/adsense.js | cut -c1-8) REACT_APP_GA_ID_MAIN=$(php scripts/ga-measurement-id.php main) REACT_APP_GA_ID_PLAY=$(php scripts/ga-measurement-id.php play) react-scripts build && rm -rf ../beta && mv build ../beta",
     "build:local": "env-cmd -f .env.local npm run build",
     "build:production": "env-cmd -f .env.production npm run build",
     "build:test": "env-cmd -f .env.test npm run build",
