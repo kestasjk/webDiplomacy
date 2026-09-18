@@ -561,6 +561,7 @@ class processMembers extends Members
 
 		//$this->Game->gamelog(l_t('New member joined'));
 
+		libHTML::analyticsEvent(libHTML::analyticsGameEventName('join_game', $this->Game), array('variant'=>$this->Game->Variant->name));
 		$this->joinedRedirect();
 	}
 

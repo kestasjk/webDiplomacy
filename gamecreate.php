@@ -246,6 +246,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
+		libHTML::analyticsEvent(libHTML::analyticsGameEventName('create_game', $Game), array('variant'=>$Game->Variant->name));
 		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)

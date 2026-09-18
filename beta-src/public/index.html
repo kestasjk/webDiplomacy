@@ -31,6 +31,21 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
+      // The same logged_in / user_type user properties the PHP pages send (see libHTML::analyticsUserProperties).
+      // This page is static, so being logged on is judged by the wD-Key cookie, and the type is the one the last
+      // PHP page stored.
+      (function () {
+        var loggedIn = /(^|;\s*)wD-Key=/.test(document.cookie);
+        var userType = "guest";
+        if (loggedIn) {
+          try { userType = localStorage.getItem("wD-userType") || "user"; } catch (e) { userType = "user"; }
+          if (userType === "guest") userType = "user";
+        }
+        gtag('set', 'user_properties', { logged_in: loggedIn ? "yes" : "no", user_type: userType });
+        // The PHP pages use Config::isOnPlayNowDomain(); the play-now domain is play.webdiplomacy.net
+        gtag('set', { site: /^play\./.test(location.hostname) ? "play" : "main" });
+      })();
+
       gtag('config', 'G-MC45SZ2JEC');
     </script>
     <!-- Google AdSense - External script for easy modification.

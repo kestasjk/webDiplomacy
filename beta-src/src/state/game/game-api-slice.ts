@@ -34,6 +34,8 @@ import {
   saveOrdersRejected,
 } from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
+import sendGameAnalyticsEvent from "../../utils/analytics";
+import getOrderStates from "../../utils/state/getOrderStates";
 import { setAlert } from "../interfaces/GameAlert";
 import PlayerActiveGames from "../interfaces/PlayerActiveGames";
 import {
@@ -106,16 +108,24 @@ export const fetchPlayerActiveGames = createAsyncThunk(
 
 export const sendMessage = createAsyncThunk(
   ApiRoute.SEND_MESSAGE,
-  async (queryParams: {
-    gameID: string;
-    countryID: string;
-    toCountryID: string;
-    message: string;
-  }) => {
+  async (
+    queryParams: {
+      gameID: string;
+      countryID: string;
+      toCountryID: string;
+      message: string;
+    },
+    thunkAPI,
+  ) => {
     const response = await postGameApiRequest(
       ApiRoute.SEND_MESSAGE,
       queryParams,
     );
+    // Not counting notes, which are messages to your own country
+    if (response.data && queryParams.toCountryID !== queryParams.countryID) {
+      const { game } = thunkAPI.getState() as RootState;
+      sendGameAnalyticsEvent("send_message", game.overview.playerTypes);
+    }
     return response.data as unknown as GameMessages;
   },
 );
@@ -237,6 +247,16 @@ export const saveOrders = createAsyncThunk(
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
     );
+    // Counted when the orders are readied (confirmed by the server), not on every save, as saves can be automatic
+    if (
+      data.userIntent === "readying" &&
+      !parsed.invalid &&
+      parsed.newContext &&
+      getOrderStates(parsed.newContext.orderStatus).Ready
+    ) {
+      const { game } = thunkAPI.getState() as RootState;
+      sendGameAnalyticsEvent("submit_orders", game.overview.playerTypes);
+    }
     return parsed;
   },
 );

@@ -94,6 +94,7 @@ try
 	$NewUser = libAuth::key_User($key);
 	$NewUser->sendNotice('No','No',l_t("Welcome! This area displays your notices, which let you catch "
 		."up with what has happened since you were last here"));
+	libHTML::analyticsEvent('sign_up', array('method'=>'email'));
 
 	$userOptions = $NewUser->getOptions();
 	$userOptions->set($_REQUEST['userForm']);

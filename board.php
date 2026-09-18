@@ -134,6 +134,9 @@ try
 
 					$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
 					unset($OI);
+
+					// Sent by javascript/orders/form.js when the orders are readied
+					libHTML::$footerScript[] = 'OrdersHTML.analyticsEventName = '.json_encode(libHTML::analyticsGameEventName('submit_orders', $Game)).';';
 				}
 			}
 

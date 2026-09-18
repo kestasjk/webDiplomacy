@@ -120,7 +120,13 @@ function OrdersHTMLFormClass() {
 				var tmpFinalized = this.context.orderStatus.match('Ready');
 				
 				if( tmpFinalized && !this.finalized )
+				{
 					this.setFinalized();
+
+					// Google Analytics; board.php sets the name (submit_orders or submit_orders_bot)
+					if( typeof gtag == 'function' && this.analyticsEventName )
+						gtag('event', this.analyticsEventName);
+				}
 				else if( !tmpFinalized && this.finalized )
 					this.setUnfinalized();
 			}

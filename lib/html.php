@@ -557,6 +557,56 @@ class libHTML
 	 * @param bool $noindex If set to true this will prevent bots from going to this page
 	 * @return string The pre-body HTML
 	 */
+	/**
+	 * Tells Google Analytics whether the viewer is logged on and what kind of user they are, as the user properties
+	 * logged_in and user_type (see User::analyticsType()), and which site this is as the site parameter on every
+	 * event ("play" for the play-now domain, otherwise "main"). This is queued in dataLayer ahead of the gtag
+	 * snippet from Config::customHeader(), so it applies from that snippet's page_view onwards. The type is also
+	 * kept in localStorage for the beta board, whose index.html is static and can't be given it by the server.
+	 */
+	static public function analyticsUserProperties()
+	{
+		global $User;
+
+		$userType = isset($User) ? $User->analyticsType() : 'guest';
+
+		return '<script type="text/javascript">
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag("set", "user_properties", {logged_in: "'.($userType == 'guest' ? 'no' : 'yes').'", user_type: "'.$userType.'"});
+			gtag("set", {site: "'.(Config::isOnPlayNowDomain() ? 'play' : 'main').'"});
+			try { localStorage.setItem("wD-userType", "'.$userType.'"); } catch(e) {}
+			</script>';
+	}
+
+	private static $analyticsEvents = array();
+
+	/**
+	 * Sends a Google Analytics event from the page being output, e.g. once a form's action has succeeded. Events
+	 * are printed in the footer, so they survive the ob_clean() in libHTML::notice(). Without the gtag snippet in
+	 * Config::customHeader() (e.g. in development) they are queued but never sent.
+	 *
+	 * @param string $name The event name
+	 * @param array $params Event parameters
+	 */
+	static public function analyticsEvent($name, $params = array())
+	{
+		self::$analyticsEvents[] = 'gtag("event", '.json_encode($name).', '.json_encode((object)$params).');';
+	}
+
+	/**
+	 * The analytics event name for an action in a game: games with bots in them get "_bot" appended, e.g.
+	 * create_game_bot. The beta board names its events the same way (beta-src/src/utils/analytics.ts).
+	 *
+	 * @param string $name The event name for a game without bots
+	 * @param Game $Game
+	 * @return string
+	 */
+	static public function analyticsGameEventName($name, $Game)
+	{
+		return $name.($Game->playerTypes == 'Members' ? '' : '_bot');
+	}
+
 	static public function prebody ( $title, $noindex = false )
 	{
 		global $DB;
@@ -625,6 +675,7 @@ class libHTML
 
 			<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 			<title>'.l_t('%s - webDiplomacy',$title).'</title>
+			'.self::analyticsUserProperties().'
 			'.
 			Config::customHeader()
 			.'
@@ -1241,6 +1292,10 @@ class libHTML
 			}
 
 			print self::footerScripts();
+
+			// Kept apart from the footer scripts, which share one try block, so they're sent even if one of those fails
+			if( count(self::$analyticsEvents) )
+				print '<script type="text/javascript">if( typeof gtag == "function" ) { '.implode(' ', self::$analyticsEvents).' }</script>';
 		}
 		else
 		{

@@ -347,6 +347,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// Get the game started straight away
 		$DB->sql_put('UPDATE wD_Games SET processTime = ' . time() . ' WHERE id = ' . $Game->id);
 		$Redis->append('processHint',','.$Game->id);
+		libHTML::analyticsEvent(libHTML::analyticsGameEventName('create_game', $Game), array('variant'=>$Game->Variant->name));
 		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)

@@ -113,7 +113,12 @@ class Chatbox
 				if( $sendingToMuted )
 					libGameMessage::send($Member->countryID, $msgCountryID, l_t("Cannot send message; this country has muted you."));
 				else
+				{
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
+
+					if( $msgCountryID != $Member->countryID ) // Not a note to self
+						libHTML::analyticsEvent(libHTML::analyticsGameEventName('send_message', $Game));
+				}
 			}
 			elseif ( $msgCountryID == 0 ) {
 				if( $User->type['Moderator'] )

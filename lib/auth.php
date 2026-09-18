@@ -253,6 +253,10 @@ class libAuth
 		else
 			$User = new User(GUESTID);
 
+		// A failed log-on doesn't get here; userPass_Key() ends the script with an error
+		if( isset($_REQUEST['loginuser']) AND isset($_REQUEST['loginpass']) )
+			libHTML::analyticsEvent('login', array('method'=>'password'));
+
 		return $User;
 	}
 

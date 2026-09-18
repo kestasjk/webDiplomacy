@@ -609,6 +609,24 @@ class User {
 		return $this->getOptions()->value['mapUI'] == 'Point and click';
 	}
 
+	/**
+	 * A coarse label for the kind of account, sent to Google Analytics as the user_type user property (see
+	 * libHTML::analyticsUserProperties()). Never a name or ID, as Google Analytics must not receive personal data.
+	 * @return string banned, guest, admin, moderator, bot, playnow (anonymous play-now account), donator or user
+	 */
+	function analyticsType()
+	{
+		if( $this->type['Banned'] ) return 'banned';
+		if( !$this->type['User'] ) return 'guest';
+		if( $this->type['Admin'] ) return 'admin';
+		if( $this->type['Moderator'] || $this->type['SeniorMod'] || $this->type['ForumModerator'] ) return 'moderator';
+		if( $this->type['Bot'] ) return 'bot';
+		if( strpos($this->username, 'diplonow_') === 0 ) return 'playnow';
+		if( $this->type['Donator'] || $this->type['DonatorBronze'] || $this->type['DonatorSilver']
+			|| $this->type['DonatorGold'] || $this->type['DonatorPlatinum'] ) return 'donator';
+		return 'user';
+	}
+
 	private $watchedGameIDsCache = null;
 	function getWatchedGameIDs()
 	{

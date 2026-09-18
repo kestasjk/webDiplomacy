@@ -103,6 +103,7 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 				WHERE id=".$userID." LIMIT 1");
 
 			libAuth::keySet($userID, false);
+			libHTML::analyticsEvent('login', array('method'=>'password_reset'));
 
 			print '<p>'.l_t('Thanks for verifying your email. This is your newly generated password, which you are now logged on as and can '.
 					'either change via the profile page or stay logged in with:').'<br /><br />';
