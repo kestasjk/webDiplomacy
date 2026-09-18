@@ -93,8 +93,12 @@ subscriber.on('error', (err) => {
   console.error('Redis subscriber error:', err);
 });
 
-// Open SSE responses, so they can all be told to resync after a Redis reconnect
-const openClients = new Set();
+// Open SSE responses and the channels each is subscribed to, so they can all be told to resync after a
+// Redis reconnect, and for the stats logged every minute
+const openClients = new Map();
+
+// Messages written to clients since the last stats line
+let messagesForwarded = 0;
 
 // Redis pub/sub keeps no history, so anything published while the subscriber was disconnected is lost.
 // By the time 'ready' fires after a reconnect every channel is subscribed again, so tell the open
@@ -104,7 +108,7 @@ subscriber.on('ready', () => {
   if (subscriberConnectedBefore) {
     console.log(`Redis subscriber reconnected; sending resync to ${openClients.size} clients`);
     const data = JSON.stringify({ channel: 'resync', message: 'resync' });
-    for (const client of openClients) {
+    for (const client of openClients.keys()) {
       try {
         client.write(`event: message\ndata: ${data}\n\n`);
       } catch (e) {
@@ -176,6 +180,7 @@ app.get('/events', async (req, res) => {
       const data = JSON.stringify({ channel, message });
       res.write(`event: message\n`);
       res.write(`data: ${data}\n\n`);
+      messagesForwarded++;
     } catch (e) {
       console.error('SSE write failed:', e);
     }
@@ -197,7 +202,7 @@ app.get('/events', async (req, res) => {
   // another client's subscribe to it is still in flight.)
   let closed = false;
   let subscribed = false;
-  openClients.add(res);
+  openClients.set(res, channels);
   res.on('close', () => {
     closed = true;
     openClients.delete(res);
@@ -243,3 +248,15 @@ setInterval(async () => {
     console.error('Health check write failed:', err);
   }
 }, 10000);
+
+// Once a minute log how many clients are connected and how many messages were forwarded to them, as
+// individual messages aren't logged
+setInterval(() => {
+  const channels = new Set();
+  for (const clientChannels of openClients.values()) {
+    for (const channel of clientChannels) channels.add(channel);
+  }
+  console.log(`SSE stats: ${openClients.size} clients open on ${channels.size} channels, `
+    + `${messagesForwarded} messages forwarded to clients in the last minute`);
+  messagesForwarded = 0;
+}, 60000);

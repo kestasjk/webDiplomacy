@@ -330,9 +330,13 @@ class OrderInterface
 
 		if( isset(Config::$sseSecret) )
 		{
+			// The turn, phase and time this page shows, so the page can tell if it missed an update while not connected
 			libHTML::$footerScript[] = "configureSSE(".
 				$this->gameID.",".
-				$this->countryID.
+				$this->countryID.",".
+				$this->turn.",".
+				"'".$this->phase."',".
+				time().
 			");";
 		}
 	}

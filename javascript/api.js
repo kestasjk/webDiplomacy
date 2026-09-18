@@ -88,10 +88,47 @@ function deleteSandbox(gameID)
         );
     }
 }
-var configureSSE = function(gameID, countryID) {
+var configureSSE = function(gameID, countryID, turn, phase, renderTime) {
 
     const overviewChannel = 'private-game' + gameID;
     const messageChannel = 'private-game' + gameID + '-country'+countryID;
+
+    var showGameProcessedNotice = function() {
+        var gameProcessedArea = document.getElementById('sseGameProcessed');
+        if( gameProcessedArea )
+        {
+            gameProcessedArea.innerHTML = "Game has been processed: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
+        }
+    };
+    var showMessageSentNotice = function() {
+        var messageSentArea = document.getElementById('sseMessageSent');
+        if( messageSentArea )
+        {
+            messageSentArea.innerHTML = "New message received: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
+        }
+    };
+
+    // Events published while not connected are lost (the SSE server keeps no history), so whenever the
+    // connection opens, or the server says it may have missed some, check whether the game has moved on
+    // from this page or has newer messages, and if so show the notices an event would have shown.
+    // Messages must be strictly newer than the page, as a message sent from this page re-renders it in
+    // the same second.
+    var checkForMissedUpdates = function() {
+        if( turn === undefined ) return; // The page didn't give us its game state to compare against
+        apiCall('game/pulse', 'GET', { gameID: gameID, countryID: countryID }, function(response) {
+            var pulse = JSON.parse(response.responseText).data;
+            if( pulse.turn != turn || pulse.phase != phase )
+            {
+                console.log('Game processed while not connected to the SSE server');
+                showGameProcessedNotice();
+            }
+            if( pulse.lastMessageTimeSent > renderTime )
+            {
+                console.log('Message received while not connected to the SSE server');
+                showMessageSentNotice();
+            }
+        });
+    };
 
     // Wait a few seconds before doing this, as unless the user is staying on this page they won't need to get notifications:
     setTimeout(() => {
@@ -115,6 +152,7 @@ var configureSSE = function(gameID, countryID) {
             var eventSource = new EventSource(sseURL);
             eventSource.onopen = () => {
                 console.log('Connected to SSE server');
+                checkForMissedUpdates();
             };
 
             // Set next reconnect time to now + 30 seconds:
@@ -137,7 +175,7 @@ var configureSSE = function(gameID, countryID) {
 
                     eventSource = null; // Ensure this timer won't keep reconnecting
                     
-                    configureSSE(gameID, countryID); // Reconfigure SSE connection
+                    configureSSE(gameID, countryID, turn, phase, renderTime); // Reconfigure SSE connection
                 }
             }, 5000);
 
@@ -154,24 +192,19 @@ var configureSSE = function(gameID, countryID) {
                     newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
                     nextReconnectTime = newReconnectTime;
 
+                    if (data.channel === 'resync') {
+                        // The SSE server lost its Redis connection, so events may have been missed
+                        console.log(`Resync requested`);
+                        checkForMissedUpdates();
                     // If data.message contains "message":
-                    if (data.message && data.message.includes("message")) {
+                    } else if (data.message && data.message.includes("message")) {
                         console.log(`New game message received`);
-                        var messageSentArea = document.getElementById('sseMessageSent');
-                        if( messageSentArea )
-                        {
-                            messageSentArea.innerHTML = "New message received: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
-                        }
+                        showMessageSentNotice();
                     } else if (data.message && data.message.includes("set-vote")) {
                         console.log(`Vote cast in game.. ignore`);
                     } else if (data.message && data.message.includes("processed")) {
                         console.log(`Game processed`);
-
-                        var gameProcessedArea = document.getElementById('sseGameProcessed');
-                        if( gameProcessedArea )
-                        {
-                            gameProcessedArea.innerHTML = "Game has been processed: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
-                        }
+                        showGameProcessedNotice();
                     }
                     else if (data.message && data.message.includes("ping")) {
                         console.log(`Ping received`);

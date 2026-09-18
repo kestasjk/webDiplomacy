@@ -28,6 +28,18 @@ let reconnectWatchdogTimer: ReturnType<typeof setInterval> | undefined;
 type EventCallback = (...args: any[]) => void;
 const eventCallbacks: { [key: string]: EventCallback[] } = {};
 
+// Events published while the connection was down are lost (the server keeps no history), so after a
+// reconnect, or when the server says it may have missed some, refetch everything an event would have.
+function refetchAfterGap(reason: string) {
+  sseDebugLog(`Refetching game state after ${reason}`);
+  if (eventCallbacks.overview) {
+    eventCallbacks.overview.forEach((callback) => callback(reason));
+  }
+  if (eventCallbacks.message) {
+    eventCallbacks.message.forEach((callback) => callback());
+  }
+}
+
 const client = {
   authorizer: (channel, options) => {
     const newGameID = parseInt(channel.split("-")[1].replace("game", ""), 10);
@@ -54,6 +66,8 @@ const client = {
     }
     gameID = newGameID;
     countryID = newCountryID;
+    // The first connection comes just after the page loaded the game, so only reconnections refetch
+    let hasConnectedBefore = false;
     const reconnect = () => {
       sseDebugLog(
         `Authorizing SSE connection for game ${gameID} with country ${countryID}`,
@@ -91,6 +105,10 @@ const client = {
                 (callback) => callback(),
               );
             }
+            if (hasConnectedBefore) {
+              refetchAfterGap("reconnecting");
+            }
+            hasConnectedBefore = true;
           };
           eventSource.onerror = (e) => {
             sseDebugLog(
@@ -135,7 +153,10 @@ const client = {
               newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
               nextReconnectTime = newReconnectTime;
 
-              if (data.message && data.message.includes("message")) {
+              if (data.channel === "resync") {
+                // The SSE server lost its Redis connection, so events may have been missed
+                refetchAfterGap("a resync request");
+              } else if (data.message && data.message.includes("message")) {
                 sseDebugLog(`New game message received`);
                 if (eventCallbacks.message) {
                   eventCallbacks.message.forEach((callback) => callback());
