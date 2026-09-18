@@ -9,6 +9,7 @@ RUN apt-get update; \
         php8.4-xdebug \
         php8.4-gmp \
         php8.4-bcmath \
+        php8.4-excimer \
         redis \
         nano \
         less \

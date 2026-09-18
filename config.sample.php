@@ -325,6 +325,27 @@ class Config
 	}
 
 	/**
+	 * The sampling profiler (lib/profiler.php), which records where PHP requests spend their time. It needs the
+	 * Excimer extension (apt install php8.4-excimer). A profiled request is sampled every 10ms, in wall-clock
+	 * time and in CPU time, and its call stacks are appended to daily files in $profilerDirectory; to see the
+	 * results run php scripts/profile-report.php
+	 *
+	 * The fraction of requests to profile: 0 is off, 0.01 is one in a hundred, 1 is all of them. The files grow
+	 * by a few KB per profiled request, so start low on a busy server.
+	 *
+	 * @var float
+	 */
+	public static $profilerSampleRate = 0;
+
+	/**
+	 * Where the profiler writes its files: an absolute path to a directory outside the webroot, writable by the
+	 * web server. Nothing is recorded while this is empty.
+	 *
+	 * @var string
+	 */
+	public static $profilerDirectory = '';
+
+	/**
 	 * Should every piece of every order entered be logged as it comes in? This helps solve
 	 * problems when people think they submitted correct orders but may not have, but it
 	 * can use up lots of disk space and waste resources every time orders are submitted.

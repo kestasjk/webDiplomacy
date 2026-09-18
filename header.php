@@ -45,6 +45,10 @@ if( !defined('IN_CODE') )
 
 require_once('config.php');
 
+// The sampling profiler, if it's turned on in config.php; started first so it sees the whole request
+require_once('lib/profiler.php');
+libProfiler::start();
+
 require_once('global/definitions.php');
 require_once('global/exceptions.php');
 
