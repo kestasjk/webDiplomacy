@@ -803,7 +803,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		$Game->moveTurnBack();
 
 		return l_t('This game was moved from %s, %s back to Diplomacy, %s, and is ready to be reprocessed.',
-			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($lastTurn));
+			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($Game->turn)); // moveTurnBack() reloads $Game at the turn moved back to
 	}
 
 	public function recreateUnitDestroyIndex(array $params)

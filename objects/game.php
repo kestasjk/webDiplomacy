@@ -65,6 +65,16 @@ class Game
 
 	public static function wipeCache($gameID, $turn=false)
 	{
+		global $Redis;
+
+		// The game/status API's cache of the game's archived turns (see GameState::loadArchiveRows())
+		try
+		{
+			if( isset($Redis) )
+				$Redis->delete('gameStateArchive_'.intval($gameID));
+		}
+		catch(Exception $e) { }
+
 		$dir = self::gameFolder($gameID);
 
 		if( defined('DATC') )

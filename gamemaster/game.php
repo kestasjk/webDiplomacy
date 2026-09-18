@@ -352,11 +352,14 @@ class processGame extends Game
 			status=IF(countryID IN (".implode(',',$undefeatedCountries)."),'Playing','Defeated')
 			WHERE gameID = ".$this->id);
 
-		$DB->sql_put("COMMIT");
-
 		// - Delete Archive values if we have moved back a turn
+		// This is in the same transaction as the turn change above, as the game/status API caches the archives
+		// against the game's turn/phase/processTime (see GameState::loadArchiveRows()), and would cache the
+		// old archives against the new turn if it read in between.
 		$DB->sql_put("DELETE FROM wD_TerrStatusArchive WHERE gameID = ".$this->id." AND turn = ".$lastTurn);
 		$DB->sql_put("DELETE FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".$lastTurn);
+
+		$DB->sql_put("COMMIT");
 
 		// - Remove the invalid maps in the mapstore
 		$this->load();

@@ -356,33 +356,19 @@ class GameState {
 		$Variant=libVariant::loadFromVariantID($this->variantID);
 		$mapID = $Variant->mapID;
 
+		list($preGameCenterRows, $centerRows, $orderRows) = $this->loadArchiveRows($gameRow, $mapID);
+
 		// Loading pre-game centers
-		$preGameCentersTabl = $DB->sql_tabl(
-			"SELECT t.id, t.countryID
-				  FROM wD_Territories t
-				  WHERE t.mapID = ".$mapID
-		);
-		while ($row = $DB->tabl_hash($preGameCentersTabl)) {
-			array_push($preGameCenters, new Territory($row['id'], $row['countryID']));
+		foreach ($preGameCenterRows as list($id, $countryID)) {
+			array_push($preGameCenters, new Territory($id, $countryID));
 		}
 
 		// Loading centers from all game turns
-		$centersTabl = $DB->sql_tabl(
-			"SELECT t.id, ts.countryID, ts.turn
-				  FROM wD_Territories t
-				  JOIN wD_TerrStatusArchive ts
-				  ON ( ts.terrID = t.id )
-				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
-		);
-		while ($row = $DB->tabl_hash($centersTabl)) {
-			$inGameCenters[intval($row['turn'])][] = new Territory($row['id'], $row['countryID']);
+		foreach ($centerRows as list($id, $countryID, $turn)) {
+			$inGameCenters[intval($turn)][] = new Territory($id, $countryID);
 		}
 
 		// Loading previous orders and units
-		$orderTabl = $DB->sql_tabl("SELECT turn, countryID, terrID, unitType, type, toTerrID, fromTerrID, viaConvoy, success, dislodged
-									FROM wD_MovesArchive
-									WHERE gameID = $this->gameID
-									ORDER by turn ASC, type ASC;");
 		$phaseTable = array("Hold" => "Diplomacy",
 							"Move" => "Diplomacy",
 							"Support hold" => "Diplomacy",
@@ -396,20 +382,20 @@ class GameState {
 							"Destroy" => "Builds");
 
 		$maxOrderTurn = -1;
-		while( $row = $DB->tabl_hash($orderTabl) )
+		foreach ($orderRows as list($turn, $countryID, $terrID, $unitType, $type, $toTerrID, $fromTerrID, $viaConvoy, $success, $dislodged))
 		{
 			$order = new \webdiplomacy_api\Order(
-				$row['turn'],
-				$phaseTable[$row['type']],
-				$row['countryID'],
-				$row['terrID'],
-				$row['unitType'],
-				$row['type'],
-				$row['toTerrID'],
-				$row['fromTerrID'],
-				$row['viaConvoy'],
-				$row['success'],
-				$row['dislodged']);
+				$turn,
+				$phaseTable[$type],
+				$countryID,
+				$terrID,
+				$unitType,
+				$type,
+				$toTerrID,
+				$fromTerrID,
+				$viaConvoy,
+				$success,
+				$dislodged);
 			array_push($orders, $order);
 			if ($order->turn > $maxOrderTurn)
 				$maxOrderTurn = $order->turn;
@@ -632,6 +618,91 @@ class GameState {
 		}
 
 		$this->phases = $finalPhases;
+	}
+
+	/**
+	 * How long the archive rows are cached for, in seconds. Only a backstop; the cached rows are checked against
+	 * the game row on every read, and Game::wipeCache() clears them.
+	 */
+	const ARCHIVE_CACHE_SECONDS = 600;
+
+	/**
+	 * The Redis key the archive rows of a game are cached under.
+	 * @param int $gameID
+	 * @return string
+	 */
+	public static function archiveCacheKey($gameID)
+	{
+		return 'gameStateArchive_'.intval($gameID);
+	}
+
+	/**
+	 * Get the map's territories, and the game's center owners and orders from past phases, as lists of row values:
+	 * [ [[id, countryID], ..], [[id, countryID, turn], ..], [[turn, countryID, terrID, unitType, type, toTerrID,
+	 * fromTerrID, viaConvoy, success, dislodged], ..] ]
+	 *
+	 * These queries were most of the cost of game/status, which bots poll constantly. The archive tables only change
+	 * when the game is processed, moved back or ended, which all change the game's turn, phase, gameOver or
+	 * processTime in the same transaction, so the rows are cached in Redis against those values. The game row must
+	 * have been read before calling this, so that rows read just before a change are never saved against the game
+	 * row after it.
+	 *
+	 * @param array $gameRow The game's wD_Games row
+	 * @param int $mapID
+	 * @return array
+	 */
+	private function loadArchiveRows($gameRow, $mapID)
+	{
+		global $DB, $Redis;
+
+		$cacheKey = self::archiveCacheKey($this->gameID);
+		$version = implode('/', array($mapID, $gameRow['turn'], $gameRow['phase'], $gameRow['gameOver'], $gameRow['processTime']));
+
+		try {
+			$cached = $Redis->get($cacheKey);
+			if ($cached !== false) {
+				$cached = json_decode(@gzuncompress($cached), true);
+				if (is_array($cached) && isset($cached['version']) && $cached['version'] === $version)
+					return $cached['rows'];
+			}
+		} catch (\Exception $e) {
+			// Redis is down; fall back to the database
+		}
+
+		$rows = array(array(), array(), array());
+
+		$tabl = $DB->sql_tabl(
+			"SELECT t.id, t.countryID
+				  FROM wD_Territories t
+				  WHERE t.mapID = ".$mapID
+		);
+		while ($row = $DB->tabl_row($tabl))
+			$rows[0][] = $row;
+
+		$tabl = $DB->sql_tabl(
+			"SELECT t.id, ts.countryID, ts.turn
+				  FROM wD_Territories t
+				  JOIN wD_TerrStatusArchive ts
+				  ON ( ts.terrID = t.id )
+				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
+		);
+		while ($row = $DB->tabl_row($tabl))
+			$rows[1][] = $row;
+
+		$tabl = $DB->sql_tabl("SELECT turn, countryID, terrID, unitType, type, toTerrID, fromTerrID, viaConvoy, success, dislodged
+									FROM wD_MovesArchive
+									WHERE gameID = $this->gameID
+									ORDER by turn ASC, type ASC;");
+		while ($row = $DB->tabl_row($tabl))
+			$rows[2][] = $row;
+
+		try {
+			$Redis->set($cacheKey, gzcompress(json_encode(array('version' => $version, 'rows' => $rows))), self::ARCHIVE_CACHE_SECONDS);
+		} catch (\Exception $e) {
+			// Not cached this time
+		}
+
+		return $rows;
 	}
 
 	function toJson($gameIDMultiplexer)
