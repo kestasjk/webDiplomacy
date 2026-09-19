@@ -13,7 +13,6 @@
 # Then create the docker containers using docker-compose up -d or right click in VS Code and select Compose Up - Select services. 
 # Select the 'core' profile to start the main services.
 # Select the 'dev' profile to also start mailhog and phpmyadmin, for easier development.
-# Select the 'bots' profile to also start the default no-press bots.
 # Select the 'reactdev' profile to also start the React development server for the new board React UI, with dynamic updates (otherwise the pre-built version will run).
 #
 # Wait for nginx to start.
@@ -58,9 +57,7 @@
 # http://localhost:43000/logon.php?logoff=on
 # http://localhost:43000/register.php?emailToken=e2c45b63%7C1665483982%7Ctest7%40test.com
 #
-# To use the default no-press bots start up the bots profile.
-# Note that the bot docker image has to download a ~300MB file on startup, and on first run
-# there is more installation than most, so bots can take some time to start.
+# The default no-press bots are no longer started from this file; see the note at the end of it.
 #
 ###############################################################################
 #Linux set in php-overrides.ini
@@ -172,25 +169,14 @@ services:
       sh -c "npm install && npm run build:production &&
               npm run start || (while true; do sleep 1; done)"
 
-# Philip Paquette's publically available no-press bot docker image. Note this is not started by default as it uses a lot of resources and may not be
-# relevant to all development situations.
-# The webdiplomacy/gunboatbots:2025-06-10 image is a fork with a couple of minor bugfixes, but mainly it contains all the
-# required model data, which were previously hosted on URLs that had gone down. With access to this image only the API 
-# endpoint and API keys are needed to run the bots.
-  bots:
-    container_name: webdip-gunboatbots
-    image: 'webdiplomacy/gunboatbots:2025-06-09'
-    restart: always
-    environment:
-      - API_WEBDIPLOMACY=http://webserver/api.php
-      - API_KEY_CD_01=bot1
-      - API_KEY_USER_01=bot1
-      - API_KEY_USER_02=bot2
-      - API_KEY_USER_03=bot3
-      - API_KEY_USER_04=bot4
-      - API_KEY_USER_05=bot5
-      - API_KEY_USER_06=bot6
-      - API_KEY_USER_07=bot7
+# The no-press (gunboat) bots, Philip Paquette's DipNet models, used to run here from the
+# webdiplomacy/gunboatbots image. Its base image has since been taken down, so the bots now live in
+# their own checkout, webdiplomacy_bots_mila, which unpacks everything they need and builds on a
+# stock Ubuntu 18.04 image; its README covers setup. To run them against this dev stack, from that
+# checkout's docker/ directory:
+#   docker compose -f compose.yml -f compose.dev.yml up -d
+# That joins this project's network (webdiplomacy_default) and calls http://webserver/api.php with
+# the API keys bot1 to bot7, as the bots service here did.
 # Apply default IDs to backup DB:
 #UPDATE wd_apikeys SET apiKey = 'bot1' WHERE userID = 108388;
 #UPDATE wd_apikeys SET apiKey = 'bot2' WHERE userID = 108978;

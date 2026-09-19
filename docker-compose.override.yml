@@ -54,9 +54,7 @@
 # http://localhost:43000/logon.php?logoff=on
 # http://localhost:43000/register.php?emailToken=e2c45b63%7C1665483982%7Ctest7%40test.com
 #
-# To use the default no-press bots start up the bots profile.
-# Note that the bot docker image has to download a ~300MB file on startup, and on first run
-# there is more installation than most, so bots can take some time to start.
+# The default no-press bots are no longer started from docker-compose.yml; see the note at the end of it.
 #
 ###############################################################################
 #Linux set in php-overrides.ini
