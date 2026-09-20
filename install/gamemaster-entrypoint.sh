@@ -128,12 +128,16 @@ fi
 
 echo "Writing sse-server/.env to match config.php"
 # The SSE server signs tokens with the same secret, and reads it from its own .env, which is not
-# in git either. Rewritten on every start so the two can't drift apart.
+# in git either. It also runs the gamemaster, for which it needs the gamemaster secret. Rewritten on
+# every start so the two can't drift apart.
 SSE_SECRET=`php -r 'define("IN_CODE",1); require "config.php"; echo Config::$sseSecret;' 2>/dev/null`
 if [ -z "$SSE_SECRET" ]; then
   echo "WARNING: config.php has no sseSecret, so the site will send no live updates"
 fi
-sed -e "s#^SSE_SECRET=.*#SSE_SECRET=$SSE_SECRET#" sse-server/sample.env > sse-server/.env
+GAMEMASTER_SECRET=`php -r 'define("IN_CODE",1); require "config.php"; echo Config::$gameMasterSecret;' 2>/dev/null`
+sed -e "s#^SSE_SECRET=.*#SSE_SECRET=$SSE_SECRET#" \
+    -e "s#^GAMEMASTER_SECRET=.*#GAMEMASTER_SECRET=$GAMEMASTER_SECRET#" \
+    sse-server/sample.env > sse-server/.env
 chmod a+r sse-server/.env
 ownLikeCheckout config.php sse-server/.env gamemaster-entrypoint.txt
 
@@ -154,28 +158,28 @@ fi
 
 echo "READY - webDiplomacy system initialized"
 
-echo "Starting gamemaster"
-checkDBEvery=20
-sinceDBCheck=0
+# The gamemaster used to be called from a loop here. The sse container does it now, so that one
+# process runs it on every install, dev and live alike; see "The gamemaster driver" in
+# sse-server/server.js and the GAMEMASTER_ settings written into sse-server/.env above.
+echo "The gamemaster runs from the sse container: docker compose logs -f sse"
+
+# What is left of that loop is the watchdog it also did: recreating the mariadb container by itself
+# leaves an empty database behind, since it keeps nothing on a volume, so notice that and install it
+# again rather than needing a restart here too. It also keeps this container, whose php-fpm is
+# forked into the background above, alive.
+echo "Watching for the database being emptied"
 while true; do
-  gameMasterSecret='' QUERY_STRING='' wget -O - http://webserver/gamemaster.php?gameMasterSecret= > /dev/null 2>&1
-  sleep 3
+  sleep 60
   echo -n "."
 
-  # Recreating the mariadb container by itself leaves an empty database behind, since it keeps
-  # nothing on a volume; notice that and install it again rather than needing a restart here too
-  sinceDBCheck=`expr $sinceDBCheck + 1`
-  if [ $sinceDBCheck -ge $checkDBEvery ]; then
-    sinceDBCheck=0
+  if ! dbInstalled; then
+    echo ""
+    echo "The database has gone away"
+    waitForDB
     if ! dbInstalled; then
-      echo ""
-      echo "The database has gone away"
-      waitForDB
-      if ! dbInstalled; then
-        installDB
-        echo "READY - webDiplomacy system initialized"
-      fi
-      echo "Starting gamemaster"
+      installDB
+      echo "READY - webDiplomacy system initialized"
     fi
+    echo "Watching for the database being emptied"
   fi
 done

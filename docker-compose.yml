@@ -12,14 +12,18 @@
 #
 # php-fpm's entrypoint, install/gamemaster-entrypoint.sh, does the setting up: composer install for
 # the PHP dependencies, config.php from config.sample.php with an SSE secret generated into it and
-# into sse-server/.env, and install/FullInstall/fullInstall.sql into an empty database. It then runs
-# the gamemaster every three seconds. Watch it with
+# into sse-server/.env, and install/FullInstall/fullInstall.sql into an empty database. Watch it with
 #
 #   docker compose logs -f php-fpm
 #
 # (the same output is at http://localhost:43000/gamemaster-entrypoint.txt) and wait for READY; the
 # first run takes a few minutes, most of it the database. If the database is ever emptied or its
 # container recreated, the entrypoint notices within a minute and installs it again.
+#
+# Nothing processes games until something calls gamemaster.php, which the sse service does once a
+# second, as it does on the live site. Watch that with
+#
+#   docker compose logs -f sse
 #
 # Nothing here is precious: the database lives in its container with no volume behind it, and
 # everything else is in git or rebuilt on startup. To start over:
@@ -141,14 +145,17 @@ services:
     ports:
       - "127.0.0.1:43006:43006"
     # Neither node_modules nor .env is in git: install the first from package-lock.json, and wait
-    # for the second, which php-fpm's entrypoint writes with the SSE secret it finds in (or
-    # generates for) config.php.
+    # for the second, which php-fpm's entrypoint writes with the SSE and gamemaster secrets it finds
+    # in (or generates for) config.php.
     command: >
       sh -c "npm ci --no-audit --no-fund --loglevel=error &&
              while [ ! -f .env ]; do echo 'Waiting for php-fpm to write sse-server/.env'; sleep 2; done &&
              node server.js"
+    # webserver because this also calls gamemaster.php in a loop, which is what processes games here;
+    # it retries until the site answers, so it doesn't matter that this only waits for the container
     depends_on:
       - "redis"
+      - "webserver"
 
   redis:
     profiles: ["core"]

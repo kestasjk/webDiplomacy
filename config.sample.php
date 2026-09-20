@@ -518,6 +518,24 @@ class Config
 	public static $gamemasterDisabled = false;
 
 	/**
+	 * Off by default (0). Set to a number of minutes to make game processing depend on status.php having been
+	 * requested that recently: gamemaster.php refuses to run if it hasn't been.
+	 *
+	 * The gamemaster is called in a loop by the SSE server (see "The gamemaster driver" in sse-server/server.js),
+	 * which runs on the web server itself, so a successful call no longer proves the site is reachable from
+	 * outside it - and games processing on while nobody can reach the site to play them is the thing
+	 * gamemaster.php is called over HTTP to avoid. Point a monitor outside the network at status.php more often
+	 * than this setting and that proof is back: if the site stops answering from outside, processing stops with
+	 * it. Each status.php request records the time in Redis as STATUS_LASTREQUEST.
+	 *
+	 * Leave it off unless there is something requesting status.php, or nothing will ever process. Mind
+	 * $downtimeTriggerMinutes below, which this runs into: once processing has been stopped for longer than that,
+	 * an admin has to start it again from the control panel, so that a site coming back from an outage doesn't
+	 * process every overdue turn at once.
+	 */
+	public static $gamemasterRequiresStatusCheckMinutes = 0;
+
+	/**
 	 * Set to true to stop writing the games' public JSON files (lib/gamefiles.php), which the /game/ board and the
 	 * bots read. Only for if writing them causes trouble: the /game/ board and bots stop seeing updates while it is set.
 	 */

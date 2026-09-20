@@ -36,6 +36,23 @@ if ( property_exists('Config', 'gamemasterDisabled') && Config::$gamemasterDisab
 		l_t("Games are not processed from this site; they are processed by the site which owns the database."));
 }
 
+// Optionally, only process while something outside the network is still asking for status.php.
+//
+// The gamemaster is called in a loop by the SSE server, which runs on the web server itself, so a
+// call arriving here no longer says anything about whether players can reach the site - and the
+// whole reason this script is called over HTTP rather than run as code is that games should stop
+// processing when they stop being playable. A monitor outside the network requesting status.php,
+// which records the time it did so, puts that back. Off unless Config sets it; see config.sample.php.
+if ( property_exists('Config', 'gamemasterRequiresStatusCheckMinutes') && Config::$gamemasterRequiresStatusCheckMinutes > 0 )
+{
+	$lastStatusCheck = (int)$Redis->get('STATUS_LASTREQUEST');
+	if ( ( time() - $lastStatusCheck ) > Config::$gamemasterRequiresStatusCheckMinutes*60 )
+		libHTML::notice(l_t('Game processing disabled'),
+			l_t("Games are only processed while this site is being checked from outside it, and status.php ".
+				"has not been requested for over %s minute(s). Loading status.php starts processing again.",
+				Config::$gamemasterRequiresStatusCheckMinutes));
+}
+
 if ( $Misc->Panic )
 {
 	libHTML::notice(l_t('Game processing disabled'),

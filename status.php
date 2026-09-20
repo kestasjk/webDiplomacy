@@ -57,6 +57,7 @@ $healthCheckResults[] = array(
 
 $Redis->set("REDIS_HEALTHCHECK", time());
 $redisOnline = $Redis->get("REDIS_HEALTHCHECK");
+
 $healthCheckResults[] = array(
 	'label' => 'Redis Server Online',
 	'description' => 'Redis server connectivity check.',
@@ -64,6 +65,12 @@ $healthCheckResults[] = array(
 	'text' => $redisOnline ? 'Online' : 'Offline',
 	'importance' => 3
 );
+
+// A site can be set to only process games while this page is being requested, which is how a monitor
+// outside the network keeps game processing tied to the site being reachable from outside it, now that
+// the gamemaster is called from the web server itself. gamemaster.php reads this; see
+// Config::$gamemasterRequiresStatusCheckMinutes.
+if( $redisOnline ) $Redis->set("STATUS_LASTREQUEST", time());
 
 $healthCheckResults[] = array(
 	'label' => 'Games Crashed',
@@ -198,6 +205,22 @@ if( $redisOnline )
 		'text' => libTime::timeLengthText( time() - $sseLastConnect ) . ' since last update',
 		'importance' => 1
 	);
+
+	// The SSE server calls gamemaster.php in a loop and records every call the site answered. Game
+	// Processing above stops moving both when nothing is calling the gamemaster and when the gamemaster
+	// is turning the calls away, so this is what tells those two apart. Installs that don't run it from
+	// there (GAMEMASTER_URL unset, as a staging site leaves it) never set this and get no row.
+	$gamemasterLastRun = $Redis->get("GAMEMASTER_LASTRUN");
+	if( $gamemasterLastRun !== false && $gamemasterLastRun !== null )
+	{
+		$healthCheckResults[] = array(
+			'label' => 'Gamemaster Called',
+			'description' => 'Last gamemaster.php call by the SSE server, which calls it in a loop. (< 5 minutes)',
+			'active' => ( time() - $gamemasterLastRun ) > 5*60,
+			'text' => libTime::timeLengthText( time() - $gamemasterLastRun ) . ' since last call',
+			'importance' => 3
+		);
+	}
 }
 
 list($botsOfflineCount) = $DB->sql_row("SELECT COUNT(*) FROM wD_ApiKeys a WHERE isChecked = 1 AND (UNIX_TIMESTAMP() - lastHit) > 15*60");

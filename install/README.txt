@@ -90,8 +90,13 @@ hash=`head /dev/random | md5sum | sed -e 's/[^0-9a-f]//g'`
 sed -i config.php -e "s/jsonSecret=''/jsonSecret='$hash'/"
 hash=`head /dev/random | md5sum | sed -e 's/[^0-9a-f]//g'`
 sed -i config.php -e "s/gameMasterSecret=''/gameMasterSecret='$hash'/"
-# Create a script to run the gamemaster:
-echo "$$ > runGamemaster.pid; while [ $$ -eq `cat runGamemaster.pid` ]; do wget 'http://localhost/gamemaster.php?gameMasterSecret="$hash"' -O /dev/null; sleep 5; done" > /var/www/runGamemaster.sh
+# The gamemaster is called in a loop by the SSE server (sse-server/server.js), which also needs the
+# secret. Give it its own .env, and put the site's public URL in it rather than localhost: calling it
+# over HTTP is what makes games stop processing when the site stops being reachable.
+sed -e "s#^GAMEMASTER_SECRET=.*#GAMEMASTER_SECRET=$hash#" \
+    -e "s#^GAMEMASTER_URL=.*#GAMEMASTER_URL=http://localhost/gamemaster.php#" \
+    sse-server/sample.env > sse-server/.env
+# Then fill in SSE_SECRET (Config::$sseSecret) and REDIS_HOST in sse-server/.env as well
 
 
 # Set e-mail to be output to the browser instead of sent to allow e-mail free registration:
@@ -124,8 +129,9 @@ echo "UPDATE wD_Users SET type='User,Moderator,Admin' WHERE type='User';" | mysq
 
 # Go to /datc.php and click Batch all to start running through all test cases.
 
-# To run the gamemaster in the background:
-sh /var/www/runGamemaster.sh
+# To run the gamemaster in the background, run the SSE server, which calls it in a loop as well as
+# serving live updates to the board. (On a server deployed by gitpull.php that script starts it.)
+cd sse-server && npm ci && nohup node server.js >> ../../sse-server.log 2>&1 &
 
 # New webdiplomacy installation up and running
 

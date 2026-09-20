@@ -49,6 +49,17 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 - **Run**: `node server.js` from that directory (it reads `.env` from the working directory). On the
   live servers `gitpull.php` starts it and restarts it when `sse-server/` changes; its output goes to
   `../sse-server.log` and its pid to `../sse-server.pid`, beside the webroot.
+- **It also runs the gamemaster**, calling `gamemaster.php` in a loop (see "The gamemaster driver" in
+  `server.js`), which is what makes games process and `gamemaster/backgroundTasks.php` run. It replaced
+  a `while true; do wget ...; done` shell script on a separate machine, so that the one supervised
+  process covers everything. Set `GAMEMASTER_URL` (the site's public URL, not localhost) and
+  `GAMEMASTER_SECRET` (matching `Config::$gameMasterSecret`) in `sse-server/.env`, which is not in git:
+  `sample.env` has them, and the docker entrypoint fills them in, but an existing live `.env` needs them
+  adding by hand or nothing will process. Leave `GAMEMASTER_URL` empty on a site sharing another's
+  database, as `Config::$gamemasterDisabled` is set there.
+- Because that loop now runs on the web server, a call to it no longer proves the site is reachable from
+  outside. `Config::$gamemasterRequiresStatusCheckMinutes` puts that back: with it set, processing only
+  happens while something outside the network is requesting `status.php`. Off by default.
 
 ## Deploying to Production
 

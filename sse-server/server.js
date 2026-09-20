@@ -172,6 +172,11 @@ function parseHave(have) {
   return versions;
 }
 
+// The current time as PHP's time() gives it, for the keys status.php reads
+function unixTime() {
+  return Math.floor(Date.now() / 1000).toString();
+}
+
 // Open SSE responses and the channels each is subscribed to, so they can all be told to resync after a
 // Redis reconnect, and for the stats logged every minute
 const openClients = new Map();
@@ -247,7 +252,8 @@ app.get('/events', async (req, res) => {
 
   // Record client connection timestamp (not awaited; it is only for status.php and shouldn't delay the client)
   console.log(`Client connected (${openClients.size + 1} open). Setting SSE_LASTCLIENTCONNECT in Redis`);
-  redisClient.set('SSE_LASTCLIENTCONNECT', Date.now().toString()).catch((err) => {
+  // In Unix seconds: status.php compares these against PHP's time(), as it does its own REDIS_HEALTHCHECK
+  redisClient.set('SSE_LASTCLIENTCONNECT', unixTime()).catch((err) => {
     console.error('SSE_LASTCLIENTCONNECT write failed:', err);
   });
 
@@ -341,12 +347,153 @@ app.listen(ssePort, (err) => {
 // Health check: write timestamp to Redis every 10 seconds, so that status.php can see the server is alive
 setInterval(async () => {
   try {
-    console.log(`Setting SSE_HEALTHCHECK in Redis`);
-    await redisClient.set('SSE_HEALTHCHECK', Date.now().toString());
+    await redisClient.set('SSE_HEALTHCHECK', unixTime());
   } catch (err) {
     console.error('Health check write failed:', err);
   }
 }, 10000);
+
+// ---------------------------------------------------------------------------
+// The gamemaster driver
+//
+// Nothing on the site happens on its own: gamemaster.php has to be called in a loop for games to
+// process, votes to apply, and for gamemaster/backgroundTasks.php to run everything that used to be
+// on cron (game backups, group and user connection updates, reliability ratings, NMR warnings).
+//
+// That loop used to be a shell script - `while true; do wget ...; sleep 1; done` - running
+// unsupervised on another machine. It is here instead because this process is already looked after:
+// gitpull.php starts it, restarts it when sse-server/ changes and keeps its pid and log, so one
+// running SSE server now means the whole site is running.
+//
+// It stays an HTTP request to the site's public URL rather than becoming code in this file or a
+// call to localhost. The comment at the top of gamemaster.php explains why: if the site stops being
+// reachable while the server itself is still up, game processing must stop with it, rather than
+// turns passing while nobody can play. GAMEMASTER_URL should be the URL a player's browser uses.
+//
+// Runs are strictly sequential - the next is scheduled once the last finishes, never on a timer -
+// because gamemaster.php takes a MySQL lock, get_lock('gamemaster',1), that an overlapping run
+// would wait one second for and then give up on with an error page. A run can take 30 seconds or
+// more, so a timer would pile them up on a busy site.
+const gamemasterUrl = process.env.GAMEMASTER_URL || '';
+const gamemasterSecret = process.env.GAMEMASTER_SECRET || '';
+const gamemasterIntervalMs = parseInt(process.env.GAMEMASTER_INTERVAL_MS || '1000', 10);
+// gamemaster.php sets its own max_execution_time to 300 seconds, so nothing useful is waiting for
+// after that; this only stops one stuck request from stopping the loop forever.
+const gamemasterTimeoutMs = parseInt(process.env.GAMEMASTER_TIMEOUT_MS || '300000', 10);
+
+// gamemaster.php prints this before it looks for anything to do. A response without it was turned
+// away at the top of the script (processing disabled, the downtime trigger, a failed permission
+// check) or died on the way, and either way nothing was processed.
+const GAMEMASTER_MARKER = 'applying votes';
+
+let gamemasterRuns = 0; // Successful runs since the last stats line
+let gamemasterFailures = 0; // Failed runs since the last stats line
+let gamemasterConsecutiveFailures = 0; // Failures in a row, which is what decides whether to log
+let gamemasterFailureLogged = 0; // When this run of failures was last written to the log
+
+// What matters in a failed run is the text of the page - the PHP error, or the notice saying why it
+// wouldn't run - and the rest is the site's menu and footer. This does what the old
+// runGamemaster_errorLogFilter.sh did to the .html files the shell loop saved, so that the reason
+// lands in this server's log instead of in a file per failure: keep what lies between the header's
+// noscript block and the footer, then drop the tags. A page that died before printing either of
+// those has neither, and is kept whole.
+function gamemasterPageText(html) {
+  let content = String(html);
+
+  const bodyStart = content.indexOf('</noscript>');
+  if (bodyStart !== -1) content = content.slice(bodyStart + '</noscript>'.length);
+  const bodyEnd = content.indexOf('<div id="footer">');
+  if (bodyEnd !== -1) content = content.slice(0, bodyEnd);
+
+  const text = content
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return text.length > 1500 ? text.slice(0, 1500) + ' [...]' : text;
+}
+
+// A site that is down would otherwise put a line a second in the log: report the first failure, then
+// at most one a minute for as long as it carries on, and one line when it starts working again.
+function gamemasterFailed(reason, body) {
+  gamemasterFailures++;
+  gamemasterConsecutiveFailures++;
+
+  const now = Date.now();
+  if (gamemasterConsecutiveFailures > 1 && (now - gamemasterFailureLogged) < 60000) return;
+  gamemasterFailureLogged = now;
+
+  const text = body ? gamemasterPageText(body) : '';
+  console.error(`Gamemaster call failed (${gamemasterConsecutiveFailures} in a row): ${reason}`
+    + (text ? `: ${text}` : ''));
+}
+
+async function runGamemaster() {
+  const url = gamemasterUrl + (gamemasterUrl.includes('?') ? '&' : '?')
+    + 'gameMasterSecret=' + encodeURIComponent(gamemasterSecret);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), gamemasterTimeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    const body = await response.text();
+
+    // Any answer at all means this loop is running and reaching the site, which is what status.php
+    // reads this for: wD_Misc.LastProcessTime stops moving both when nothing is calling the
+    // gamemaster and when the gamemaster is refusing the calls, and this tells those two apart.
+    redisClient.set('GAMEMASTER_LASTRUN', unixTime()).catch((err) => {
+      console.error('GAMEMASTER_LASTRUN write failed:', err);
+    });
+
+    if (!response.ok) {
+      gamemasterFailed(`HTTP ${response.status}`, body);
+      return;
+    }
+    if (!body.includes(GAMEMASTER_MARKER)) {
+      gamemasterFailed('the run did not get as far as processing games', body);
+      return;
+    }
+
+    if (gamemasterConsecutiveFailures > 0) {
+      console.log(`Gamemaster call succeeded again, after ${gamemasterConsecutiveFailures} failures`);
+      gamemasterConsecutiveFailures = 0;
+    }
+    gamemasterRuns++;
+  } catch (err) {
+    gamemasterFailed(err && err.name === 'AbortError'
+      ? `no response within ${gamemasterTimeoutMs}ms`
+      : String(err && err.message ? err.message : err), null);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+// Nothing here may throw into the rest of this process: the point of moving the loop in was that one
+// running server means everything is running, which a gamemaster failure taking SSE down would undo.
+async function gamemasterLoop() {
+  for (;;) {
+    try {
+      await runGamemaster();
+    } catch (err) {
+      console.error('Gamemaster loop error:', err);
+    }
+    await new Promise((resolve) => setTimeout(resolve, gamemasterIntervalMs));
+  }
+}
+
+if (!gamemasterUrl) {
+  // Every install that shares another's database - staging, a developer's copy - must leave this
+  // unset, as Config::$gamemasterDisabled does for the site itself
+  console.log('No GAMEMASTER_URL is set, so the gamemaster is not run from here');
+} else if (typeof fetch !== 'function') {
+  console.error('This node has no global fetch (node 18 or newer is needed), so the gamemaster cannot be run from here');
+} else {
+  console.log(`Running the gamemaster at ${gamemasterUrl} every ${gamemasterIntervalMs}ms`);
+  gamemasterLoop();
+}
 
 // Once a minute log how many clients are connected and how many messages were forwarded to them, as
 // individual messages aren't logged
@@ -356,6 +503,9 @@ setInterval(() => {
     for (const channel of clientChannels) channels.add(channel);
   }
   console.log(`SSE stats: ${openClients.size} clients open on ${channels.size} channels, `
-    + `${messagesForwarded} messages forwarded to clients in the last minute`);
+    + `${messagesForwarded} messages forwarded to clients in the last minute`
+    + (gamemasterUrl ? `; ${gamemasterRuns} gamemaster runs, ${gamemasterFailures} failed` : ''));
   messagesForwarded = 0;
+  gamemasterRuns = 0;
+  gamemasterFailures = 0;
 }, 60000);
