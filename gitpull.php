@@ -23,6 +23,12 @@ function runStep($cmd)
 	return $output;
 }
 
+// Whether a step run above succeeded, read from the exit status marker runStep() appends
+function stepSucceeded($output)
+{
+	return preg_match('/\[exit status: (\d+)\]\s*$/', $output, $m) && $m[1] === '0';
+}
+
 /**
  * The port the SSE server listens on, from sse-server/.env, which is not in git; server.js defaults
  * to 3000 when the file doesn't set one.
@@ -90,7 +96,19 @@ function deploySSE($changedFiles, $forceAll)
 
 	// Its dependencies aren't in git either
 	if( $changed || !is_dir(__DIR__.'/sse-server/node_modules') )
-		runStep('cd sse-server && npm ci --cache ../cache/npm --no-audit --no-fund');
+	{
+		$install = runStep('cd sse-server && npm ci --cache ../cache/npm --no-audit --no-fund');
+
+		// npm ci empties node_modules before it installs, so a failure here (e.g. EACCES on a
+		// node_modules left behind by another user) leaves a tree that cannot start. Stop before the
+		// kills below, which would trade a working server for one that can't come up.
+		if( !stepSucceeded($install) )
+		{
+			runStep('echo The SSE server dependencies did not install, so it was not restarted'
+				.( $running ? '; pid '.implode(' ', $running).' left running' : '' ));
+			return;
+		}
+	}
 
 	foreach( $running as $pid )
 		runStep('kill '.intval($pid).' && echo Stopped SSE server pid '.intval($pid));
