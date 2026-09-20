@@ -325,7 +325,7 @@ the same integer IDs. If you want the static files to become the source of truth
 | Draw votes | bot assumes public draw votes (models hard-code `PUBLIC`). Draw state is rebuilt only from `publicVotesHistory`, which the server only emits for `drawType == "draw-votes-public"`. |
 | Anonymity | not consumed (`ANON` hard-coded). |
 | Phase length | any; `phaseLengthInMinutes == 5` switches on the live-game heuristics. |
-| Game membership | whatever `players/pulse` returns for the account(s): member `Playing`, phase in Diplomacy/Retreats/Builds, variant in the server's `apiConfig.variantIDs`. Pre-game and finished games are never seen. Paused games appear with `processTime` null. |
+| Game membership | whatever `players/pulse` returns for the account(s): member `Playing`, phase in Diplomacy/Retreats/Builds, variant in the server's bot variant list (`apiConfig.variantIDs` when this was written, now `Config::$botVariantIDs`). Pre-game and finished games are never seen. Paused games appear with `processTime` null. |
 
 ---
 

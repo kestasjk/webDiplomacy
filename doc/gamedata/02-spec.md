@@ -597,3 +597,36 @@ Later the same day, at the user's direction:
 `players/active_games` and `game/getmessages`, so they stop working when this is deployed** unless they
 are switched to the `webdiplomacy_bots_meta` clone at the same time. The two equivalence tests also need
 `game/status` and can only be run against a server on older code from now on.
+
+Later still, after the first staging deploy of all of the above:
+
+- **`Config::$apiConfig` is gone**, replaced by `Config::$botVariantIDs` and read through
+  `libVariant::botVariantIDs()`, which falls back to the old `$apiConfig['variantIDs']` so an install
+  isn't broken by the deploy. It was written when the API was only for bots, and each of its keys had
+  become a hazard now that the site's own board is an API client: `enabled` 404'd every route,
+  including `game/playercontext` and the writes, so flipping it took the board down rather than the
+  bots; `restrictToGameIDs` gated three write routes and both halves of `game/playercontext` against a
+  list that would now have to name every game on the site; `noPressOnly` was read by nothing.
+- **`game/playercontext` no longer hides a player's non-Classic games.** Its list form filtered on the
+  bot variant list, inherited from `players/active_games`, so a player in a Modern or World game was
+  never told about it while `game/playercontext?gameID=` for the same game answered normally. The
+  filter now applies only to API-key callers, which is what it was for.
+- **Bots are kept to their variants at the point they join**, not by what they're shown: `game/join`
+  refuses a variant outside `libVariant::botVariantIDs()` for API-key callers. The old arrangement
+  relied on a bot never being *listed* a game it couldn't play.
+- **The classic board's missed-update fallback was calling the deleted `game/pulse`** (`api.js:118`,
+  which `doc/gamedata/audit/board-php.md` row 5 had documented). It reads `game/playercontext` now:
+  `game.turn`, `game.phase` and `member.lastMessageTime` in place of `data.turn`, `data.phase` and
+  `data.lastMessageTimeSent`. The commented-out `monitorForUpdate` poller, which called the deleted
+  `game/getLastUpdateTime`, is deleted with it. JSVERSION 1.92 -> 1.93.
+- **`game/playercontext` re-seeds `gameTurnPhase_<id>` as `game/pulse` did.** Both of the keys the SSE
+  server compares on reconnect expire after 30 days, and `game/pulse` set this one again when it was
+  missing (`Game::cacheTurnPhase(..., true)`); nothing did after the route was deleted, so a game whose
+  key had gone would have had every client asked to resync, for ever. The single-game form of
+  `game/playercontext` now sets it, next to where it already re-seeds `lastmsgtime_<game>_<country>`.
+- **A deploy that changes `gitpull.php` runs the old copy of it**, because PHP has the file loaded
+  before `git pull` replaces it: the first staging deploy tried to build `beta-src/`, which no longer
+  has a `package.json`, and never ran the SSE step at all. A second run (`php gitpull.php FORCEALL`)
+  does the new steps. `deploySSE()` now also stops if `npm ci` fails instead of killing a working
+  server and starting one that can't load its dependencies, which is what happened on staging when
+  `sse-server/node_modules` turned out to be owned by another user.

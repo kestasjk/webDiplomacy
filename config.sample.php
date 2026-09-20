@@ -257,24 +257,15 @@ class Config
 	public static $grPressMods = array('Regular'=>1,'PublicPressOnly'=>2,'NoPress'=>4,'RulebookPress'=>1);
 
 	/**
-	 * The API configuration. Whether to enable it or not, and restrict it to some variants or some gameIDs.
+	 * The variants bots are able to play. A bot account is kept out of a game in any other variant,
+	 * whether it would join one itself or be listed the game to play: the bots' code only knows these
+	 * maps.
+	 *
+	 * 1 = Classic, 15 = ClassicFvA, 23 = ClassicGvI
 	 *
 	 * @var array
 	 */
-	public static $apiConfig = array(
-		/* Whether the API is enabled or not */
-		"enabled" => true,
-
-		/* Only replace players in CD if they are in a NoPress game */
-		"noPressOnly" => true,
-
-		/* If the API should only be enabled for some game ids, set the list of game ids here */
-		"restrictToGameIDs" => array(),
-
-		/* List of variant IDs supported */
-		/* 1 = Classic, 15 = ClassicFvA, 23 = ClassicGvI */
-		"variantIDs" => array(1, 15, 23)
-	);
+	public static $botVariantIDs = array(1, 15, 23);
 
 	/**
 	 * Messages to display when different flags are set via the admin control panel.

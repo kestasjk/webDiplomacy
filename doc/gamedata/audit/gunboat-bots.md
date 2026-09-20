@@ -220,8 +220,10 @@ Webdip's "Bulgaria (North Coast)" (terrID 80 in Classic) is the engine's `BUL/EC
 
 ### Variants and how `variantID` is used
 
-- Supported: 1 (Classic), 15 (ClassicFvA), 23 (ClassicGvI). These are exactly `Config::$apiConfig['variantIDs']`
-  on the server, which is the only thing stopping other variants reaching the bot.
+- Supported: 1 (Classic), 15 (ClassicFvA), 23 (ClassicGvI). These are exactly `Config::$botVariantIDs`
+  on the server (`Config::$apiConfig['variantIDs']` when this was written), which is what stops other
+  variants reaching the bot: an API key is only listed games in those variants, and `game/join`
+  refuses anything else.
 - `variantID` picks the ID tables and the engine map. The engine map name then picks the model (BOT:183-219):
   `standard` -> DipNet SL model via TF Serving model `standard`; both 1v1 maps -> model `standard_1v1`. Any other
   map name -> `get_player` returns `None`, logged, **no `add_error`** (BOT:151-154).

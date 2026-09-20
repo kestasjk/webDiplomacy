@@ -117,14 +117,15 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, au
     // the same second.
     var checkForMissedUpdates = function() {
         if( turn === undefined ) return; // The page didn't give us its game state to compare against
-        apiCall('game/pulse', 'GET', { gameID: gameID, countryID: countryID }, function(response) {
-            var pulse = JSON.parse(response.responseText).data;
-            if( pulse.turn != turn || pulse.phase != phase )
+        apiCall('game/playercontext', 'GET', { gameID: gameID }, function(response) {
+            var context = JSON.parse(response.responseText);
+            if( context.game.turn != turn || context.game.phase != phase )
             {
                 console.log('Game processed while not connected to the SSE server');
                 showGameProcessedNotice();
             }
-            if( pulse.lastMessageTimeSent > renderTime )
+            // member is null for anyone not playing in the game, who has no messages to miss
+            if( context.member && context.member.lastMessageTime > renderTime )
             {
                 console.log('Message received while not connected to the SSE server');
                 showMessageSentNotice();
@@ -250,49 +251,3 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, au
         );
     }, 7000);
 }
-/*
-function monitorForUpdate(gameID, turn, phase, checkInterval)
-{
-    console.log('Monitoring for update: '+gameID+' '+turn+' '+phase+' '+checkInterval);
-
-    var turnHasChanged = false;
-    var haltAfterRequestNumber = 1000;
-    
-    var d = new Date();
-    var time = d.getTime();
-
-    var monitorForUpdateStatus = document.getElementById('monitorForUpdateStatus');
-    if( monitorForUpdateStatus ) {
-        monitorForUpdateStatus.innerHTML = '...';
-    }
-
-    timerInterval = setInterval(function() {
-        if( monitorForUpdateStatus ) {
-            monitorForUpdateStatus.innerHTML = '...';
-        }
-        apiCall(
-            'game/getLastUpdateTime', 
-            'GET', 
-            {
-                monitorGameID: gameID,
-                lastUpdateTime: lastUpdateTime
-            },
-            function(response) {
-                if( response.turn != turn )
-                {
-                    window.location.href = 'board.php?gameID='+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated"; // Random number to force a reload
-                }
-                if( monitorForUpdateStatus ) {
-                    monitorForUpdateStatus.innerHTML = '...';
-                }
-            },
-            function(response) {
-                if( monitorForUpdateStatus ) {
-                    monitorForUpdateStatus.innerHTML = '...';
-                }
-            }
-        );
-    }, checkInterval);
-
-    
-}*/

@@ -45,6 +45,26 @@ class libVariant {
 	public static $Variant;
 
 	/**
+	 * The variant IDs bots are able to play, from Config::$botVariantIDs.
+	 *
+	 * Bots are kept out of every other variant: their code only knows these maps, so a bot in e.g. a
+	 * Modern game would sit in civil disorder until a moderator removed it. This was
+	 * Config::$apiConfig['variantIDs'] until the API stopped being a bots-only thing, and a config.php
+	 * still using that name is read so an install doesn't break on the deploy.
+	 *
+	 * @return array Variant IDs
+	 */
+	public static function botVariantIDs() {
+		if( property_exists('Config', 'botVariantIDs') )
+			return Config::$botVariantIDs;
+
+		if( property_exists('Config', 'apiConfig') && isset(Config::$apiConfig['variantIDs']) )
+			return Config::$apiConfig['variantIDs'];
+
+		return array(1, 15, 23);
+	}
+
+	/**
 	 * For everything in board/* (used by ajax.php and board.php) it can be assumed that only one variant
 	 * will be loaded, so here that variant is defined where it will be globally accessible.
 	 *

@@ -14,3 +14,10 @@ Changelog
   NOT NULL and actually filled (its 1.71-1.72 backfill was invalid SQL and never ran), and
   webdip_like_given_count is added beside it. The Post Love extension keeps both up to date as
   likes are toggled rather than counting them for every post row it renders.
+
+- Config::$apiConfig is replaced by Config::$botVariantIDs, holding just the variant IDs bots can
+  play (1, 15, 23). config.php can be updated at leisure: libVariant::botVariantIDs() reads the old
+  $apiConfig['variantIDs'] when the new name isn't there. Its other keys are gone with the code that
+  read them - "enabled" 404'd the whole API, which is now how the site's own board talks to the
+  server rather than a bots-only thing; "restrictToGameIDs" would have to list every game on the
+  site to mean anything; "noPressOnly" had not been read by anything for some time.

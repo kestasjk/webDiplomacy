@@ -278,7 +278,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		$input['variantID']=(int)$input['variantID'];
 		$input['countryID']=(int)$input['countryID'];
-		if( !in_array($input['variantID'],Config::$apiConfig['variantIDs']) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
+		if( !in_array($input['variantID'],libVariant::botVariantIDs()) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
 
 		$input['fullPress'] = ( $input['variantID'] == 1 && $input['fullPress'] == 1 ) ? 1 : 0;
 
@@ -414,7 +414,7 @@ print '<div class="content-bare content-board-header content-title-header">
 			$first='';
 			foreach(Config::$variants as $variantID=>$variantName)
 			{
-				if (in_array($variantID, Config::$apiConfig['variantIDs']))
+				if (in_array($variantID, libVariant::botVariantIDs()))
 				{
 					$Variant = libVariant::loadFromVariantName($variantName);
 					$checkboxes[$Variant->fullName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.$Variant->fullName.'</option>';

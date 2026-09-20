@@ -21,6 +21,7 @@
 namespace webdiplomacy_api;
 
 use libGameFiles;
+use libVariant;
 use libAuth;
 use Config;
 
@@ -64,11 +65,14 @@ class PlayerContext
 		$gameID = intval($args['gameID']);
 		if( $gameID <= 0 ) throw new \RequestException('Invalid game ID.');
 
-		if( !empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']) )
-			throw new \ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
-
 		$gameRow = libGameFiles::loadGameRow($gameID);
 		if( $gameRow === false ) throw new \RequestException('Unknown game ID.');
+
+		// The SSE server tells a reconnecting client what it missed by comparing the turn and phase it shows
+		// with this key. When Redis has lost it the server can't, and asks the client to check for itself,
+		// which is this request; game/pulse re-seeded the key for the same reason. Only when missing: this
+		// row may have been read before a process which has since cached a newer turn.
+		\Game::cacheTurnPhase($gameID, intval($gameRow['turn']), $gameRow['phase'], true);
 
 		$memberRows = libGameFiles::loadMemberRows($gameID);
 
@@ -382,11 +386,12 @@ class PlayerContext
 
 		$userID = intval($userID);
 
-		// The same set of games as players/active_games gave
-		$apiVariants = implode(', ', array_map('intval', Config::$apiConfig['variantIDs']));
-		$filterGameClause = '';
-		if( !empty(Config::$apiConfig['restrictToGameIDs']) )
-			$filterGameClause = "AND g.id IN (".implode(', ', array_map('intval', Config::$apiConfig['restrictToGameIDs'])).")";
+		// players/active_games, which this replaced, was only ever called by bots and so only listed the
+		// variants they can play. A person's own browser is told about every game they are in; a bot is
+		// still only told about the games it could take a turn in.
+		$filterVariantClause = '';
+		if( !$apiEntry->isSessionAuth )
+			$filterVariantClause = "AND g.variantID IN (".implode(', ', array_map('intval', libVariant::botVariantIDs())).")";
 
 		$games = array();
 		$tabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.status, m.orderStatus, m.votes, m.newMessagesFrom,
@@ -395,7 +400,7 @@ class PlayerContext
 			FROM wD_Members m
 			INNER JOIN wD_Games g ON ( g.id = m.gameID )
 			WHERE m.userID = ".$userID." AND m.status = 'Playing'
-				AND g.variantID IN (".$apiVariants.") ".$filterGameClause."
+				".$filterVariantClause."
 				AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
 			ORDER BY g.processTime ASC, m.countryID ASC");
 		while( $row = $DB->tabl_hash($tabl) )

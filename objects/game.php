@@ -67,7 +67,7 @@ class Game
 	 * The Redis key holding a game's "turn|phase". A board tells the SSE server the turn and phase it shows when
 	 * it connects, and the SSE server compares them with this to tell whether the board missed the game being
 	 * processed while it wasn't connected (sse-server/server.js sendMissedEvents). It is set whenever a game's
-	 * turn or phase changes, and game/pulse sets it when it is missing.
+	 * turn or phase changes, and game/playercontext sets it when it is missing.
 	 */
 	public static function turnPhaseCacheKey($gameID)
 	{
@@ -87,7 +87,7 @@ class Game
 			if( !isset($Redis) ) return;
 
 			$value = intval($turn).'|'.$phase;
-			// Expires so that finished games' keys don't build up; game/pulse sets it again if it is needed
+			// Expires so that finished games' keys don't build up; game/playercontext sets it again if needed
 			if( $onlyIfMissing )
 				$Redis->setIfMissing(self::turnPhaseCacheKey($gameID), $value, 30*24*60*60);
 			else

@@ -101,7 +101,7 @@ subscriber.on('error', (err) => {
 // - gameTurnPhase_{gameID}: "turn|phase", set whenever a game's turn or phase changes (Game::cacheTurnPhase)
 // - lastmsgtime_{gameID}_{countryID}: when the country's newest message was sent (libGameMessage::send)
 // If either is missing it can't tell, so it sends a resync and the client checks for itself; for the old
-// board that is a game/pulse request, which sets both keys again. A catchup event always ends the check,
+// board that is a game/playercontext request, which sets both keys again. A catchup event always ends the check,
 // which tells the client that this server does it; a client which doesn't get one checks for itself.
 // The events are in the format PHP publishes them in (RedisInterface::trigger).
 //

@@ -458,8 +458,6 @@ class ToggleVote extends ApiEntry {
 		$vote = $args['vote'];
 		if (!in_array($vote, ['Draw', 'Pause', 'Cancel', 'Concede']))
 		    throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
-		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
-			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		// Without this a member could log a vote as any country in the game, though not change its votes
@@ -525,9 +523,6 @@ class SetVote extends ApiEntry {
 		$voteOn = filter_var($args['voteOn'], FILTER_VALIDATE_BOOLEAN);
 		if (!in_array($vote, ['Draw', 'Pause', 'Cancel', 'Concede']))
 		    throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
-
-		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
-			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		// Without this a member could log a vote as any country in the game, though not change its votes
@@ -612,8 +607,8 @@ class SSEAuthentication extends ApiEntry {
 		// The token will expire every day to prevent reusing on games that the user has since left.
 		// This token is passed to any validated by the SSE server, but the info it gives is not very useful, 
 		// just who is receiving messages when.
-		// board.php and game/overview give members this token with the page, so this is only needed once that
-		// one has expired.
+		// board.php and game/playercontext give members this token with the page, so this is only needed once
+		// that one has expired.
 		$token = libAuth::sseChannelToken($channelName);
 		
 		return $this->JSONResponse(
@@ -794,6 +789,13 @@ class JoinGame extends ApiEntry {
 		require_once(l_r('gamemaster/game.php'));
 		
 		$Variant=libVariant::loadFromGameID($gameID);
+
+		// A bot only knows the maps its code was written for, so joining any other variant would
+		// leave it in civil disorder until a moderator removed it. A logged-in user's browser is a
+		// person, who can join whatever the game itself allows.
+		if( !$this->isSessionAuth && !in_array($Variant->id, libVariant::botVariantIDs()) )
+			throw new ClientForbiddenException('Bots cannot play this variant.');
+
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->processGame($gameID);
 		
@@ -892,8 +894,6 @@ class SetOrders extends ApiEntry {
 			throw new RequestException('Body field `orders` is not an array.');
 		if ($readyArg && (!is_string($readyArg) || !in_array($readyArg, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
-        if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
-            throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$turn = intval($turn);
 		$phase = strval($phase);
 		$countryID = intval($countryID);
@@ -1496,10 +1496,6 @@ if( isset(Config::$botsLogFile) && Config::$botsLogFile )
 }
 
 try {
-    if (!property_exists('Config', 'apiConfig') || !Config::$apiConfig['enabled']) {
-        http_response_code(404);
-        die('API is not enabled.');
-    }
 	// Load API object, load API entries, parse API call and print response as a JSON object.
 	$api = new Api();
 
