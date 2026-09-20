@@ -511,13 +511,6 @@ class Config
 	}
 
 	/**
-	 * Set to true on a site that shares another site's database, such as a staging site, so that gamemaster.php only
-	 * runs on one of them. Otherwise a moderator opening gamemaster.php there (it is linked from the admin pages), or a
-	 * cron job, would process the live games with that site's code.
-	 */
-	public static $gamemasterDisabled = false;
-
-	/**
 	 * Off by default (0). Set to a number of minutes to make game processing depend on status.php having been
 	 * requested that recently: gamemaster.php refuses to run if it hasn't been.
 	 *

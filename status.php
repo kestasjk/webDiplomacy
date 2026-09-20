@@ -208,8 +208,8 @@ if( $redisOnline )
 
 	// The SSE server calls gamemaster.php in a loop and records every call the site answered. Game
 	// Processing above stops moving both when nothing is calling the gamemaster and when the gamemaster
-	// is turning the calls away, so this is what tells those two apart. Installs that don't run it from
-	// there (GAMEMASTER_URL unset, as a staging site leaves it) never set this and get no row.
+	// is turning the calls away, so this is what tells those two apart. An install that doesn't run it
+	// from there (GAMEMASTER_URL unset) never sets this and gets no row.
 	$gamemasterLastRun = $Redis->get("GAMEMASTER_LASTRUN");
 	if( $gamemasterLastRun !== false && $gamemasterLastRun !== null )
 	{

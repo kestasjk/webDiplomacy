@@ -55,8 +55,8 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
   process covers everything. Set `GAMEMASTER_URL` (the site's public URL, not localhost) and
   `GAMEMASTER_SECRET` (matching `Config::$gameMasterSecret`) in `sse-server/.env`, which is not in git:
   `sample.env` has them, and the docker entrypoint fills them in, but an existing live `.env` needs them
-  adding by hand or nothing will process. Leave `GAMEMASTER_URL` empty on a site sharing another's
-  database, as `Config::$gamemasterDisabled` is set there.
+  adding by hand or nothing will process. Every site drives its own gamemaster, so staging's `.env`
+  points at staging; leave the URL empty only on an install that shouldn't process games at all.
 - Because that loop now runs on the web server, a call to it no longer proves the site is reachable from
   outside. `Config::$gamemasterRequiresStatusCheckMinutes` puts that back: with it set, processing only
   happens while something outside the network is requesting `status.php`. Off by default.

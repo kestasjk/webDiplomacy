@@ -485,8 +485,8 @@ async function gamemasterLoop() {
 }
 
 if (!gamemasterUrl) {
-  // Every install that shares another's database - staging, a developer's copy - must leave this
-  // unset, as Config::$gamemasterDisabled does for the site itself
+  // Every site drives its own gamemaster at its own URL, so this is only for an install that should
+  // not be processing games at all
   console.log('No GAMEMASTER_URL is set, so the gamemaster is not run from here');
 } else if (typeof fetch !== 'function') {
   console.error('This node has no global fetch (node 18 or newer is needed), so the gamemaster cannot be run from here');

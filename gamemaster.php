@@ -28,14 +28,6 @@ require_once(l_r('gamemaster/game.php'));
 require_once(l_r('gamemaster/misc.php'));
 require_once(l_r('lib/metrics.php'));
 
-// A site sharing another's database, like stg.webdiplomacy.net, sets this so that only the live site processes games.
-// It can't be a setting in the database (like Panic below), as that is shared.
-if ( property_exists('Config', 'gamemasterDisabled') && Config::$gamemasterDisabled )
-{
-	libHTML::notice(l_t('Game processing disabled'),
-		l_t("Games are not processed from this site; they are processed by the site which owns the database."));
-}
-
 // Optionally, only process while something outside the network is still asking for status.php.
 //
 // The gamemaster is called in a loop by the SSE server, which runs on the web server itself, so a
