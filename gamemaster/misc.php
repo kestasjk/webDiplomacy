@@ -79,12 +79,25 @@ class miscUpdate
 	{
 		global $DB, $Misc;
 
-		list($Misc->GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game'");
-		list($Misc->GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase IN ('Diplomacy', 'Retreats', 'Builds') AND NOT playerTypes = 'MemberVsBots'");
-		list($Misc->GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished'");
+		/*
+		 * Bot games are left out of all four counts. They were already left out of GamesActive, and
+		 * these are the numbers the game listings tabs and the home page show, which have always
+		 * counted human games only; gamelistings.php now reads these rather than running the same
+		 * counts itself on every view.
+		 *
+		 * The conditions are written as IN lists because MySQL will not use an index for <>: as
+		 * "NOT playerTypes = 'MemberVsBots'" counting the finished games reads an index entry for
+		 * every finished game there has ever been, where as an IN list the (playerTypes, phase, pot)
+		 * index reads only the games being counted, and reads them without touching the rows.
+		 */
+		list($Misc->GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes IN ('Members','Mixed')");
+		list($Misc->GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase IN ('Diplomacy','Retreats','Builds') AND playerTypes IN ('Members','Mixed')");
+		list($Misc->GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes IN ('Members','Mixed')");
 		list($Misc->GamesCrashed) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE processStatus = 'Crashed'");
 		list($Misc->GamesPaused) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE processStatus = 'Paused'");
-		list($Misc->GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
+		// Only a game still being played can be joined, so listing the phases is the same condition
+		// as the "not pre-game, with the game not over" this used to ask for
+		list($Misc->GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase IN ('Diplomacy','Retreats','Builds') and g.playerTypes IN ('Members','Mixed')");
 
 		if( $Misc->GamesActive >= 16 )
 		{

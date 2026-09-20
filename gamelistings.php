@@ -103,39 +103,31 @@ if($User->type['User'] )
 	/*list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase = 'Pre-game' AND m.userID = ".$User->id);
 	list($GamesOpenUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
-		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase IN ('Diplomacy','Retreats','Builds')
 		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));*/
 	list($GamesMine) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase <> 'Finished' AND m.userID = ".$User->id);
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
+		AND phase IN ('Diplomacy','Retreats','Builds') AND playerTypes IN ('Members','Mixed') 
 		AND ".$User->points." >= minimumBet AND ".$User->reliabilityRating." >= minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
 }
 else
 {
-	if( ($GamesOpen = $Redis->get('GamesOpen')) === false )
-	{
-		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-			AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ");
-		$Redis->set('GamesOpen', $GamesOpen, 600);
-	}
+	// Nothing here depends on who is looking, so the count miscUpdate::game() keeps in wD_Misc does
+	// (a game can only be finished with gameOver set, so its lack of a phase <> 'Finished' makes no
+	// difference)
+	$GamesOpen = $Misc->GamesOpen;
 }
 
-if( ($GamesNew = $Redis->get('GamesNew')) === false )
-{
-	list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
-	$Redis->set('GamesNew', $GamesNew, 600);
-}
-if( ($GamesActive = $Redis->get('GamesActive')) === false )
-{
-	list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
-	$Redis->set('GamesActive', $GamesActive, 600);
-}
-if( ($GamesFinished = $Redis->get('GamesFinished')) === false )
-{
-	list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes <> 'MemberVsBots'");
-	$Redis->set('GamesFinished', $GamesFinished, 600);
-}
+/*
+ * These three are counted every seven minutes by miscUpdate::game() and read from wD_Misc, which
+ * header.php has already loaded, so the tabs cost no queries at all. They used to be counted here
+ * behind a ten minute Redis cache; counting the finished games alone walks over a million index
+ * entries, and it was showing up as one of the busiest queries on the server.
+ */
+$GamesNew = $Misc->GamesNew;
+$GamesActive = $Misc->GamesActive;
+$GamesFinished = $Misc->GamesFinished;
 
 
 $GamesNew -= $GamesNewUser;
@@ -191,6 +183,14 @@ $tournamentID = 0;
 if ( isset($_REQUEST['pagenum'])) { $pagenum=max(1, (int)$_REQUEST['pagenum']); } // < 1 would give a negative LIMIT offset
 
 
+/*
+ * The conditions below are written as IN lists rather than as 'not this phase' / 'not a bot game'
+ * because MySQL can only use an index for equality: with <> it has to read every finished game -
+ * over a million rows - and sort those to find one page of them. As IN lists the (playerTypes,
+ * phase, pot) index can narrow the read down to the games the tab is actually listing. The enums
+ * are phase('Finished','Pre-game','Diplomacy','Retreats','Builds') and
+ * playerTypes('Members','Mixed','MemberVsBots'), so the lists mean exactly what the <>s did.
+ */
 if ($tab == 'My games')
 {
 	if($User->type['User'])
@@ -201,18 +201,18 @@ if ($tab == 'My games')
 	}
 	else
 	{
-		$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
+		$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND playerTypes IN ('Members','Mixed') ";
 		$totalResults = $GamesActive;
 	}
 }
 elseif ($tab == 'New')
 {
-	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes IN ('Members','Mixed') ";
 	$totalResults = $GamesNew;
 }
 elseif ($tab == 'Open Positions')
 {
-	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND playerTypes IN ('Members','Mixed') 
 		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
 		if($User->type['User'])
 		{
@@ -222,12 +222,12 @@ elseif ($tab == 'Open Positions')
 }
 elseif ($tab == 'Active')
 {
-	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND playerTypes IN ('Members','Mixed') ";
 	$totalResults = $GamesActive;
 }
 elseif ($tab == 'Finished')
 {
-	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes IN ('Members','Mixed') ";
 	$totalResults = $GamesFinished;
 }
 else
@@ -499,18 +499,18 @@ else
 		}
 		elseif($_REQUEST['status'] == 'Active')
 		{
-			$SQL .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
-			$SQLCounter .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
+			$SQL .= " AND g.phase IN ('Diplomacy','Retreats','Builds')";
+			$SQLCounter .= " AND g.phase IN ('Diplomacy','Retreats','Builds')";
 		}
 		elseif($_REQUEST['status'] == 'Paused')
 		{
-			$SQL .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus = 'Paused'";
-			$SQLCounter .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus = 'Paused'";
+			$SQL .= " AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.processStatus = 'Paused'";
+			$SQLCounter .= " AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.processStatus = 'Paused'";
 		}
 		elseif($_REQUEST['status'] == 'Running')
 		{
-			$SQL .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus <> 'Paused'";
-			$SQLCounter .= " AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus <> 'Paused'";
+			$SQL .= " AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.processStatus <> 'Paused'";
+			$SQLCounter .= " AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.processStatus <> 'Paused'";
 		}
 		elseif($_REQUEST['status'] == 'Finished')
 		{

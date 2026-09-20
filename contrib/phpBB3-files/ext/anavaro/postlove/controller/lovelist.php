@@ -109,35 +109,44 @@ class lovelist
 			return -1;
 		}
 
-		$sql_array = array(
-			'SELECT'	=> 'COUNT(*) as count',
-			'FROM'	=> array(
-				POSTS_TABLE	=> 'p',
-				TOPICS_TABLE	=> 't',
-			),
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array($this->likes_table	=> 'pl'),
-					'ON'	=> 'pl.post_id = p.post_id'
-				),
-			),
-			'WHERE'	=> 'p.topic_id = t.topic_id AND (p.poster_id = ' . (int) $user_id . ' OR  pl.user_id = ' . (int) $user_id . ') AND pl.user_id > 0 AND ' . $this->db->sql_in_set('p.forum_id', $forum_ids),
-			'ORDER_BY'	=> 'pl.timestamp DESC',
-			'GROUP_BY'	=> 'pl.timestamp, pl.user_id, p.post_id, t.topic_title'
-		);
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-		$counter = 0;
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$counter = $counter + $row['count'];
-		}
+		/*
+		 * The list is the likes on this user's posts plus the likes they gave. That was one query across
+		 * the posts, topics and likes tables whose condition was (p.poster_id = x OR pl.user_id = x): an
+		 * OR spanning two tables, which no index can serve, so it read its way through the posts table
+		 * and sorted the result on disk - by some distance the heaviest query on the server. Each half is
+		 * now looked up on its own index and the two are UNIONed, which also drops the duplicate row a
+		 * user liking their own post would produce, as the GROUP BY here used to.
+		 *
+		 * The count was read by fetching every grouped row and adding up the counts in PHP, so the whole
+		 * thing was done twice per view; it is now counted over the same union in the database.
+		 */
+		$forum_sql = $this->db->sql_in_set('p.forum_id', $forum_ids);
+		$columns = 'pl.timestamp AS timestamp, pl.user_id AS liker_id, p.post_id AS post_id, p.topic_id AS topic_id,
+				p.poster_id AS poster, p.post_subject AS post_subject, t.topic_title AS topic_title';
+
+		// Likes received: this user's posts, then the likes on each of them
+		$received_sql = 'SELECT ' . $columns . '
+			FROM ' . POSTS_TABLE . ' p
+			INNER JOIN ' . TOPICS_TABLE . ' t ON (t.topic_id = p.topic_id)
+			INNER JOIN ' . $this->likes_table . ' pl ON (pl.post_id = p.post_id)
+			WHERE p.poster_id = ' . (int) $user_id . ' AND pl.user_id > 0 AND ' . $forum_sql;
+
+		// Likes given: this user's rows in the likes table, then the post each one is on
+		$given_sql = 'SELECT ' . $columns . '
+			FROM ' . $this->likes_table . ' pl
+			INNER JOIN ' . POSTS_TABLE . ' p ON (p.post_id = pl.post_id)
+			INNER JOIN ' . TOPICS_TABLE . ' t ON (t.topic_id = p.topic_id)
+			WHERE pl.user_id = ' . (int) $user_id . ' AND pl.user_id > 0 AND ' . $forum_sql;
+
+		$likes_sql = '(' . $received_sql . ') UNION (' . $given_sql . ')';
+
+		$result = $this->db->sql_query('SELECT COUNT(*) AS count FROM (' . $likes_sql . ') likes');
+		$counter = (int) $this->db->sql_fetchfield('count');
 		$this->db->sql_freeresult($result);
 		if ($counter > 0)
 		{
-			$sql_array['SELECT'] = 'pl.timestamp as timestamp, pl.user_id as liker_id, p.post_id as post_id, p.topic_id as topic_id, p.poster_id as poster, p.post_subject as post_subject, t.topic_title as topic_title';
-			$sql = $this->db->sql_build_query('SELECT', $sql_array);
-			$result = $this->db->sql_query_limit($sql, $limit, $start);
+			// timestamp is a VARCHAR column, so this sorts as text, exactly as the query it replaces did
+			$result = $this->db->sql_query_limit($likes_sql . ' ORDER BY timestamp DESC', $limit, $start);
 			$users = $output = $raw_output = array();
 			while ($row = $this->db->sql_fetchrow($result))
 			{

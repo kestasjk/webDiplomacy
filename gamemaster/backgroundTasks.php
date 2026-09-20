@@ -113,6 +113,12 @@ class libBackgroundTasks
             miscUpdate::bots();
 
             $Misc->LastStatsUpdate = time();
+            // Without this write the timestamp only reached wD_Misc when a later task in the same run
+            // happened to call write() (the backup, every 37 minutes), so these counts - among them a
+            // COUNT over every finished game - were recounted on most gamemaster cycles instead of
+            // every seven minutes.
+            $Misc->write();
+            $DB->sql_put("COMMIT");
             self::taskDone('MISCSTATS', $taskStart);
         }
 

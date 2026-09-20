@@ -79,7 +79,10 @@ class libCache
 
 		if( is_null($name) ) return $dir;
 
-		if( !is_dir($dir.'/'.$name) && !mkdir($dir.'/'.$name, 0775, true) )
+		// The is_dir() recheck matters: two requests can pass the first check together, and the one
+		// that loses the race gets a false back from mkdir(), and a "File exists" warning, for a
+		// directory that is now perfectly usable.
+		if( !is_dir($dir.'/'.$name) && !@mkdir($dir.'/'.$name, 0775, true) && !is_dir($dir.'/'.$name) )
 			throw new Exception(l_t("Couldn't make cache directory '%s'.",$dir.'/'.$name));
 
 		return self::dir($dir.'/'.$name, $dirParts);
