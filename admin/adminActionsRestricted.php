@@ -950,7 +950,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 			else $phase = 'Diplomacy';
 
 			$DB->sql_put("UPDATE wD_Games
-				SET phase = '".$phase."', gameOver = 'No',
+				SET phase = '".$phase."', gameOver = 'No', finishTime = NULL,
 					processStatus = 'Not-processing', pauseTimeRemaining = NULL, processTime = 2000000000
 				WHERE id = ".$gameID);
 

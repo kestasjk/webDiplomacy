@@ -318,7 +318,7 @@ class libBackgroundTasks
             // this game - as the only thing keeping a game they are still playing out of this. Submitting
             // orders (api.php's game/orders) and opening the board (api/responses/player_context.php) both
             // keep it current; board.php used to be the only thing that did.
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
+            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished', g.finishTime = UNIX_TIMESTAMP() WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
             $DB->sql_put("COMMIT");
 
             $Redis->set('lastAnonBotGameCleanup', time());
@@ -350,7 +350,7 @@ class libBackgroundTasks
              * It takes a game now only when none of its members has been seen inside the week - and still
              * leaves alone any game a member with an API key is in, as the join on wD_ApiKeys did.
              */
-            $DB->sql_put("UPDATE wD_Games g SET g.gameOver='Drawn', g.phase='Finished'
+            $DB->sql_put("UPDATE wD_Games g SET g.gameOver='Drawn', g.phase='Finished', g.finishTime = UNIX_TIMESTAMP()
                 WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND g.gameOver = 'No' AND g.sandboxCreatedByUserID IS NOT NULL
                     AND NOT EXISTS (
                         SELECT 1 FROM wD_Members m
@@ -362,7 +362,7 @@ class libBackgroundTasks
 
             // Cancel bot games that haven't been used for two days if they are not anonymous (sandbox games
             // are excluded by sandboxCreatedByUserID rather than by their name, as above):
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 4*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 4*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 4*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
+            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished', g.finishTime = UNIX_TIMESTAMP() WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 4*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 4*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 4*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
             $DB->sql_put("COMMIT");
 
             // Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
@@ -373,6 +373,81 @@ class libBackgroundTasks
             $Misc->write();
             $DB->sql_put("COMMIT");
             self::taskDone('BOTGAMECLEANUP', $taskStart);
+        }
+
+        /*
+         * Clear away the boards left behind by the cleanups above.
+         *
+         * They end a game with an UPDATE of wD_Games instead of playing it out, so the units, territory
+         * statuses and orders that Game::process() deletes when a game reaches the Finished phase are
+         * left on the table. That is most of all three tables: in September 2026 6.7m of the 7.4m rows
+         * in wD_Units, and a similar share of wD_TerrStatus and wD_Orders, belonged to bot games which
+         * had ended, and every live game's queries were carrying them.
+         *
+         * A board is kept for a week after its game ended, because a board still on the table is what
+         * makes a game which was ended in error recoverable (see restoreCancelledSandboxGames in
+         * admin/adminActionsRestricted.php). Sandbox games are never touched: they are their creator's
+         * own work rather than a game the server handed out, so they stay recoverable indefinitely.
+         *
+         * When a game ended is finishTime, which the cleanups now record as setWon()/setDrawn() do.
+         * Where it is NULL the game was ended before they did, and processTime stands in for it: that
+         * is the deadline of the phase the game was ended in, which is at or after the moment it ended.
+         *
+         * The work is spread over many runs: each one walks wD_Units from where the last one stopped,
+         * in gameID order, which is an index jump per game rather than a scan of the table, until its
+         * budget is used up. Once it reaches the end of the table the next run starts a new pass.
+         */
+        if( self::getRedisTimestamp('lastFinishedBoardTidy') < (time() - 60) )
+        {
+            $taskStart = libMetrics::start();
+
+            $tidyCutoff = time() - 7*24*60*60;
+            $tidyDeadline = microtime(true) + 3;
+            $tidyCursor = self::getRedisTimestamp('finishedBoardTidyCursor'); // Not a timestamp; the last gameID looked at
+            $tidiedGames = 0;
+
+            do
+            {
+                $gameIDs = array();
+                $tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Units WHERE gameID > ".$tidyCursor." ORDER BY gameID LIMIT 200");
+                while( list($gameID) = $DB->tabl_row($tabl) )
+                    $gameIDs[] = (int)$gameID;
+
+                if( count($gameIDs) == 0 )
+                {
+                    $tidyCursor = 0; // The end of the table; the next run starts a new pass
+                    break;
+                }
+
+                $tidyCursor = $gameIDs[count($gameIDs)-1];
+
+                $tidyIDs = array();
+                $tabl = $DB->sql_tabl("SELECT id FROM wD_Games
+                    WHERE id IN (".implode(',',$gameIDs).")
+                        AND phase = 'Finished' AND sandboxCreatedByUserID IS NULL
+                        AND ( finishTime < ".$tidyCutoff." OR ( finishTime IS NULL AND processTime < ".$tidyCutoff." ) )");
+                while( list($gameID) = $DB->tabl_row($tabl) )
+                    $tidyIDs[] = (int)$gameID;
+
+                if( count($tidyIDs) )
+                {
+                    $tidiedGames += count($tidyIDs);
+                    $tidyIDs = implode(',', $tidyIDs);
+
+                    $DB->sql_put("DELETE FROM wD_Units WHERE gameID IN (".$tidyIDs.")");
+                    $DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID IN (".$tidyIDs.")");
+                    $DB->sql_put("DELETE FROM wD_Orders WHERE gameID IN (".$tidyIDs.")");
+                    $DB->sql_put("COMMIT");
+                }
+            } while( microtime(true) < $tidyDeadline );
+
+            $Redis->set('finishedBoardTidyCursor', $tidyCursor);
+            $Redis->set('lastFinishedBoardTidy', time());
+
+            if( $tidiedGames > 0 )
+                print "Cleared the boards left behind by ".$tidiedGames." finished games\n";
+
+            self::taskDone('FINISHEDBOARDTIDY', $taskStart);
         }
 
         // Apply the results of sending push notifications (see libPush::drain()) on every run; this is two Redis
