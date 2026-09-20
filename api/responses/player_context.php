@@ -103,15 +103,20 @@ class PlayerContext
 		}
 
 		/*
-		 * A sandbox is finished by the gamemaster once nobody has been near it for a week, which it
-		 * judges by its members' timeLoggedIn (see libBackgroundTasks::run()). Only board.php keeps
-		 * that up to date, and only for the one country Members::ByUserID maps its owner to - they
-		 * hold all of them - so a sandbox played through this board would be ended a week after it
-		 * was created however much it was being used. Mark all of the owner's countries as seen,
-		 * throttled to once every few minutes as board.php does. timeLoggedIn is not part of any
-		 * game file's fingerprint, so this doesn't have the files rewritten.
+		 * wD_Members.timeLoggedIn is when this player was last seen in this game, and the gamemaster ends
+		 * games nobody has been near by it (see libBackgroundTasks::run(): a bot game two hours after a
+		 * play-now player was last seen, four days after a registered one, a sandbox after a week). Only
+		 * board.php kept it up to date, and this board never goes through board.php - board.php redirects
+		 * to it before it gets that far - so the only thing marking a player as present was submitting
+		 * orders, and a game being read, or thought about, or watched while the bots move, could be ended
+		 * underneath them. Mark this player as seen, throttled to once every few minutes as board.php was.
+		 *
+		 * Every country they hold, because a sandbox's owner holds all of them and board.php only updated
+		 * the one Members::ByUserID mapped them to, which had sandboxes ended a week after they were made
+		 * however much they were used. timeLoggedIn is not part of any game file's fingerprint, so this
+		 * doesn't have the files rewritten.
 		 */
-		if( $isSandboxOwner && count($ownRows) )
+		if( count($ownRows) )
 		{
 			$lastSeen = 0;
 			foreach($ownRows as $ownRow)

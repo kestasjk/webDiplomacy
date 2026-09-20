@@ -312,6 +312,12 @@ class libBackgroundTasks
             // Cancel bot games that haven't been used for an hour if they are anonymous. Sandbox games are
             // bot games too and are left to the weekly cleanup below; they were told apart by their SB_ name
             // prefix, which is only a convention, where sandboxCreatedByUserID is what actually marks one.
+            //
+            // A play-now account is never given a wD_Sessions row and so never has its timeLastSessionEnded
+            // moved on (see User::online()), which leaves m.timeLoggedIn - when the player was last seen in
+            // this game - as the only thing keeping a game they are still playing out of this. Submitting
+            // orders (api.php's game/orders) and opening the board (api/responses/player_context.php) both
+            // keep it current; board.php used to be the only thing that did.
             $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
             $DB->sql_put("COMMIT");
 
@@ -337,9 +343,10 @@ class libBackgroundTasks
             /*
              * Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up.
              *
-             * A sandbox's countries are all held by its creator, and only the country they last looked at
-             * on board.php has its timeLoggedIn kept up to date, so as a join on any member being a week
+             * A sandbox's countries are all held by its creator, and board.php only kept the timeLoggedIn
+             * of the one country it mapped them to up to date, so as a join on any member being a week
              * stale this ended every sandbox a week after it was created however much it was being used.
+             * (The board marks all of their countries as seen now; see player_context.php.)
              * It takes a game now only when none of its members has been seen inside the week - and still
              * leaves alone any game a member with an API key is in, as the join on wD_ApiKeys did.
              */
