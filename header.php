@@ -157,6 +157,9 @@ require_once('lib/gamefiles.php');
 require_once('lib/time.php');
 require_once('lib/group.php');
 require_once('lib/html.php');
+// Every page's footer records its own metrics, and its head tells the browser which counter to
+// report its load time to; libHTML needs it, so it is loaded before anything which can fail
+require_once('lib/metrics.php');
 require_once('lib/push.php');
 
 require_once('locales/layer.php');
@@ -204,9 +207,6 @@ header("Expires: 0", false);
 header("X-Frame-Options: SAMEORIGIN"); //@ibarrionuevo
 
 require_once(l_r('lib/auth.php'));
-// Every page's footer records its own metrics, and its head tells the browser which counter to
-// report its load time to
-require_once(l_r('lib/metrics.php'));
 
 if( !defined('AJAX') )
 {
