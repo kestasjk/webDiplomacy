@@ -2,3 +2,8 @@ RedirectMatch 404 /\.git
 RewriteEngine On
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+# The React board moved from /beta/ to /game/ on 2026-09-20. This also covers the old build if it is
+# still on disk, since mod_rewrite runs before the file is served.
+RewriteRule ^beta$ /game/ [R=302,L]
+RewriteRule ^beta/(.*)$ /game/$1 [R=302,L]

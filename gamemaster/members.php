@@ -574,7 +574,7 @@ class processMembers extends Members
 	 */
 	function joinedRedirect()
 	{
-		$page = $this->Game->usePointAndClickUI() ? "beta/" : "board.php";
+		$page = $this->Game->usePointAndClickUI() ? "game/" : "board.php";
 
 		header('refresh: 3; url='.$page.'?gameID='.$this->Game->id);
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="'.$page.'?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';

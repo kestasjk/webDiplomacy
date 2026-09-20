@@ -1,11 +1,11 @@
 // webDiplomacy root service worker.
 //
 // Served from the site root so its scope ('/') covers both the classic PHP pages and the React
-// app under /beta/. Registered by javascript/push.js when the user subscribes.
+// app under /game/. Registered by javascript/push.js when the user subscribes.
 //
 // This worker only handles Web Push notifications; it deliberately has no fetch handler and does
 // no offline caching, so it cannot interfere with normal page loads. If a service worker is ever
-// added to the /beta/ build (e.g. via CRA/workbox) keep it scoped to /beta/ or merge it here.
+// added to the /game/ build (e.g. via CRA/workbox) keep it scoped to /game/ or merge it here.
 
 self.addEventListener('install', function () {
 	self.skipWaiting();

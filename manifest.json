@@ -9,12 +9,12 @@
   "background_color": "#d9d9d9",
   "icons": [
     {
-      "src": "/beta/logo192.png",
+      "src": "/game/logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/beta/logo512.png",
+      "src": "/game/logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

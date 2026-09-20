@@ -28,7 +28,6 @@ adminInfo.php
 tmp/
 apilog.txt
 git*
-beta-src/node_modules/
 vendor/
 composer.lock
 gamemaster-entrypoint.txt
@@ -41,11 +40,11 @@ composer.lock
 .github/
 ads.txt
 backup.flag
-/beta/adsense.js
-# Anchored: an unanchored "beta/" or "game/" also hides the source folders of the same
-# name, e.g. beta-src/src/state/game/
-/beta/
+# The built board. Anchored: an unanchored "game/" would also hide source folders of that
+# name, e.g. game-src/src/state/game/. /beta/ is the board it replaced, whose build may still
+# be sitting on a server.
 /game/
+/beta/
 scratchpad/
 # Ignore working-notes markdown docs, but keep the READMEs and CLAUDE.md
 *.md

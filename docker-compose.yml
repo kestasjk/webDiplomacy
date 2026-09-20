@@ -6,7 +6,7 @@
 #
 #   docker compose --profile core up -d                       # the site
 #   docker compose --profile dev up -d                        # and mailhog and phpmyadmin
-#   docker compose --profile build up beta-build game-build    # build /beta/ and /game/, then exit
+#   docker compose --profile build up game-build               # build /game/, then exits
 #
 # (or right click this file in VS Code and select Compose Up - Select services)
 #
@@ -29,7 +29,7 @@
 # Ports, all bound to localhost (see the comment on mariadb below):
 #   43000 the site   43001 mailhog   43003 mariadb   43005 redis   43006 sse   43009 phpmyadmin
 #
-# The 'reactdev' profile runs the beta React development server with hot reload instead of a build.
+# The 'reactdev' profile runs the board's React development server with hot reload instead of a build.
 #
 # The containers that write into the checkout run as uid 1000; if that isn't you, put DOCKER_UID and
 # DOCKER_GID in a .env file beside this one.
@@ -197,23 +197,12 @@ services:
     depends_on:
       - "mariadb"
 
-# Build the two React boards, which aren't in git and so are missing from a fresh checkout:
-# beta-src to /beta/ and game-src to /game/. Both run once and exit:
-#   docker compose --profile build up beta-build game-build
-# They build as the host user (override with DOCKER_UID/DOCKER_GID) so the output and node_modules
-# aren't left owned by root. The builds call php for the Google Analytics ID and there is no php
+# Builds the React board, which isn't in git and so is missing from a fresh checkout: game-src to
+# /game/. It runs once and exits:
+#   docker compose --profile build up game-build
+# It builds as the host user (override with DOCKER_UID/DOCKER_GID) so the output and node_modules
+# aren't left owned by root. The build calls php for the Google Analytics ID and there is no php
 # here, so a dev build loads no analytics, which is what a dev build wants.
-  beta-build:
-    profiles: ["build"]
-    image: "node:20-alpine"
-    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
-    working_dir: /application/beta-src
-    environment:
-      - HOME=/tmp
-    volumes:
-      - "./:/application"
-    command: sh -c "npm ci --no-audit --no-fund && npm run build"
-
   game-build:
     profiles: ["build"]
     image: "node:20-alpine"
@@ -225,18 +214,18 @@ services:
       - "./:/application"
     command: sh -c "npm ci --no-audit --no-fund && npm run build"
 
-# This is necessary for doing live React dev for the new board, but isn't needed after doing a build,
-# and needs the /beta proxy in phpdocker/nginx/nginx.conf uncommented.
-  beta:
+# For live React dev on the board, which isn't needed after a build. It serves on port 3000; to use it
+# instead of the build, proxy /game to it in phpdocker/nginx/nginx.conf.
+  game:
     profiles: ["reactdev"]
     image: "node:20-alpine"
-    container_name: webdiplomacy-beta
+    container_name: webdiplomacy-game
     user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
     working_dir: /application
     environment:
       - HOME=/tmp
     volumes:
-      - "./beta-src:/application"
+      - "./game-src:/application"
     ports:
       - "127.0.0.1:3000:3000"
     command: >

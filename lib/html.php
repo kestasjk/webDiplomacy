@@ -574,7 +574,7 @@ class libHTML
 	 * logged_in and user_type (see User::analyticsType()), and which site this is as the site parameter on every
 	 * event ("play" for the play-now domain, otherwise "main"). This is queued in dataLayer ahead of the gtag
 	 * snippet from Config::customHeader(), so it applies from that snippet's page_view onwards. The type is also
-	 * kept in localStorage for the beta board, whose index.html is static and can't be given it by the server.
+	 * kept in localStorage for the game board, whose index.html is static and can't be given it by the server.
 	 */
 	static public function analyticsUserProperties()
 	{
@@ -608,7 +608,7 @@ class libHTML
 
 	/**
 	 * The analytics event name for an action in a game: games with bots in them get "_bot" appended, e.g.
-	 * create_game_bot. The beta board names its events the same way (beta-src/src/utils/analytics.ts).
+	 * create_game_bot. The game board names its events the same way (game-src/src/utils/analytics.ts).
 	 *
 	 * @param string $name The event name for a game without bots
 	 * @param Game $Game
@@ -666,7 +666,7 @@ class libHTML
 			<link rel="shortcut icon" href="'.l_s('favicon.ico').'" />
 			<link rel="icon" href="'.l_s('favicon.ico').'" />
 			<link rel="manifest" href="/manifest.json" />
-			<link rel="apple-touch-icon" href="/beta/logo192.png" />
+			<link rel="apple-touch-icon" href="/game/logo192.png" />
 			<meta name="theme-color" content="#d9d9d9" />
 
 			<script type="text/javascript">'.$userOptionsJS.'</script>
@@ -920,7 +920,7 @@ class libHTML
 			$gameNotifyBlock .= '<span class="variant'.Config::$variants[$notifyGame['variantID']].'">'.
 				'<a gameID="'.$gameID.'" class="country'.$notifyGame['countryID'].'" href="'.
 				// If in play-now mode the game links should go to the new board:
-				(defined('PLAYNOW') ? 'beta/' : 'board.php').
+				(defined('PLAYNOW') ? 'game/' : 'board.php').
 				'?gameID='.$gameID.'">'.
 				$notifyGame['name'];
 

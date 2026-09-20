@@ -11,8 +11,9 @@ Disallow: /search.php
 # Game archives and rendered maps
 Disallow: /board.php?*viewArchive
 Disallow: /map.php
-# The JSON API; also stops crawlers that render the beta board from calling it
+# The JSON API, and the games' public JSON files, which the game board reads
 Disallow: /api.php
+Disallow: /cache/
 # phpBB forum
 Disallow: /contrib/phpBB3/
 

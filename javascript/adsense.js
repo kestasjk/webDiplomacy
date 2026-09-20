@@ -5,14 +5,14 @@
 //
 // When editing this file bump the ?ver= query on the script tags that
 // include it, so clients with a cached copy pick up the new one:
-//  - beta-src/public/index.html (then rebuild the beta UI)
+//  - game-src/public/index.html (then rebuild the game board)
 //  - contrib/phpBB3-files/.../template/overall_header.html (the forum)
 (function() {
   // Configuration - edit these values
   var AD_CLIENT = 'ca-pub-7157909811195408';  // Your AdSense publisher ID
 
-  // Ad slot IDs for the beta React UI's dedicated ad areas
-  // (see beta-src/src/components/ui/WDAds.tsx). The top slot is a
+  // Ad slot IDs for the React game board's dedicated ad areas
+  // (see game-src/src/components/ui/WDAds.tsx). The top slot is a
   // horizontal banner shown above the UI on mobile/tablet; the left/right
   // slots are vertical rails shown beside the UI on wide desktop screens.
   // These can share one responsive slot, but separate slots give separate
@@ -25,9 +25,9 @@
   // to change who sees ads.
   //
   // `user` is whatever user info is available on the current page:
-  //  - On the beta React UI it is the `user` object from the game overview
-  //    API, i.e. { member: { userID, username, bet, timeLoggedIn, ... } }.
-  //  - On plain pages (e.g. the forum), or on the beta UI before/without
+  //  - On the React game board it is the `user` object built from
+  //    game/playercontext, i.e. { member: { userID, username, bet, timeLoggedIn, ... } }.
+  //  - On plain pages (e.g. the forum), or on the board before/without
   //    game data, it is { userID } parsed from the wD-Key cookie.
   //  - null when not logged in / unknown, which should return false.
   function shouldShowAds(user) {
@@ -76,7 +76,7 @@
     document.head.appendChild(script);
   }
 
-  // Expose the config and gating to the beta React UI, which calls
+  // Expose the config and gating to the React game board, which calls
   // shouldShowAds with the game API's user object once it has loaded
   // (falling back to the cookie until/unless that's available).
   window.wDAds = {
