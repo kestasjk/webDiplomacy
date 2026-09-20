@@ -145,13 +145,30 @@ print '</div></br></br>';
 print '<button class="SearchCollapsible">Overall Peak Ghost Rating</button>';
 print'<div class="advancedSearchContent">';
 
+// peakRank and peakRankActive are kept up to date by libBackgroundTasks::updateGhostRatingRanks().
+// They replaced COUNT queries cached in Redis under keys that held the viewer's own rating, which is
+// near enough unique per user, so those caches never hit and the counts ran on every view. The player
+// counts below do cache, as their keys are fixed.
 $currentRating = 0;
-list ($currentRating) = $DB->sql_row("SELECT peakRating FROM wD_GhostRatings WHERE categoryID = 0 and userID = ".$User->id);
+$peakRank = null;
+$peakRankActive = null;
+$grRow = $DB->sql_hash("SELECT peakRating, peakRank, peakRankActive FROM wD_GhostRatings WHERE categoryID = 0 and userID = ".$User->id);
+if( $grRow )
+{
+	$currentRating = $grRow['peakRating'];
+	$peakRank = $grRow['peakRank'];
+	$peakRankActive = $grRow['peakRankActive'];
+}
 
 if ( $User->type['User'] && $currentRating > 0 )
 {
-	$position = User::cachedRankQuery('grPeak_'.$currentRating,
-		"SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
+	// A peak first recorded since the last rank update has no rank yet; with the
+	// (categoryID, peakRating) index this count is cheap, and it only runs for those users.
+	$position = $peakRank;
+	if( !isset($position) )
+		list($position) = $DB->sql_row(
+			"SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
+
 	$players = User::cachedRankQuery('grPeakPlayers',
 		"SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and peakRating  > 100");
 
@@ -207,8 +224,10 @@ $sixMonths = time() - 15552000;
 
 if ( $User->type['User'] && $currentRating > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
-	$position = User::cachedRankQuery('grPeakActive_'.$currentRating,
-		"SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID
+	$position = $peakRankActive;
+	if( !isset($position) )
+		list($position) = $DB->sql_row(
+			"SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID
 									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating > ".$currentRating);
 
 	$players = User::cachedRankQuery('grPeakActivePlayers',

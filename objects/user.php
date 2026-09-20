@@ -1534,20 +1534,25 @@ class User {
 		global $DB;		
 		$ghostRatingCategories = array();
 
-		// rating+0e0 is the exact rating, for the cache key; the rating as returned is rounded to 6 digits, which
-		// different ratings can share
+		// ratingRank is kept up to date by libBackgroundTasks::updateGhostRatingRanks(). It replaced a
+		// COUNT of everyone rated above this user, run once per category on every profile view and
+		// cached in Redis under a key that included the user's own exact rating - which is near enough
+		// unique per user, so the cache never hit and the count always ran.
 		$tabl = $DB->sql_tabl(
-				"SELECT g.categoryID, g.rating, g.peakRating, g.rating+0e0 AS exactRating
+				"SELECT g.categoryID, g.rating, g.peakRating, g.ratingRank
 				FROM wD_GhostRatings g WHERE g.userID = ".$this->id
 			);
 
-		while ( list($categoryID, $rating, $peakRating, $exactRating) = $DB->tabl_row($tabl) )
+		while ( list($categoryID, $rating, $peakRating, $position) = $DB->tabl_row($tabl) )
 		{
-			$position = self::cachedRankQuery('gr_'.$categoryID.'_'.$exactRating,
-				"SELECT COUNT(1)+1 FROM wD_GhostRatings g1
-				WHERE g1.categoryID = ".$categoryID." AND g1.rating > (
-					SELECT g.rating FROM wD_GhostRatings g WHERE g.userID = ".$this->id." AND g.categoryID = ".$categoryID." LIMIT 1
-				)");
+			// A rating first recorded since the last rank update has no rank yet; with the
+			// (categoryID, rating) index this count is cheap, and it only runs for those users.
+			if( !isset($position) )
+				list($position) = $DB->sql_row(
+					"SELECT COUNT(1)+1 FROM wD_GhostRatings g1
+					WHERE g1.categoryID = ".$categoryID." AND g1.rating > (
+						SELECT g.rating FROM wD_GhostRatings g WHERE g.userID = ".$this->id." AND g.categoryID = ".$categoryID." LIMIT 1
+					)");
 
 			$categoryName = Config::$grCategories[$categoryID]["name"];
 

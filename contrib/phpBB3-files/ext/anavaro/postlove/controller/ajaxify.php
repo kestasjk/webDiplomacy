@@ -80,6 +80,7 @@ class ajaxify
 							$sql = 'INSERT INTO ' . $this->likes_table . ' (post_id, user_id, type, timestamp) VALUES (' . (int) $post . ', ' . $this->user->data['user_id'] . ', \'post\', ' . time() . ')';
 							$result = $this->db->sql_query($sql);
 							$this->db->sql_freeresult($result);
+							$this->update_like_counts($row['poster'], $this->user->data['user_id'], 1);
 							$sql = 'SELECT topic_id, poster_id, post_subject FROM ' . POSTS_TABLE . ' WHERE post_id = ' . (int) $post;
 							$result = $this->db->sql_query($sql);
 							$row1 = $this->db->sql_fetchrow($result);
@@ -96,6 +97,7 @@ class ajaxify
 							$sql = 'DELETE FROM ' . $this->likes_table . ' WHERE post_id = ' . (int) $post . ' AND user_id = ' . $this->user->data['user_id'];
 							$result = $this->db->sql_query($sql);
 							$this->db->sql_freeresult($result);
+							$this->update_like_counts($row['poster'], $this->user->data['user_id'], -1);
 							$this->notifyhelper->notify('remove', $row['topic_id'], (int) $post, $row['post_subject'], $row['poster'], $this->user->data['user_id']);
 							return new \Symfony\Component\HttpFoundation\JsonResponse(array(
 								'toggle_action' => 'remove',
@@ -108,5 +110,25 @@ class ajaxify
 		}
 		// We should never get this ... but hey - the code smells without it.
 		return 0;
+	}
+
+	/**
+	* Move the two cached counts a like sits between: the poster's likes received and the liker's
+	* likes given. main_listener::modify_post_row reads these off the user row rather than counting
+	* the likes table once per post it renders, so they have to move with every toggle.
+	*
+	* @param int $poster_id  The user whose post was liked
+	* @param int $liker_id   The user who gave or took back the like
+	* @param int $delta      1 when a like was given, -1 when one was taken back
+	*/
+	private function update_like_counts($poster_id, $liker_id, $delta)
+	{
+		// The columns are UNSIGNED, so a decrement goes through a signed value with a floor of zero
+		// rather than wrapping if a count has somehow drifted below what is on the likes table.
+		$received = ($delta > 0 ? 'webdip_like_count + 1' : 'GREATEST(CAST(webdip_like_count AS SIGNED) - 1, 0)');
+		$given = ($delta > 0 ? 'webdip_like_given_count + 1' : 'GREATEST(CAST(webdip_like_given_count AS SIGNED) - 1, 0)');
+
+		$this->db->sql_query('UPDATE ' . USERS_TABLE . ' SET webdip_like_count = ' . $received . ' WHERE user_id = ' . (int) $poster_id);
+		$this->db->sql_query('UPDATE ' . USERS_TABLE . ' SET webdip_like_given_count = ' . $given . ' WHERE user_id = ' . (int) $liker_id);
 	}
 }

@@ -136,33 +136,21 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		//so should we display more info?
-		//Test if we are shoung likes given!
+		// The two totals below come off the poster's user row, where ajaxify::base keeps them as likes
+		// are given and taken back, and recount_like_counts() puts them right after a post or user is
+		// permanently deleted. They used to be counted here instead, for every post of every topic page:
+		// likes given scanned the likes table, and likes received joined it against the whole posts
+		// table. viewtopic selects the poster's user row into $event['row'], so both are already loaded.
 		if ($this->config['postlove_show_likes'])
 		{
-			$sql = 'SELECT COUNT(post_id) as count FROM ' .$this->loves_table . ' WHERE user_id = ' . $event['row']['user_id'];
-			$result = $this->db->sql_query($sql);
-			$count = (int) $this->db->sql_fetchfield('count');
-			$this->db->sql_freeresult($result);
 			$post_row = $event['post_row'];
-			$post_row['USER_LIKES'] = $count;
+			$post_row['USER_LIKES'] = isset($event['row']['webdip_like_given_count']) ? (int) $event['row']['webdip_like_given_count'] : 0;
 			$event['post_row'] = $post_row;
 		}
 		if ($this->config['postlove_show_liked'])
 		{
-			$sql_array = array(
-				'SELECT'	=> 'COUNT(pl.post_id) as count',
-				'FROM'	=> array(
-					$this->loves_table	=> 'pl',
-					POSTS_TABLE	=> 'p'
-				),
-				'WHERE'	=> 'pl.post_id = p.post_id AND p.poster_id = ' . $event['row']['user_id'],
-			);
-			$sql = $this->db->sql_build_query('SELECT', $sql_array);
-			$result = $this->db->sql_query($sql);
-			$count = (int) $this->db->sql_fetchfield('count');
-			$this->db->sql_freeresult($result);
 			$post_row = $event['post_row'];
-			$post_row['USER_LIKED'] = $count;
+			$post_row['USER_LIKED'] = isset($event['row']['webdip_like_count']) ? (int) $event['row']['webdip_like_count'] : 0;
 			$event['post_row'] = $post_row;
 		}
 	}
@@ -180,6 +168,8 @@ class main_listener implements EventSubscriberInterface
 	{
 		$sql = 'DELETE FROM ' . $this->loves_table . ' WHERE ' . $this->db->sql_in_set('post_id', $event['post_ids']);
 		$this->db->sql_query($sql);
+
+		$this->recount_like_counts();
 	}
 
 	/**
@@ -189,6 +179,42 @@ class main_listener implements EventSubscriberInterface
 	public function clean_users_after($event)
 	{
 		$sql = 'DELETE FROM ' . $this->loves_table . ' WHERE ' . $this->db->sql_in_set('user_id', $event['user_ids']);
+		$this->db->sql_query($sql);
+
+		$this->recount_like_counts();
+	}
+
+	/**
+	* Bring the cached like counts on the user rows back in line with the likes table.
+	*
+	* ajaxify::base keeps them up to date one like at a time, but permanently deleting a post or a
+	* user takes likes out from under that bookkeeping, so recount after those. Both are rare
+	* moderator actions, and the WHERE means only the rows whose count really moved are written.
+	*
+	* The multi-table UPDATE is MySQL/MariaDB only, as is webDiplomacy; this copy of the extension is
+	* webDiplomacy's own (see README.md).
+	*/
+	private function recount_like_counts()
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . ' u
+			LEFT JOIN (
+				SELECT p.poster_id, COUNT(*) AS likes
+				FROM ' . POSTS_TABLE . ' p
+				INNER JOIN ' . $this->loves_table . ' l ON l.post_id = p.post_id
+				GROUP BY p.poster_id
+			) x ON x.poster_id = u.user_id
+			SET u.webdip_like_count = COALESCE(x.likes, 0)
+			WHERE u.webdip_like_count <> COALESCE(x.likes, 0)';
+		$this->db->sql_query($sql);
+
+		$sql = 'UPDATE ' . USERS_TABLE . ' u
+			LEFT JOIN (
+				SELECT l.user_id, COUNT(*) AS likes
+				FROM ' . $this->loves_table . ' l
+				GROUP BY l.user_id
+			) x ON x.user_id = u.user_id
+			SET u.webdip_like_given_count = COALESCE(x.likes, 0)
+			WHERE u.webdip_like_given_count <> COALESCE(x.likes, 0)';
 		$this->db->sql_query($sql);
 	}
 }

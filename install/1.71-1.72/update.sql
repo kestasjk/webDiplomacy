@@ -670,20 +670,9 @@ ORDER BY g.id, gm.timeSent;
 
 -- Add a like count to the users table to prevent having to constantly count for each post:
 ALTER TABLE `phpbb_users` ADD `webdip_like_count` INT(0) UNSIGNED NULL AFTER `webdip_user_id`;
-
--- Calculate the initial counts:
-UPDATE phpbb_users u
-SET webdip_like_count = 0
-UPDATE phpbb_users u
-INNER JOIN (
-    SELECT p.poster_id, COUNT(*) AS likes
-    FROM phpbb_posts p
-    INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
-    GROUP BY p.poster_id
-) x ON x.poster_id = u.user_id
-SET u.webdip_like_count = x.likes;
--- This will be updated when a like is added or removed, and recounted
--- in total on a daily basis.
+-- The initial fill that was here was two UPDATE statements run into each other with no separator,
+-- so it could only ever be a syntax error and the column stayed NULL. 1.81-1.82 makes the column
+-- NOT NULL, adds the matching count of likes given, and fills both.
 
 -- Health check for when last backup was successfully archived:
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` enum('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate','LastBackupArchived','LastVotesCounted','LastOrderStatusCounted','LastReliabilityRatingsRefresh') NOT NULL;

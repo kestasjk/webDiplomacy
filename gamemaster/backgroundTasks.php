@@ -111,21 +111,6 @@ class libBackgroundTasks
             miscUpdate::game();
             miscUpdate::user();
             miscUpdate::bots();
-            
-            // Update like counts for the forum every day (TODO: WIP to prevent counting likes constantly which this phpBB extension does)
-            if( false && floor($Misc->LastStatsUpdate / (24*60*60)) < floor(time() / (24*60*60)) )
-            {
-                $DB->sql_put("UPDATE phpbb_users u
-                    SET webdip_like_count = 0
-                    UPDATE phpbb_users u
-                    INNER JOIN (
-                        SELECT p.poster_id, COUNT(*) AS likes
-                        FROM phpbb_posts p
-                        INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
-                        GROUP BY p.poster_id
-                    ) x ON x.poster_id = u.user_id
-                    SET u.webdip_like_count = x.likes;");
-            }
 
             $Misc->LastStatsUpdate = time();
             self::taskDone('MISCSTATS', $taskStart);
@@ -141,6 +126,17 @@ class libBackgroundTasks
             $Misc->write();
             $DB->sql_put("COMMIT");
             self::taskDone('RELIABILITY', $taskStart);
+        }
+
+        // Ghost Ratings ranks, read as columns by User::getCurrentGRByCategory() and halloffame.php
+        if( self::getRedisTimestamp('lastGhostRatingRanksUpdate') < (time() - 60*30) )
+        {
+            $taskStart = libMetrics::start();
+            print l_t('Updating Ghost Ratings ranks').'<br />';
+            self::updateGhostRatingRanks();
+
+            $Redis->set('lastGhostRatingRanksUpdate', time());
+            self::taskDone('GRRANKS', $taskStart);
         }
 
         if( $Misc->LastReliabilityRatingsRefresh < (time() - 60*60*24*(3 + rand(0,100)/100.0)) )
@@ -425,5 +421,49 @@ class libBackgroundTasks
         }
 
         return self::$tasksRun;
+    }
+
+    /**
+     * Recalculate the rank columns on wD_GhostRatings: ratingRank and peakRank within each category,
+     * and peakRankActive, the peak rank counting only users active in the last six months.
+     *
+     * These used to be counted on every page view - once per category on a profile, twice more on the
+     * hall of fame - over a table with no index on rating, behind a Redis cache whose key included the
+     * viewer's own rating and so never hit. A rank only moves when a finished game changes somebody's
+     * rating, so recalculating them on a timer is enough.
+     *
+     * RANK() gives ties the same rank, which is what the counts it replaces did (one more than the
+     * number of players strictly above). The WHERE writes only the rows whose rank actually moved, so
+     * after the first run this touches very little.
+     */
+    private static function updateGhostRatingRanks()
+    {
+        global $DB;
+
+        // The same six month window the hall of fame's "active" lists use
+        $sixMonths = 15552000;
+
+        $DB->sql_put("UPDATE wD_GhostRatings g
+            INNER JOIN (
+                SELECT userID, categoryID,
+                    RANK() OVER ( PARTITION BY categoryID ORDER BY rating DESC ) AS ratingRank,
+                    RANK() OVER ( PARTITION BY categoryID ORDER BY peakRating DESC ) AS peakRank
+                FROM wD_GhostRatings
+            ) r ON ( r.userID = g.userID AND r.categoryID = g.categoryID )
+            LEFT JOIN (
+                SELECT a.userID, a.categoryID,
+                    RANK() OVER ( PARTITION BY a.categoryID ORDER BY a.peakRating DESC ) AS peakRankActive
+                FROM wD_GhostRatings a
+                INNER JOIN wD_Users u ON ( u.id = a.userID )
+                WHERE u.timeLastSessionEnded > UNIX_TIMESTAMP() - ".$sixMonths."
+            ) ra ON ( ra.userID = g.userID AND ra.categoryID = g.categoryID )
+            SET g.ratingRank = r.ratingRank,
+                g.peakRank = r.peakRank,
+                g.peakRankActive = ra.peakRankActive
+            WHERE NOT ( g.ratingRank <=> r.ratingRank )
+                OR NOT ( g.peakRank <=> r.peakRank )
+                OR NOT ( g.peakRankActive <=> ra.peakRankActive )");
+
+        $DB->sql_put("COMMIT");
     }
 }

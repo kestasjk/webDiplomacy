@@ -2491,23 +2491,7 @@ WHERE g.id IN (
 )
 ORDER BY g.id, gm.timeSent;
 
--- If phpbb is installed:
--- -- Add a like count to the users table to prevent having to constantly count for each post:
--- ALTER TABLE `phpbb_users` ADD `webdip_like_count` INT(0) UNSIGNED NULL AFTER `webdip_user_id`;
--- 
--- -- Calculate the initial counts:
--- UPDATE phpbb_users u
--- SET webdip_like_count = 0
--- UPDATE phpbb_users u
--- INNER JOIN (
---     SELECT p.poster_id, COUNT(*) AS likes
---     FROM phpbb_posts p
---     INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
---     GROUP BY p.poster_id
--- ) x ON x.poster_id = u.user_id
--- SET u.webdip_like_count = x.likes;
--- -- This will be updated when a like is added or removed, and recounted
--- -- in total on a daily basis.
+-- If phpBB is installed, see the phpbb_users like count columns in the 1.81-1.82 section below.
 
 -- Health check for when last backup was successfully archived:
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` enum('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate','LastBackupArchived','LastVotesCounted','LastOrderStatusCounted','LastReliabilityRatingsRefresh') NOT NULL;
@@ -2592,3 +2576,21 @@ CREATE TABLE `wD_PushSubscriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 UPDATE `wD_Misc` SET `value` = '181' WHERE `name` = 'Version';
+
+-- Precomputed Ghost Ratings ranks; see install/1.81-1.82/update.sql. They are filled in by
+-- libBackgroundTasks::updateGhostRatingRanks() once the gamemaster runs.
+ALTER TABLE `wD_GhostRatings`
+    ADD COLUMN `ratingRank` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+    ADD COLUMN `peakRank` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+    ADD COLUMN `peakRankActive` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+    ADD INDEX `categoryRating` (`categoryID`, `rating`),
+    ADD INDEX `categoryPeakRating` (`categoryID`, `peakRating`);
+
+-- If phpbb is installed:
+-- -- Cached forum like counts, maintained by the Post Love extension as likes are toggled, so it
+-- -- doesn't count them for every post row it renders:
+-- ALTER TABLE `phpbb_users`
+--     ADD COLUMN `webdip_like_count` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `webdip_user_id`,
+--     ADD COLUMN `webdip_like_given_count` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `webdip_like_count`;
+
+UPDATE `wD_Misc` SET `value` = '182' WHERE `name` = 'Version';
