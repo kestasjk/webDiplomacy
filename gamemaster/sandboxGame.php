@@ -98,6 +98,7 @@ class processSandboxGame extends processGame
 		list($name, $variantID, $turn, $phase) = $row;
 
 		if( $turn == 0 && $phase == 'Pre-game' ) throw new RequestException("You cannot create a sandbox game from a game which hasn't started yet.");
+		if( $turn < 1 && $phase == 'Finished' ) throw new RequestException("You cannot create a sandbox game from a game which finished before a turn was played.");
 		$name = $DB->escape($name);
 		$Game = self::createGameMemberRecords($variantID, 'SB_'.$name, $turn, $phase);
 		
@@ -154,9 +155,33 @@ class processSandboxGame extends processGame
 
 		// Reload the game object with the territory data before generating orders
 		$Game = $Variant->processGame($Game->id);
-		$Game->generateOrders();
 
-		$DB->sql_put("COMMIT");
+		/*
+		 * The members were just created with no supply centers or units against their names. Count the board
+		 * that was copied in, so that the counts are displayed correctly, and so that a Builds phase generates
+		 * the right build/destroy orders; without this every country looks like it has nothing to build, which
+		 * leaves no orders to enter and has the game processed straight out of the Builds phase.
+		 */
+		$Game->Members->countUnitsSCs();
+
+		if( $phase == 'Finished' )
+		{
+			/*
+			 * A finished game has no Units/TerrStatus left; they are deleted once a game ends, so the copy
+			 * above found nothing to copy and the sandbox would be a finished game with an empty board.
+			 * Move it back to the last archived turn, which rebuilds the board (and the orders that were
+			 * played that turn, which are public knowledge in a finished game) from the archives, and leaves
+			 * the sandbox in the Diplomacy phase of that turn ready to be played. This commits.
+			 */
+			$Game->moveTurnBack();
+		}
+		else
+		{
+			// Orders are never copied from the game being sandboxed; blank orders are generated for this phase
+			$Game->generateOrders();
+
+			$DB->sql_put("COMMIT");
+		}
 
 		return $Game;
 	}

@@ -284,7 +284,13 @@ class processGame extends Game
 		if( $this->turn <= 0 || ($this->turn == 0 && $this->phase == 'Diplomacy' && $this->phase == 'Pre-game')) 
 			return false;
 		
-		if( isset($User) && $User->type['Admin'] || $User->id === $this->sandboxCreatedByUserID ) 
+		if( !isset($User) ) return false;
+
+		if( $User->type['Admin'] ) return true;
+
+		// The creator of a sandbox game can move it back; the IDs are compared as ints as they can be
+		// strings or ints depending on where they were loaded from
+		if( !is_null($this->sandboxCreatedByUserID) && intval($User->id) === intval($this->sandboxCreatedByUserID) )
 			return true;
 		
 		return false;
@@ -354,6 +360,11 @@ class processGame extends Game
 		$DB->sql_put("UPDATE wD_Members SET votes='', orderStatus='',
 			status=".( count($undefeatedCountries) ? "IF(countryID IN (".implode(',',$undefeatedCountries)."),'Playing','Defeated')" : "'Defeated'" )."
 			WHERE gameID = ".$this->id);
+
+		// The member supply-center/unit counts belong to the turn we've just discarded; recount them
+		// against the restored board, so that they are displayed correctly and so that the builds
+		// check at the end of the restored turn uses the right numbers.
+		$this->Members->countUnitsSCs();
 
 		// - Delete Archive values if we have moved back a turn
 		// This is in the same transaction as the turn change above, as the game/status API caches the archives
