@@ -901,7 +901,6 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		global $DB;
 
 		require_once(l_r('gamemaster/game.php'));
-		require_once(l_r('lib/gamefiles.php'));
 
 		$userID = ( isset($params['sandboxUserID']) && trim($params['sandboxUserID']) !== '' ) ? (int)$params['sandboxUserID'] : null;
 
@@ -920,9 +919,17 @@ class adminActionsRestricted extends adminActionsSeniorMod
 			return l_t('No cancelled sandbox games with a board still on the table were found%s.',
 				is_null($userID) ? '' : l_t(' for user %s', $userID));
 
+		/*
+		 * Each game is restored in its own transaction, and a run stops with time to spare rather than
+		 * being cut off by the request timing out: whatever has been committed stays restored and the
+		 * rest are picked up by running this again, as a restored game no longer matches the search.
+		 */
 		$restored = array();
+		$startTime = time();
 		foreach($games as $row)
 		{
+			if( ( time() - $startTime ) > 20 ) break;
+
 			$gameID = (int)$row['id'];
 
 			/*
@@ -961,12 +968,23 @@ class adminActionsRestricted extends adminActionsSeniorMod
 
 			Game::cacheTurnPhase($gameID, (int)$row['turn'], $phase); // For the SSE server
 			Game::wipeCache($gameID);
-			libGameFiles::refresh($gameID);
+
+			/*
+			 * The game's public JSON files still describe a finished game, but they are not rewritten here:
+			 * game/playercontext rewrites whichever of them are out of date when the game is next opened
+			 * (see api/responses/player_context.php), and rebuilding the history of a long game is slow
+			 * enough that doing it for every game restored is what made this time out.
+			 */
 
 			$restored[] = $gameID.' ('.$row['name'].', '.$phase.')';
 		}
 
-		return l_t('Restored %s sandbox game(s): %s', count($restored), implode(', ', $restored));
+		$left = count($games) - count($restored);
+		if( count($restored) > 25 )
+			$restored = array_merge(array_slice($restored, 0, 25), array(l_t('and %s more', count($restored)-25)));
+
+		return l_t('Restored %s sandbox game(s): %s.%s', count($games) - $left, implode(', ', $restored),
+			$left > 0 ? ' '.l_t('%s still to go; run this again to carry on.', $left) : '');
 	}
 
 	public function recreateUnitDestroyIndex(array $params)
