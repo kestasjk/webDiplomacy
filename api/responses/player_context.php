@@ -102,6 +102,28 @@ class PlayerContext
 						$memberRow = $ownRow;
 		}
 
+		/*
+		 * A sandbox is finished by the gamemaster once nobody has been near it for a week, which it
+		 * judges by its members' timeLoggedIn (see libBackgroundTasks::run()). Only board.php keeps
+		 * that up to date, and only for the one country Members::ByUserID maps its owner to - they
+		 * hold all of them - so a sandbox played through this board would be ended a week after it
+		 * was created however much it was being used. Mark all of the owner's countries as seen,
+		 * throttled to once every few minutes as board.php does. timeLoggedIn is not part of any
+		 * game file's fingerprint, so this doesn't have the files rewritten.
+		 */
+		if( $isSandboxOwner && count($ownRows) )
+		{
+			$lastSeen = 0;
+			foreach($ownRows as $ownRow)
+				$lastSeen = max($lastSeen, intval($ownRow['timeLoggedIn']));
+
+			if( $lastSeen < (time() - 3*60) )
+			{
+				$DB->sql_put("UPDATE wD_Members SET timeLoggedIn = ".time()." WHERE gameID = ".$gameID." AND userID = ".$userID);
+				$DB->sql_put("COMMIT"); // api.php leaves autocommit off and doesn't commit at the end of a request
+			}
+		}
+
 		// A member who left and is blocked from rejoining is treated as a spectator, as on board.php
 		$isTempBanned = false;
 		if( !is_null($memberRow) && $memberRow['status'] == 'Left' )

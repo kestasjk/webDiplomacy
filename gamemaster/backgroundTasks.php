@@ -309,8 +309,10 @@ class libBackgroundTasks
             $taskStart = libMetrics::start();
             print "Cleaning up anonymous bot games\n";
 
-            // Cancel bot games that haven't been used for an hour if they are anonymous:
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
+            // Cancel bot games that haven't been used for an hour if they are anonymous. Sandbox games are
+            // bot games too and are left to the weekly cleanup below; they were told apart by their SB_ name
+            // prefix, which is only a convention, where sandboxCreatedByUserID is what actually marks one.
+            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
             $DB->sql_put("COMMIT");
 
             $Redis->set('lastAnonBotGameCleanup', time());
@@ -327,16 +329,33 @@ class libBackgroundTasks
 
             // Tidy up any sandbox / bot games as part of this process
             
-            // Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error:
-            $DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE name LIKE 'SB_%' AND processStatus <> 'Paused'");
+            // Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error.
+            // (By sandboxCreatedByUserID, not by the SB_ name prefix, so that a sandbox is parked however it is named.)
+            $DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE sandboxCreatedByUserID IS NOT NULL AND processStatus <> 'Paused' AND phase NOT IN ('Finished','Pre-game')");
             $DB->sql_put("COMMIT");
 
-            // Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up:
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id LEFT JOIN wD_ApiKeys a ON a.userID = m.userID SET g.gameOver='Drawn', g.phase='Finished' WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND a.userID IS NULL AND g.sandboxCreatedByUserID IS NOT NULL AND m.timeLoggedIn < UNIX_TIMESTAMP() - 24*60*60*7 AND g.gameOver = 'No';");
+            /*
+             * Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up.
+             *
+             * A sandbox's countries are all held by its creator, and only the country they last looked at
+             * on board.php has its timeLoggedIn kept up to date, so as a join on any member being a week
+             * stale this ended every sandbox a week after it was created however much it was being used.
+             * It takes a game now only when none of its members has been seen inside the week - and still
+             * leaves alone any game a member with an API key is in, as the join on wD_ApiKeys did.
+             */
+            $DB->sql_put("UPDATE wD_Games g SET g.gameOver='Drawn', g.phase='Finished'
+                WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND g.gameOver = 'No' AND g.sandboxCreatedByUserID IS NOT NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM wD_Members m
+                        LEFT JOIN wD_ApiKeys a ON a.userID = m.userID
+                        WHERE m.gameID = g.id
+                            AND ( m.timeLoggedIn > UNIX_TIMESTAMP() - 24*60*60*7 OR a.userID IS NOT NULL )
+                    );");
             $DB->sql_put("COMMIT");
 
-            // Cancel bot games that haven't been used for two days if they are not anonymous:
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 4*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 4*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 4*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
+            // Cancel bot games that haven't been used for two days if they are not anonymous (sandbox games
+            // are excluded by sandboxCreatedByUserID rather than by their name, as above):
+            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 4*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 4*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 4*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
             $DB->sql_put("COMMIT");
 
             // Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
