@@ -2594,3 +2594,14 @@ ALTER TABLE `wD_GhostRatings`
 --     ADD COLUMN `webdip_like_given_count` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `webdip_like_count`;
 
 UPDATE `wD_Misc` SET `value` = '182' WHERE `name` = 'Version';
+
+-- The game listings tabs, and the game counts the gamemaster keeps in wD_Misc for them, look games
+-- up by player type and phase and order them by pot; see install/1.82-1.83/update.sql.
+ALTER TABLE `wD_Games` ADD INDEX `playerTypesPhasePot` (`playerTypes`, `phase`, `pot`);
+
+-- If phpbb is installed:
+-- -- The likes list needs to find the likes a user has given, and the Post Love extension creates
+-- -- phpbb_posts_likes with only PRIMARY KEY (post_id, user_id):
+-- ALTER TABLE `phpbb_posts_likes` ADD INDEX `user_id` (`user_id`);
+
+UPDATE `wD_Misc` SET `value` = '183' WHERE `name` = 'Version';

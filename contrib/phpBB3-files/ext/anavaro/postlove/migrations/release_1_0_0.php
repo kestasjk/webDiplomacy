@@ -36,6 +36,12 @@ class release_1_0_0 extends \phpbb\db\migration\migration
 						'timestamp'		=> array('VCHAR:32', 0)
 					),
 					'PRIMARY_KEY'    => 'post_id, user_id',
+					// The primary key can only find the likes on a post; the likes list also needs
+					// the likes a given user has left (see controller/lovelist.php). Installs that
+					// already have this table get the index from webDiplomacy's 1.82-1.83 update.
+					'KEYS'		=> array(
+						'user_id'		=> array('INDEX', 'user_id'),
+					),
 				)
 			),
 		);
