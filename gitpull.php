@@ -80,6 +80,18 @@ function deploy($forceAll = false)
 	else
 		runStep('echo Skipping beta build, no beta-src changes');
 
+	// The same for the game board (game-src/, built to game/), which reads games from their public JSON files and
+	// game/playercontext (doc/gamedata/02-spec.md). It is a copy of the beta, so it gets the beta's .env.production
+	// if the server has one and it doesn't.
+	if( $forceAll || strpos($changedFiles, 'game-src/') !== false )
+	{
+		runStep('cd game-src && ( [ ! -f ../beta-src/.env.production ] || [ -f .env.production ] || cp ../beta-src/.env.production . )'
+			.' && npm ci --cache ../cache/npm'
+			.' && if [ -f .env.production ]; then npm run build:production; else npm run build; fi');
+	}
+	else
+		runStep('echo Skipping game board build, no game-src changes');
+
 	// Overlay the phpBB integration files onto the phpBB install (per
 	// contrib/phpBB3-files/README.txt) and wipe the compiled caches, which
 	// phpBB rebuilds on the next request. Only the cache folder contents are
@@ -116,8 +128,8 @@ if( !isset($headers['X-Hub-Signature-256']) )
 
 $rawReq = file_get_contents('php://input');
 
-// Define this in the apache site config:
-// SetEnv GITWEBHOOKSECRET "jpoiegwe9823-09rjk209873hf3497hqawodji1032r084hj32"
+// Define this in the apache site config, with the secret set on the site's GitHub webhook:
+// SetEnv GITWEBHOOKSECRET "<the webhook's secret>"
 
 $envGITHUBSECRET = getenv('GITWEBHOOKSECRET');
 if( is_null($envGITHUBSECRET) || $envGITHUBSECRET == '' )
