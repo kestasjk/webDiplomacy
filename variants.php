@@ -47,13 +47,36 @@ foreach($variants as $variantDir) {
 if( count($variantsOff) )
    print '<a name="top"></a><h4>'.l_t('Active variants').'</h4>';
 
+/*
+ * The number of games played on each variant. This used to be a COUNT(*) over wD_Games for every
+ * active variant on every page load, which is a scan of the whole games table each time for a
+ * headline figure that nobody needs to the minute. Count them all in one pass and keep the result
+ * in Redis for an hour instead. wD_Misc can't hold these: its Name column is an enum, so a new
+ * variant would need a schema change to get a row.
+ */
+$variantGameCounts = false;
+try { $variantGameCounts = $Redis->get('variantGameCounts'); }
+catch(Exception $e) { }
+
+if( $variantGameCounts === false || $variantGameCounts === null )
+{
+   $variantGameCounts = array();
+   $tabl = $DB->sql_tabl("SELECT variantID, COUNT(1) FROM wD_Games WHERE phase != 'Pre-game' GROUP BY variantID");
+   while( list($variantID, $gameCount) = $DB->tabl_row($tabl) )
+      $variantGameCounts[$variantID] = $gameCount;
+
+   try { $Redis->set('variantGameCounts', json_encode($variantGameCounts), 60*60); }
+   catch(Exception $e) { }
+}
+else
+   $variantGameCounts = json_decode($variantGameCounts, true);
+
 print '<ul>';
 foreach( $variantsOn as $variantName )
 {
    $Variant = libVariant::loadFromVariantName($variantName);
    print '<li><a href="variants.php#' . $Variant->name . '">' . l_t($Variant->fullName) . '</a> '.l_t('(%s Players)',count($Variant->countries)).'';
-   $sql = 'SELECT COUNT(*) FROM wD_Games WHERE variantID=' .  $Variant->id . ' AND phase != "Pre-game"';
-   list($num) = $DB->sql_row($sql);
+   $num = ( isset($variantGameCounts[$Variant->id]) ? $variantGameCounts[$Variant->id] : 0 );
    print ' - '.l_t('%s game(s) played on this server',$num).'</li>';
 }
 print '</ul>';
