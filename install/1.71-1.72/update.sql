@@ -255,9 +255,9 @@ INSERT INTO wD_DATCOrders (testID, countryID, unitType, terrID, moveType, toTerr
 (903, 5, 'Fleet', 22, 'Move', 69, NULL, 'Hold', 'No', 'Yes'),
 (903, 7, 'Army', 24, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
 (903, 5, 'Fleet', 69, 'Move', 21, NULL, 'Hold', 'No', 'Yes'),
-(903, 7, 'Fleet', 21, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
+(903, 7, 'Fleet', 21, 'Move', 80, NULL, 'Hold', 'No', 'Yes'),
 (903, 3, 'Fleet', 23, 'Support Move', 22, 20, 'Hold', 'No', 'Yes'),
-(903, 3, 'Fleet', 24, 'Support Move', 69, 22, 'Hold', 'No', 'Yes');
+(903, 3, 'Fleet', 25, 'Support Move', 69, 22, 'Hold', 'No', 'Yes');
 
 
 CREATE TABLE `wD_UserIdentity` (
