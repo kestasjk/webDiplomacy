@@ -54,6 +54,13 @@ class adminActionsRestricted extends adminActionsSeniorMod
 				'description' => 'Clears order log text files.',
 				'params' => array(),
 			),
+			'testEmail' => array(
+				'name' => 'Test e-mail sending',
+				'description' => 'Sends a test e-mail to the address given, to check whether the server\'s mail settings are working.<br />
+					If the mailer gives an error it is displayed here; if no error is given but nothing arrives the problem is
+					past this server, so check the address\'s spam folder and the mail server\'s logs.',
+				'params' => array('email'=>'E-mail address'),
+			),
 			'giveModerator' => array(
 				'name' => 'Give moderator status',
 				'description' => 'Gives moderator status to the specified user ID.',
@@ -464,6 +471,66 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		}
 
 		return l_t('The order logs were cleared, %s files deleted.',$i);
+	}
+
+	public function testEmailConfirm(array $params)
+	{
+		$email = self::testEmailAddress($params);
+
+		return l_t('Are you sure you want to send a test e-mail to %s?', htmlspecialchars($email));
+	}
+
+	/**
+	 * Check the e-mail address given to the test e-mail task, and return it ready to be mailed.
+	 *
+	 * @param array $params The task's parameters
+	 * @return string The e-mail address given
+	 */
+	private static function testEmailAddress(array $params)
+	{
+		$email = isset($params['email']) ? trim((string)$params['email']) : '';
+
+		if( $email == '' )
+			throw new Exception(l_t("No e-mail address was given to send the test e-mail to."));
+
+		if( !filter_var($email, FILTER_VALIDATE_EMAIL) )
+			throw new Exception(l_t("%s isn't a valid e-mail address.", htmlspecialchars($email)));
+
+		return $email;
+	}
+
+	public function testEmail(array $params)
+	{
+		global $User;
+
+		$email = self::testEmailAddress($params);
+
+		if( Config::$mailerConfig['UseSendmail'] )
+			$mailerUsed = l_t('the sendmail binary at %s', Config::$mailerConfig['SendmailSettings']['Location']);
+		elseif( Config::$mailerConfig['UseSMTP'] )
+			$mailerUsed = l_t('SMTP via %s', Config::$mailerConfig['SMTPSettings']['Host'].':'.Config::$mailerConfig['SMTPSettings']['Port']);
+		elseif( Config::$mailerConfig['UseMail'] )
+			$mailerUsed = l_t("PHP's mail() function");
+		else
+			throw new Exception(l_t("No mailer type is set up; one of UseMail, UseSendmail or UseSMTP has to be enabled in the mailer config before e-mail can be sent."));
+
+		require_once(l_r('objects/mailer.php'));
+		$Mailer = new Mailer();
+
+		$sentAt = gmdate("Y-m-d H:i:s");
+
+		// Any problem the mailer runs into is thrown, and displayed above this task's form
+		$Mailer->Send(array($email=>$email), l_t('E-mail test'),
+			l_t("This is a test e-mail, sent by %s from the admin control panel at %s (GMT+0) to check that e-mail sending is working.",
+				$User->username, $sentAt)."<br /><br />".
+			l_t("If you received this then e-mail sending is working, and nothing further needs to be done."));
+
+		if( Config::$mailerConfig['UseDebug'] )
+			return l_t('The mailer is in debug mode, so nothing was sent; the message which would have gone to %s is printed above.', htmlspecialchars($email));
+
+		return l_t('A test e-mail was sent to %s using %s, and the mailer gave no error. '.
+			'If it doesn\'t arrive check that address\'s spam folder and the mail server\'s logs.',
+			htmlspecialchars($email), $mailerUsed);
 	}
 
 	public function wipeDATCTestGame(array $params)
