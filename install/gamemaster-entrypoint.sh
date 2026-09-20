@@ -1,9 +1,14 @@
 #!/bin/sh
 
-# For docker development environments this is the php-fpm entrypoint script, which will initialize the database
-# and clean/prepare the blank system for use.
+# For docker development environments this is the php-fpm entrypoint script, which sets up
+# everything the site needs that isn't in git, installs an empty database, and then runs the
+# gamemaster. It is written to be safe to run again: each step checks whether it is needed.
 
 HOME=/application
+export COMPOSER_HOME=/application/cache/composer
+export COMPOSER_ALLOW_SUPERUSER=1
+
+MYSQL_ARGS="-u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy"
 
 cd $HOME
 
@@ -11,77 +16,166 @@ echo "Started gamemaster-entrypoint.sh"
 
 echo "Script will output READY once completed"
 
-if [ ! -d vendor ]; then
-  echo "ERROR: vendor directory not found; please run composer update in the source directory"
-  
-else
+# Is the database up and holding a webDiplomacy install?
+dbInstalled()
+{
+  mysql $MYSQL_ARGS --connect-timeout=2 -e "SHOW TABLES;" 2>/dev/null | grep -q 'w[Dd]_[Uu]ser'
+}
 
+waitForDB()
+{
+  echo "Waiting for DB to be available"
+  res=1
+  while [ "$res" -ne 0 ]; do
+    sleep 1;
+    echo "SELECT 1" | mysql --connect-timeout=1 $MYSQL_ARGS
+    res=$?
+    echo -n "."
+  done
+}
+
+# Load the empty database, and throw away anything cached from the database that was there before:
+# the variant caches hold territory IDs, which the install renumbers.
+installDB()
+{
+  echo "DB not installed, erasing existing variant/datc data and installing new DB"
+  rm -rf datc/maps/*.*
+
+  clearCaches
+
+  echo "Connecting to mysql to run install/FullInstall/fullInstall.sql"
+  mysql $MYSQL_ARGS < $HOME/install/FullInstall/fullInstall.sql
+  mysqlResult=$?
+  if [ $mysqlResult -ne 0 ]; then
+    echo "mysql on fullInstall.sql returned $mysqlResult"
+  fi
+
+  echo "Connecting to mysql to run install/createBotAccounts.sql"
+  mysql $MYSQL_ARGS < $HOME/install/createBotAccounts.sql
+  mysqlResult=$?
+  if [ $mysqlResult -ne 0 ]; then
+    echo "mysql on createBotAccounts.sql returned $mysqlResult , which indicates the install script failed. Check the logs, recreate the database and rerun gamemaster-entrypoint.sh from the php-fpm container"
+  fi
+
+  # Again, as the site will have answered requests while the install ran and cached what it saw
+  clearCaches
+
+  echo "DB created"
+  echo ""
+  echo "NOTE: a new database has wD_Misc.LastProcessTime set to 0, and the gamemaster will not"
+  echo "process any game until it isn't. Register an account, then visit"
+  echo "http://localhost:43000/gamemaster.php?gameMasterSecret= while logged in as it: that makes"
+  echo "the account the admin and starts the games processing."
+  echo ""
+}
+
+# This script runs as root, so anything it creates in the checkout would otherwise be neither
+# editable nor removable by the user who owns it on the host
+ownLikeCheckout()
+{
+  chown -R `stat -c %u:%g composer.json` "$@" 2>/dev/null
+}
+
+clearCaches()
+{
   echo "Erasing old cache data"
-  rm -rf cache/*
+  # cache/ isn't in git, so on a fresh checkout it isn't there at all
+  mkdir -p cache
+  # Everything but the npm cache, which only makes the next React build slower to rebuild
+  find cache -mindepth 1 -maxdepth 1 ! -name npm -exec rm -rf {} + 2>/dev/null
+
+  echo "Erasing old variant cache data"
+  find variants | grep 'cache/.*\..*$' | ( while read a; do rm -f $a; done )
+  echo "Make sure all variant cache folders exist"
+  ls variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir -p "$v""cache"; done)
 
   echo "Making sure all cache folders writable"
   # Make sure the cache and datc folders are writable, this is v slow in hyper-v docker with a large cache, so first clear the cache
   find . -name "cache" -exec chmod a+rwx {} \;
   find . -name "datc" -exec chmod a+rwx {} \;
   find . -name "variants" -exec chmod a+rwx {} \;
-
-  echo "Making sure config present"
-  # If no config has been set up use the sample, which is compatible with docker
-  if [ ! -f config.php ]; then
-    echo "Copying sample config to config.php"
-    cp config.sample.php config.php
-  fi
-
-  echo "Starting PHP server"
-  # Fork the FPM server
-  /usr/sbin/php-fpm8.4 -O &
-
-  echo "Waiting for DB to be available"
-  res=1
-  while [ "$res" -ne 0 ]; do
-    sleep 1;
-    echo "SELECT 1" | mysql --connect-timeout=1 -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy
-    res=$?
-    echo -n "."
-  done
-
-  echo "Checking if DB installed"
-  if mysql -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy -e "SHOW TABLES;" | grep -q 'w[Dd]_[Uu]ser' ; then
-    echo "DB installed"
-  else
-    echo "DB not installed, erasing existing variant/dact data and installing new DB"
-    rm -rf datc/maps/*.*
-
-    find variants | grep 'cache/.*\..*$' | ( while read a; do rm -v $a; done )
-    echo "Make sure all variant cache folders exist"
-    ls variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir "$v""cache"; done)
-    
-    echo "Connecting to mysql to run install/FullInstall/fullInstall.sql"
-    mysql -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/FullInstall/fullInstall.sql
-    mysqlResult=$?
-    if [ $mysqlResult -ne 0 ]; then
-      echo "mysql on fullInstall.sql returned $mysqlResult"
-    fi
-
-    echo "Connecting to mysql to run install/createBotAccounts.sql"
-    mysql -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/createBotAccounts.sql
-    mysqlResult=$?
-    if [ $mysqlResult -ne 0 ]; then
-      echo "mysql on createBotAccounts.sql returned $mysqlResult , which indicates the install script failed. Check the logs, recreate the database and rerun gamemaster-entrypoint.sh from the php-fpm container"
-    fi
-    echo "DB created"
-  fi
-
-  echo "Setting ownership of cache folders to www-data"
   find . -name "cache" -exec chown -R www-data:www-data {} \;
+}
 
-  echo "READY - webDiplomacy system initialized"
+mkdir -p cache/composer
 
-  echo "Starting gamemaster"
-  while true; do
-    gameMasterSecret='' QUERY_STRING='' wget -O - http://webserver/gamemaster.php?gameMasterSecret= > /dev/null 2>&1
-    sleep 3
-    echo -n "."
-  done
-
+echo "Making sure the PHP dependencies are installed"
+# composer comes with the php-fpm image, so nothing has to be installed on the host
+if [ ! -d vendor ]; then
+  if [ -f composer.lock ]; then
+    composer install --no-interaction --no-progress
+  else
+    composer update --no-interaction --no-progress
+  fi
+  if [ ! -d vendor ]; then
+    echo "ERROR: composer did not create the vendor directory; the site will not run"
+  fi
+  ownLikeCheckout vendor composer.lock
 fi
+
+echo "Making sure config present"
+# If no config has been set up use the sample, which is compatible with docker
+if [ ! -f config.php ]; then
+  echo "Copying sample config to config.php"
+  cp config.sample.php config.php
+
+  # Without a secret the site hands out no SSE tokens and nothing updates live. It is generated
+  # rather than shipped in config.sample.php so that no real site can end up with a known one.
+  SSE_SECRET=`php -r 'echo bin2hex(random_bytes(16));' 2>/dev/null`
+  echo "Generating an SSE secret for this install"
+  sed -i "s#public static \$sseSecret = '';#public static \$sseSecret = '$SSE_SECRET'; // generated by install/gamemaster-entrypoint.sh#" config.php
+fi
+
+echo "Writing sse-server/.env to match config.php"
+# The SSE server signs tokens with the same secret, and reads it from its own .env, which is not
+# in git either. Rewritten on every start so the two can't drift apart.
+SSE_SECRET=`php -r 'define("IN_CODE",1); require "config.php"; echo Config::$sseSecret;' 2>/dev/null`
+if [ -z "$SSE_SECRET" ]; then
+  echo "WARNING: config.php has no sseSecret, so the site will send no live updates"
+fi
+sed -e "s#^SSE_SECRET=.*#SSE_SECRET=$SSE_SECRET#" sse-server/sample.env > sse-server/.env
+chmod a+r sse-server/.env
+ownLikeCheckout config.php sse-server/.env gamemaster-entrypoint.txt
+
+clearCaches
+
+echo "Starting PHP server"
+# Fork the FPM server
+/usr/sbin/php-fpm8.4 -O &
+
+waitForDB
+
+echo "Checking if DB installed"
+if dbInstalled; then
+  echo "DB installed"
+else
+  installDB
+fi
+
+echo "READY - webDiplomacy system initialized"
+
+echo "Starting gamemaster"
+checkDBEvery=20
+sinceDBCheck=0
+while true; do
+  gameMasterSecret='' QUERY_STRING='' wget -O - http://webserver/gamemaster.php?gameMasterSecret= > /dev/null 2>&1
+  sleep 3
+  echo -n "."
+
+  # Recreating the mariadb container by itself leaves an empty database behind, since it keeps
+  # nothing on a volume; notice that and install it again rather than needing a restart here too
+  sinceDBCheck=`expr $sinceDBCheck + 1`
+  if [ $sinceDBCheck -ge $checkDBEvery ]; then
+    sinceDBCheck=0
+    if ! dbInstalled; then
+      echo ""
+      echo "The database has gone away"
+      waitForDB
+      if ! dbInstalled; then
+        installDB
+        echo "READY - webDiplomacy system initialized"
+      fi
+      echo "Starting gamemaster"
+    fi
+  fi
+done
