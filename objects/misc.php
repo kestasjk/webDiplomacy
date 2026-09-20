@@ -43,7 +43,12 @@ class Misc
 		// Open was renamed to Joinable due to the verb/noun confusion in translations
 		if( $name == 'GamesJoinable' ) $name = 'GamesOpen';
 		
-		if( !isset($this->data[$name]) ) return -1;
+		// array_key_exists, not isset: a cached value can be null - miscUpdate::forum() and ::game()
+		// fill several of these from MIN() aggregates that return NULL over an empty set - and isset()
+		// would report that as missing and hand back -1. -1 is truthy, so the `if( !$Misc->X ) $Misc->X
+		// = 0;` guards those callers put after each of those queries never fired and the null survived
+		// as far as write().
+		if( !array_key_exists($name, $this->data) ) return -1;
 
 		return $this->data[$name];
 	}
@@ -60,7 +65,9 @@ class Misc
 		
 		foreach($this->updated as $name)
 		{
-			$DB->sql_put("UPDATE wD_Misc SET value = ".$this->data[$name]." WHERE name = '".$name."'");
+			// Cast: wD_Misc.value is an unsigned integer column, and interpolating a null here would
+			// give "SET value =  WHERE ...", a syntax error that takes down whatever was writing.
+			$DB->sql_put("UPDATE wD_Misc SET value = ".((int)$this->data[$name])." WHERE name = '".$name."'");
 			unset($this->updated[$name]);
 		}
 	}
