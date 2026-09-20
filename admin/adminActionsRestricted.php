@@ -158,7 +158,9 @@ class adminActionsRestricted extends adminActionsSeniorMod
 					cleanup while they were still being played. Only games whose board is still on the table are
 					touched, which is what tells a game ended by a cleanup from one that was really played out.
 					Leave the user ID empty for every such game, or give one to restore only that user\'s.',
-				'params' => array('userID'=>'User ID (optional)'),
+				/* Not named userID: the admin panel builds a User object from a parameter of that name to show a
+				   profile link beside the form, which throws when it is left empty, and here it is optional. */
+				'params' => array('sandboxUserID'=>'Sandbox owner user ID (empty for all)'),
 			),
 			'updateDonators' => array(
 				'name' => 'Update Donators',
@@ -901,7 +903,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		require_once(l_r('gamemaster/game.php'));
 		require_once(l_r('lib/gamefiles.php'));
 
-		$userID = ( isset($params['userID']) && trim($params['userID']) !== '' ) ? (int)$params['userID'] : null;
+		$userID = ( isset($params['sandboxUserID']) && trim($params['sandboxUserID']) !== '' ) ? (int)$params['sandboxUserID'] : null;
 
 		$tabl = $DB->sql_tabl("SELECT g.id, g.variantID, g.turn, g.name, g.sandboxCreatedByUserID
 			FROM wD_Games g
