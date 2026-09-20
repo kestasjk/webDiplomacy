@@ -152,6 +152,14 @@ class adminActionsRestricted extends adminActionsSeniorMod
 					along with that phase\'s orders, and sets the time so that the game will be reprocessed.',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'restoreCancelledSandboxGames' => array(
+				'name' => 'Restore cancelled sandbox games',
+				'description' => 'Brings back sandbox games which were finished by the gamemaster\'s weekly
+					cleanup while they were still being played. Only games whose board is still on the table are
+					touched, which is what tells a game ended by a cleanup from one that was really played out.
+					Leave the user ID empty for every such game, or give one to restore only that user\'s.',
+				'params' => array('userID'=>'User ID (optional)'),
+			),
 			'updateDonators' => array(
 				'name' => 'Update Donators',
 				'description' => 'Will not do anything outside webdip, updates all donators to sync with Ranks on the new forum.',
@@ -871,6 +879,92 @@ class adminActionsRestricted extends adminActionsSeniorMod
 
 		return l_t('This game was moved from %s, %s back to Diplomacy, %s, and is ready to be reprocessed.',
 			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($Game->turn)); // moveTurnBack() reloads $Game at the turn moved back to
+	}
+
+	/**
+	 * Restore sandbox games which a cleanup finished while they were still in use.
+	 *
+	 * The gamemaster's weekly sandbox cleanup used to take a game whose *any* member row had a
+	 * timeLoggedIn over a week old. A sandbox's countries all belong to its creator and only the one
+	 * they last opened on board.php had that kept up to date, so every sandbox was drawn a week after
+	 * it was created however much it was being played.
+	 *
+	 * It is recoverable because the cleanup is a single UPDATE of wD_Games: the units, territories and
+	 * orders were never deleted, as they are when a game really finishes (see Game::process(), which
+	 * clears them once the phase becomes Finished). A finished game with units still on the table was
+	 * therefore ended by a cleanup and not by being played out, which is what this selects on.
+	 */
+	public function restoreCancelledSandboxGames(array $params)
+	{
+		global $DB;
+
+		require_once(l_r('gamemaster/game.php'));
+		require_once(l_r('lib/gamefiles.php'));
+
+		$userID = ( isset($params['userID']) && trim($params['userID']) !== '' ) ? (int)$params['userID'] : null;
+
+		$tabl = $DB->sql_tabl("SELECT g.id, g.variantID, g.turn, g.name, g.sandboxCreatedByUserID
+			FROM wD_Games g
+			WHERE g.sandboxCreatedByUserID IS NOT NULL
+				AND g.phase = 'Finished'
+				".( is_null($userID) ? "" : "AND g.sandboxCreatedByUserID = ".$userID )."
+				AND EXISTS ( SELECT 1 FROM wD_Units u WHERE u.gameID = g.id )
+			ORDER BY g.id");
+
+		$games = array();
+		while($row = $DB->tabl_hash($tabl)) $games[] = $row;
+
+		if( count($games) == 0 )
+			return l_t('No cancelled sandbox games with a board still on the table were found%s.',
+				is_null($userID) ? '' : l_t(' for user %s', $userID));
+
+		$restored = array();
+		foreach($games as $row)
+		{
+			$gameID = (int)$row['id'];
+
+			/*
+			 * Which phase it was in. The cleanup overwrote the phase but nothing else, so the orders
+			 * waiting to be entered say what it was: builds and retreats orders exist only in their own
+			 * phases. A retreating unit is the same answer from the other direction, for a retreats phase
+			 * whose orders had not been generated yet.
+			 */
+			list($retreatOrders) = $DB->sql_row("SELECT COUNT(1) FROM wD_Orders
+				WHERE gameID = ".$gameID." AND type IN ('Retreat','Disband')");
+			list($buildOrders) = $DB->sql_row("SELECT COUNT(1) FROM wD_Orders
+				WHERE gameID = ".$gameID." AND type IN ('Build Army','Build Fleet','Wait','Destroy')");
+			list($retreating) = $DB->sql_row("SELECT COUNT(1) FROM wD_TerrStatus
+				WHERE gameID = ".$gameID." AND retreatingUnitID IS NOT NULL");
+
+			if( $retreatOrders > 0 || $retreating > 0 ) $phase = 'Retreats';
+			elseif( $buildOrders > 0 ) $phase = 'Builds';
+			else $phase = 'Diplomacy';
+
+			$DB->sql_put("UPDATE wD_Games
+				SET phase = '".$phase."', gameOver = 'No',
+					processStatus = 'Not-processing', pauseTimeRemaining = NULL, processTime = 2000000000
+				WHERE id = ".$gameID);
+
+			/*
+			 * The same cleanup run set every Playing member to Survived. A sandbox's members are all its
+			 * creator, so they go back to Playing, except for countries with nothing left on the board,
+			 * which are Defeated - the same rule moveTurnBack() uses.
+			 */
+			$DB->sql_put("UPDATE wD_Members m
+				SET m.status = IF( EXISTS ( SELECT 1 FROM wD_Units u WHERE u.gameID = m.gameID AND u.countryID = m.countryID ), 'Playing', 'Defeated' ),
+					m.votes = ''
+				WHERE m.gameID = ".$gameID." AND m.status IN ('Survived','Drawn','Won','Resigned')");
+
+			$DB->sql_put("COMMIT");
+
+			Game::cacheTurnPhase($gameID, (int)$row['turn'], $phase); // For the SSE server
+			Game::wipeCache($gameID);
+			libGameFiles::refresh($gameID);
+
+			$restored[] = $gameID.' ('.$row['name'].', '.$phase.')';
+		}
+
+		return l_t('Restored %s sandbox game(s): %s', count($restored), implode(', ', $restored));
 	}
 
 	public function recreateUnitDestroyIndex(array $params)
