@@ -493,11 +493,11 @@ P = `game/playercontext`, X = dropped (no consumer reads it).
 1. **Production web server.** The files need `Content-Type: application/json` and gzip for
    `.json` under `cache/` and `variants/*/cache/`. Is production Apache or nginx, and is there
    anything in front of it (CDN, proxy cache) that would cache `cache/**` without the `?v=`?
-2. **`players/cd`.** The gunboat bots' civil-disorder takeover has been rejected by `game/status`
-   since 2022. The new gunboat client ignores the CD keys. With the public files the takeover could
-   work again (the state no longer needs membership, and `game/orders` still accepts orders for a
-   country in CD from a key with `submitOrdersForUserInCD`), if something lists the countries in CD:
-   wanted?
+2. **`players/cd`.** The route was removed on 2026-09-20 and the new gunboat client ignores the CD
+   keys; the takeover it was for had been rejected by `game/status` since 2022. With the public files
+   it could work again (the state no longer needs membership, and `game/orders` still accepts orders
+   for a country in CD from a key with `submitOrdersForUserInCD`), if something lists the countries
+   in CD: wanted?
 3. **Redacted messages.** `config.sample.php` says a separate process fills
    `wD_GameMessages_Redacted` in production, so API-key callers keep reading that table unless
    `allowBotsAccessToUnredactedMessages` is set. Logged-in users read the real one. Confirm this
@@ -571,3 +571,29 @@ ports are bound to localhost, phpmyadmin can only reach the dev database, and ng
 files. Verified from a clone: READY, all of `test_playercontext.py`, both boards built, the `/game/` board
 loading a game from its files, and the gunboat bots playing a dev game through the new route with
 `equivalence_test.py` clean.
+
+Later the same day, at the user's direction:
+
+- **The legacy read API is gone.** `game/status`, `game/pulse`, `game/overview`, `game/data`,
+  `game/members`, `game/getmessages`, `players/pulse`, `players/active_games`, `players/cd` and
+  `players/missing_orders` were removed from `api.php`, with the response classes only they used.
+  `api/responses/game_state.php` stays, because `libGameFiles::buildHistory()` builds `history.json`
+  from its `GameState`. What remains is `game/playercontext`, the writes (`game/orders`,
+  `game/sendmessage`, `game/setvote`, `game/togglevote`, `game/messagesseen`, `game/markbackfromleft`,
+  `game/join`, `game/leave`), `sse/authentication`, `push/*` and `sandbox/*`. `api/README.md`, which
+  documented `players/cd`, `players/missing_orders`, `game/status` and `game/orders` for outside bot
+  authors, is rewritten around the files, `game/playercontext` and the writes, and lists what replaced
+  each removed route.
+- **`beta-src/` is deleted and `/beta/` redirects to `/game/`** (302, in `.htaccess` and the dev nginx
+  config, which catches the old build too if it is still on the server). Every link the site generated
+  to `beta/` now points at `game/`: `board.php`'s point-and-click redirect, the join redirect, the game
+  panel's map link, the play-now game list and the apple-touch-icon and manifest icons.
+- **`gitpull.php` runs the SSE server.** It starts `sse-server/server.js` with node if it isn't
+  running, and restarts it when `sse-server/` changed, keeping the pid in `../sse-server.pid` and the
+  output in `../sse-server.log`. It reports the port it came up on, or the tail of the log if it
+  didn't. This closes the "needs a manual SSE restart on deploy" item.
+
+**The live Cicero and Dora bots read `game/status`, `game/pulse`, `players/pulse`,
+`players/active_games` and `game/getmessages`, so they stop working when this is deployed** unless they
+are switched to the `webdiplomacy_bots_meta` clone at the same time. The two equivalence tests also need
+`game/status` and can only be run against a server on older code from now on.

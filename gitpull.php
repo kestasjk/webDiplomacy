@@ -5,8 +5,8 @@
 // Set GITWEBHOOKSECRET in the Apache config files with SetEnv
 
 // Can also be run manually from the CLI on the server: php gitpull.php
-// Pass FORCEALL to rebuild the beta app and re-copy the phpBB files even if
-// the pull brought no changes to them: php gitpull.php FORCEALL
+// Pass FORCEALL to rebuild the board, restart the SSE server and re-copy the
+// phpBB files even if the pull brought no changes to them: php gitpull.php FORCEALL
 
 // Run a deploy step, appending the output to the permanent log (outside the
 // webroot) and to gitpull.txt (latest run only, web accessible so the deploy
@@ -23,18 +23,123 @@ function runStep($cmd)
 	return $output;
 }
 
+/**
+ * The port the SSE server listens on, from sse-server/.env, which is not in git; server.js defaults
+ * to 3000 when the file doesn't set one.
+ */
+function ssePort()
+{
+	$env = @file_get_contents(__DIR__.'/sse-server/.env');
+	if( $env !== false && preg_match('/^\s*SSE_PORT\s*=\s*(\d+)/m', $env, $m) )
+		return intval($m[1]);
+
+	return 3000;
+}
+
+/**
+ * The pids of any SSE server running from this checkout. It is started below with the full path to
+ * server.js, so this doesn't match another checkout's copy (a staging site on the same machine).
+ */
+function ssePids()
+{
+	$out = trim(''.shell_exec('pgrep -f '.escapeshellarg('^node .*'.__DIR__.'/sse-server/server\.js$').' 2>/dev/null'));
+	if( $out === '' ) return array();
+
+	return array_map('intval', preg_split('/\s+/', $out));
+}
+
+/**
+ * Whether something is listening on the SSE port yet, given a few seconds to come up.
+ */
+function sseListening($seconds = 10)
+{
+	$port = ssePort();
+	for( $i = 0; $i < $seconds * 2; $i++ )
+	{
+		$socket = @fsockopen('127.0.0.1', $port, $errno, $errstr, 1);
+		if( $socket ) { fclose($socket); return true; }
+		usleep(500000);
+	}
+
+	return false;
+}
+
+/**
+ * Start the SSE server (sse-server/server.js), or restart it when its code changed.
+ *
+ * Nothing else supervises it: this script owns the process, writing its pid to ../sse-server.pid and
+ * its output to ../sse-server.log, both outside the webroot. A deploy that doesn't touch sse-server/
+ * leaves the connected clients alone and only starts it if it isn't running, e.g. after a reboot.
+ */
+function deploySSE($changedFiles, $forceAll)
+{
+	$changed = $forceAll || strpos($changedFiles, 'sse-server/') !== false;
+	$running = ssePids();
+
+	if( !$changed && $running )
+	{
+		runStep('echo SSE server already running as pid '.implode(' ', $running).', and sse-server/ has not changed');
+		return;
+	}
+
+	if( !is_file(__DIR__.'/sse-server/.env') )
+	{
+		runStep('echo No sse-server/.env, so the SSE server has nothing to sign tokens with; not starting it');
+		return;
+	}
+
+	// Its dependencies aren't in git either
+	if( $changed || !is_dir(__DIR__.'/sse-server/node_modules') )
+		runStep('cd sse-server && npm ci --cache ../cache/npm --no-audit --no-fund');
+
+	foreach( $running as $pid )
+		runStep('kill '.intval($pid).' && echo Stopped SSE server pid '.intval($pid));
+
+	// Give them a moment to close their listening socket, then insist
+	for( $i = 0; $i < 20 && ssePids(); $i++ )
+		usleep(250000);
+	foreach( ssePids() as $pid )
+		runStep('kill -9 '.intval($pid).' && echo SSE server pid '.intval($pid).' did not stop, killed it');
+
+	// Started with the full path so the pgrep above can tell this checkout's server from another's,
+	// but from its own directory, which is where it reads .env from
+	runStep('cd sse-server && nohup node '.escapeshellarg(__DIR__.'/sse-server/server.js')
+		.' >> ../../sse-server.log 2>&1 < /dev/null & echo Started the SSE server');
+
+	// It has either come up or written why it couldn't. Check the process first: if the port alone were
+	// checked, another checkout's server holding the port would look like success.
+	$pids = array();
+	for( $i = 0; $i < 20 && !$pids; $i++ )
+	{
+		usleep(250000);
+		$pids = ssePids();
+	}
+
+	if( !$pids )
+		runStep('echo The SSE server did not start ; tail -n 20 ../sse-server.log');
+	elseif( !sseListening() )
+		runStep('echo The SSE server is running as pid '.implode(' ', $pids).' but nothing is listening on port '
+			.ssePort().' ; tail -n 20 ../sse-server.log');
+	else
+	{
+		file_put_contents('../sse-server.pid', implode(' ', $pids)."\n");
+		runStep('echo SSE server listening on port '.ssePort().' as pid '.implode(' ', $pids));
+	}
+}
+
 function deploy($forceAll = false)
 {
 	chdir(__DIR__);
 
 	// The web server can run this with no PATH at all (e.g. PHP-FPM's clear_env). The shell still finds npm on
 	// its built-in default path, but npm only puts node_modules/.bin on a PATH that exists, so npm scripts then
-	// can't run package binaries ("husky: not found" from the beta's prepare script). Runs from a shell are fine.
+	// can't run package binaries. It also has to find node, for the board build and the SSE server. Runs from
+	// a shell are fine.
 	if( getenv('PATH') === false || getenv('PATH') === '' )
 		putenv('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
 
 	// Keep deploying even after github closes the webhook connection; the
-	// beta build can take a few minutes
+	// board build can take a few minutes
 	ignore_user_abort(true);
 	set_time_limit(0);
 
@@ -66,31 +171,25 @@ function deploy($forceAll = false)
 		}
 	}
 
-	// Rebuild the beta React app when its source changed.
+	// Rebuild the React game board (game-src/, built to game/) when its source changed.
 	// npm ci rather than npm install so package-lock.json is never rewritten,
 	// which would dirty the working tree and break future pulls; the cache
 	// flag keeps npm out of the web user's (unwritable) home directory.
-	if( $forceAll || strpos($changedFiles, 'beta-src/') !== false )
+	// It replaced the beta board, so on a server that has not built it before it takes the beta's
+	// .env.production, which is not in git and so is still sitting in beta-src/.
+	if( $forceAll || strpos($changedFiles, 'game-src/') !== false )
 	{
 		// Environment snapshot; a build that dies without output is usually resources
 		runStep('free -m; df -h .; node --version; npm --version');
-		runStep('cd beta-src && npm ci --cache ../cache/npm'
-			.' && if [ -f .env.production ]; then npm run build:production; else npm run build; fi');
-	}
-	else
-		runStep('echo Skipping beta build, no beta-src changes');
-
-	// The same for the game board (game-src/, built to game/), which reads games from their public JSON files and
-	// game/playercontext (doc/gamedata/02-spec.md). It is a copy of the beta, so it gets the beta's .env.production
-	// if the server has one and it doesn't.
-	if( $forceAll || strpos($changedFiles, 'game-src/') !== false )
-	{
 		runStep('cd game-src && ( [ ! -f ../beta-src/.env.production ] || [ -f .env.production ] || cp ../beta-src/.env.production . )'
 			.' && npm ci --cache ../cache/npm'
 			.' && if [ -f .env.production ]; then npm run build:production; else npm run build; fi');
 	}
 	else
 		runStep('echo Skipping game board build, no game-src changes');
+
+	// Start the SSE server, or restart it if its code changed
+	deploySSE($changedFiles, $forceAll);
 
 	// Overlay the phpBB integration files onto the phpBB install (per
 	// contrib/phpBB3-files/README.txt) and wipe the compiled caches, which

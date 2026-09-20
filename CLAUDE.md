@@ -11,7 +11,7 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 ### Core Components
 
 - **PHP Backend**: Main application logic written in PHP with MySQL database
-- **React Frontend**: Modern UI located in `beta-src/` directory built with TypeScript, Redux Toolkit, and Tailwind CSS
+- **React Frontend**: The game board, in `game-src/`, built with TypeScript, Redux Toolkit and Tailwind CSS. It builds to `/game/` and reads games from their public JSON files and `game/playercontext` (see `doc/gamedata/02-spec.md`). It replaced the `beta-src/` board on 2026-09-20; `/beta/` now redirects to `/game/`
 - **SSE Server**: Node.js server for real-time events in `sse-server/` directory
 - **Game Engine**: Sophisticated adjudicator system in `gamemaster/` for processing game moves and rules
 - **Variant System**: Extensible game variant framework in `variants/` directory
@@ -25,7 +25,7 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 - `variants/`: Different game variants (Classic, Modern, etc.)
 - `lib/`: Shared utility libraries
 - `locales/`: Internationalization files
-- `beta-src/`: React frontend source code
+- `game-src/`: React game board source code
 - `sse-server/`: Server-sent events backend
 
 ## Development Commands
@@ -36,33 +36,38 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 - **Configuration**: Copy `config.sample.php` to `config.php`
 - **Dependencies**: Run `composer update` to install PHP dependencies
 
-### React Frontend (beta-src/)
+### React Frontend (game-src/)
 - **Install**: `npm install`
 - **Development**: `npm start` (starts dev server)
-- **Build**: `npm run build` (outputs to `../beta` directory)
+- **Build**: `npm run build` (outputs to `../game` directory)
 - **Test**: `npm test`
 - **Lint**: Uses ESLint with Airbnb config
+- In docker: `docker compose --profile build up game-build`
 
 ### SSE Server
 - **Install**: `npm install` in `sse-server/`
-- **Run**: `node server.js`
+- **Run**: `node server.js` from that directory (it reads `.env` from the working directory). On the
+  live servers `gitpull.php` starts it and restarts it when `sse-server/` changes; its output goes to
+  `../sse-server.log` and its pid to `../sse-server.pid`, beside the webroot.
 
 ## Deploying to Production
 
 - Production pulls from the `production` branch, which mirrors `master`. To deploy:
   commit to `master`, `git push origin master`, then `git push origin master:production`.
 - On each push a GitHub webhook calls `gitpull.php` on the production server, which runs
-  `git pull`, rebuilds the beta React app if `beta-src/` changed, and overlays
+  `git pull`, rebuilds the React board if `game-src/` changed, restarts the SSE server if
+  `sse-server/` changed (and starts it if it isn't running), and overlays
   `contrib/phpBB3-files/` onto the phpBB install (wiping its compiled cache) if those
   files changed.
 - Including `[force-deploy]` in a pushed commit message (an empty commit works:
-  `git commit --allow-empty -m "Redeploy [force-deploy]"`) forces the beta rebuild and
-  phpBB overlay even when the pull didn't touch those paths.
+  `git commit --allow-empty -m "Redeploy [force-deploy]"`) forces the board rebuild, the SSE
+  restart and the phpBB overlay even when the pull didn't touch those paths.
 - To verify: fetch https://webdiplomacy.net/gitpull.txt — it holds the latest deploy run's
-  full output and should end with `Deploy finished` and a timestamp. A beta rebuild takes
+  full output and should end with `Deploy finished` and a timestamp. A board rebuild takes
   a few minutes, so refetch until the marker appears; any npm or copy errors show here.
 - Manual/forced deploy (e.g. after a failed build): run `sudo -u www-data php gitpull.php FORCEALL`
-  from the production webroot to force the beta rebuild and phpBB overlay without new commits.
+  from the production webroot to force the board rebuild, the SSE restart and the phpBB overlay
+  without new commits.
 
 ## Database Schema
 
@@ -99,7 +104,7 @@ The system uses MySQL with a comprehensive schema including:
 - Test cases ensure adjudicator follows official Diplomacy rules
 
 ### Frontend Testing
-- React Testing Library setup in `beta-src/`
+- React Testing Library setup in `game-src/`
 - Run `npm test` for component testing
 
 ## Configuration
