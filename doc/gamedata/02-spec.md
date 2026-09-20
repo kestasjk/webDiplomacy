@@ -387,7 +387,7 @@ channel and the files channel; closes the over-subscription finding).
 | Votes applied: pause/unpause, draw, concede | `libGameMaster::findAndApplyGameVotes()` after each commit | game, status, history |
 | Cancelled / abandoned / erased | `eraseGame()` | delete all |
 | Turn moved back | `moveTurnBack()` after COMMIT | game, status, history, messages |
-| Order status changed | `OrderInterface::writeOrderStatus()` callers, after their COMMIT (`ajax.php`, `game/orders`) | status |
+| Order status changed | `OrderInterface::writeOrderStatus()` callers, after their COMMIT: `ajax.php` when the status actually changed (`$O->orderStatus->updated`), `game/orders` on every save | game, status (a member can come back from Left while saving orders, which `game.json` carries) |
 | Vote toggled | `userMember::toggleVote()`, `game/setvote`, `game/togglevote` | status, messages if the vote log is public |
 | Global message sent | `libGameMessage::send()` when `toCountryID == 0` | messages |
 | Join, leave, takeover, back from left | `processMembers::join()`, `processMember::leave()`, `markBackFromLeft()` | game, status |

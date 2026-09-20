@@ -143,9 +143,11 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		$O->writeOrderStatus();
 		$DB->sql_put("COMMIT");
 
-		// Let the other players' clients see the new order status (where the game shows it)
+		// Let the other players' clients see the new order status (where the game shows it). The member's
+		// status can also have changed while saving orders, from Left back to Playing, which is in game.json;
+		// game/orders refreshes both for the same reason.
 		if( $O->orderStatus->updated )
-			libGameFiles::refresh($O->gameID, array('status'));
+			libGameFiles::refresh($O->gameID, array('game', 'status'));
 
 		$results = $O->getResults();
 
