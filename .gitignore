@@ -41,9 +41,11 @@ composer.lock
 .github/
 ads.txt
 backup.flag
-beta/adsense.js
-beta/
-game/
+/beta/adsense.js
+# Anchored: an unanchored "beta/" or "game/" also hides the source folders of the same
+# name, e.g. beta-src/src/state/game/
+/beta/
+/game/
 scratchpad/
 # Ignore working-notes markdown docs, but keep the READMEs and CLAUDE.md
 *.md
