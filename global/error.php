@@ -329,6 +329,67 @@ class libError
 	}
 
 	/**
+	 * Log an error a browser reported through the client/error API route, in the same form and with the same
+	 * de-duplication as a server error, so that one error log holds both. Nothing here may end the request:
+	 * the browser is told nothing beyond that its report was accepted.
+	 *
+	 * @param string $kind script, promise or react
+	 * @param array $error message, source, line, column, stack, componentStack, url, userAgent
+	 * @param int $userID The logged-in user who saw it, or 0 for a guest
+	 * @return bool Whether a log file was written; false when de-duplicated or logging is off
+	 */
+	public static function logClientError($kind, array $error, $userID = 0)
+	{
+		if( !self::isLoggingEnabled() )
+			return false;
+
+		$dir = Config::errorlogDirectory();
+		if( !is_dir($dir) || !is_writable($dir) )
+			return false;
+
+		// Everything below came from a browser, so it is cut to a sane length and stripped of control
+		// characters before it goes anywhere near a file
+		$field = function($name, $limit) use($error) {
+			$value = isset($error[$name]) ? (string)$error[$name] : '';
+			$value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
+			return mb_substr($value, 0, $limit);
+		};
+
+		$message = $field('message', 1000);
+		$source = $field('source', 500);
+		$line = intval($error['line'] ?? 0);
+
+		// Prefixed so a client error and a server error can never share a signature, and de-duplicated on
+		// the message and where it was raised, not the page it happened on: one broken script is one error
+		// however many pages it breaks
+		$signature = self::signature('client-'.$kind.'|'.$message, $source, $line);
+
+		$logFile = self::newLogFile($dir);
+		$occurrence = self::recordOccurrence($dir, $signature, basename($logFile));
+		if( $occurrence['duplicate'] )
+			return false;
+
+		$log = 'Signature: '.$signature."\n";
+		if( $occurrence['previous'] )
+			$log .= 'Previously: '.$occurrence['previous']['count'].' occurrence(s) between '.date('c', $occurrence['previous']['first']).
+				' and '.date('c', $occurrence['previous']['last']).', trace in '.$occurrence['previous']['file']."\n";
+		$log .= 'Error: "'.$message."\"\n";
+		$log .= 'Client error ('.$kind.'); reported by a browser, this request only wrote it down'."\n";
+		if( $source )
+			$log .= 'Raised: "'.$source."\"\n";
+		if( $line )
+			$log .= 'Line: "'.$line.( intval($error['column'] ?? 0) ? ':'.intval($error['column']) : '' )."\"\n";
+		$log .= 'Page: "'.$field('url', 500)."\"\n";
+		$log .= 'User: '.( $userID > 0 ? intval($userID) : 'guest' ).', IP '.(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '?')."\n";
+		$log .= 'Browser: "'.$field('userAgent', 300)."\"\n";
+		$log .= "Trace:\n".( $field('stack', 4000) ?: '(none given)' )."\n";
+		if( $field('componentStack', 4000) )
+			$log .= "Component stack:\n".$field('componentStack', 4000)."\n";
+
+		return (bool)@file_put_contents($logFile, $log);
+	}
+
+	/**
 	 * Record that an error with $signature has just occurred, in $dir/.dedup/<signature>.json.
 	 *
 	 * @param string $dir The error log directory

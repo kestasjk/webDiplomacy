@@ -204,6 +204,9 @@ header("Expires: 0", false);
 header("X-Frame-Options: SAMEORIGIN"); //@ibarrionuevo
 
 require_once(l_r('lib/auth.php'));
+// Every page's footer records its own metrics, and its head tells the browser which counter to
+// report its load time to
+require_once(l_r('lib/metrics.php'));
 
 if( !defined('AJAX') )
 {

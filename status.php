@@ -394,6 +394,8 @@ $pageEndpoints = array(
 );
 // The parts of each gamemaster.php run, which are also counted in PAGE_GAMEMASTER
 $gamemasterParts = libMetrics::gamemasterParts();
+// What browsers report about themselves through the client/metrics API route
+$clientParts = libMetrics::clientParts();
 $metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
 					
 // Handle clearing API metrics if requested
@@ -426,6 +428,14 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 				if ($type == 'BOTCOUNT') continue; // PAGE doesn't have bot counts
 				$key = 'METRICS_PAGE_' . $endpoint . '_' . $type;
 				if ($Redis->delete($key)) {
+					$clearedCount++;
+				}
+			}
+		}
+		// Clear client metrics
+		foreach ($clientParts as $part) {
+			foreach (array('COUNT', 'TIME_MS') as $type) {
+				if ($Redis->delete('METRICS_' . $part . '_' . $type)) {
 					$clearedCount++;
 				}
 			}
@@ -602,6 +612,39 @@ try
 			print '<td class="modTools" style="text-align:right">'.round($data['db_get'] / $data['count'], 2).'</td>';
 			print '<td class="modTools" style="text-align:right">'.round($data['db_put'] / $data['count'], 2).'</td>';
 			print '<td class="modTools" style="text-align:right">'.round($data['db_time_ms'] / $data['count'], 2).'</td>';
+			print '</tr>';
+		}
+		print '</TABLE>';
+	}
+
+	// What browsers reported about themselves (client/metrics and client/error). These are times measured in
+	// the browser, so they include the network and the user's machine, which the server-side times above don't.
+	$clientMetrics = array();
+	foreach ($clientParts as $part) {
+		$count = intval($Redis->get('METRICS_' . $part . '_COUNT'));
+		if ($count > 0) {
+			$clientMetrics[$part] = array(
+				'count' => $count,
+				'time_ms' => (float)$Redis->get('METRICS_' . $part . '_TIME_MS'),
+			);
+		}
+	}
+	if (!empty($clientMetrics)) {
+		uasort($clientMetrics, function($a, $b) {
+			return $b['count'] <=> $a['count'];
+		});
+		print '<h4>'.l_t('Reported by browsers:').'</h4>';
+		print '<TABLE class="modTools">';
+		print '<tr>';
+		print '<th class="modTools">Part</th>';
+		print '<th class="modTools">Reports</th>';
+		print '<th class="modTools">Avg Time (ms)</th>';
+		print '</tr>';
+		foreach ($clientMetrics as $part => $data) {
+			print '<tr>';
+			print '<td class="modTools">'.strtolower(substr($part, strlen('CLIENT_'))).'</td>';
+			print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
+			print '<td class="modTools" style="text-align:right">'.( $data['time_ms'] > 0 ? round($data['time_ms'] / $data['count'], 1) : '-' ).'</td>';
 			print '</tr>';
 		}
 		print '</TABLE>';

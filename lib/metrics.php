@@ -68,6 +68,100 @@ class libMetrics
 	}
 
 	/**
+	 * The things a browser is allowed to report a timing or a count for, recorded as
+	 * METRICS_CLIENT_<name>_{COUNT,TIME_MS} by the client/metrics API route.
+	 *
+	 * A browser can say anything, so the names it may use are listed here rather than taken from the
+	 * request: they become Redis keys, and status.php lists them.
+	 *
+	 * - PAGE_<name>: a classic page, from the browser's navigation timing (TIME_MS is load time)
+	 * - BOARD_LOAD / BOARD_FILES / BOARD_CONTEXT: the React board's time to first render, time spent
+	 *   fetching the public game files, and time in game/playercontext
+	 * - SSE_CONNECT / SSE_RECONNECT / SSE_RESYNC: the SSE connection as the browser sees it
+	 * - ERROR_SCRIPT / ERROR_PROMISE / ERROR_REACT: client errors, counted even when the log is
+	 *   de-duplicated or the beacon is rate limited
+	 *
+	 * @return string[]
+	 */
+	public static function clientParts()
+	{
+		$parts = array('PAGE_HOME', 'PAGE_BOARD', 'PAGE_GAMELISTINGS', 'PAGE_FORUM', 'PAGE_PROFILE', 'PAGE_OTHER',
+			'BOARD_LOAD', 'BOARD_FILES', 'BOARD_CONTEXT',
+			'SSE_CONNECT', 'SSE_RECONNECT', 'SSE_RESYNC',
+			'ERROR_SCRIPT', 'ERROR_PROMISE', 'ERROR_REACT');
+
+		return array_map(function($part) { return 'CLIENT_'.$part; }, $parts);
+	}
+
+	/**
+	 * The name of the page being served, as the METRICS_PAGE_* counters and status.php's page list spell it:
+	 * the script's own name, with index.php as HOME.
+	 *
+	 * @return string
+	 */
+	public static function pageName()
+	{
+		$pageName = '';
+		if (isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF']) {
+			$pageName = strtoupper(basename($_SERVER['PHP_SELF'], '.php'));
+		} elseif (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME']) {
+			$pageName = strtoupper(basename($_SERVER['SCRIPT_NAME'], '.php'));
+		}
+
+		if ($pageName === 'INDEX' || $pageName === '') {
+			$pageName = 'HOME';
+		}
+
+		return $pageName;
+	}
+
+	/**
+	 * The counter a page's own load time is added to, for the head of the page to tell the browser. Pages
+	 * which aren't listed in clientParts() share PAGE_OTHER rather than each making a counter of their own.
+	 *
+	 * @return string A name recordClient() accepts
+	 */
+	public static function clientPageName()
+	{
+		$name = 'PAGE_'.preg_replace('/[^A-Z0-9_]/', '', self::pageName());
+
+		return in_array('CLIENT_'.$name, self::clientParts()) ? $name : 'PAGE_OTHER';
+	}
+
+	/**
+	 * Add a browser's report to one of the client counters. Unlike record() there is no time or query count
+	 * of our own to add: the browser gives the milliseconds, and only names from clientParts() are accepted.
+	 *
+	 * @param string $name A name from clientParts(), without the CLIENT_ prefix
+	 * @param int $count How many times it happened
+	 * @param int|null $ms The milliseconds to add, if the name is a timing
+	 * @return bool Whether the name was one we record
+	 */
+	public static function recordClient($name, $count = 1, $ms = null)
+	{
+		global $Redis;
+
+		$name = 'CLIENT_'.strtoupper(preg_replace('/[^A-Za-z0-9_]/', '', (string)$name));
+		if( !in_array($name, self::clientParts()) )
+			return false;
+
+		$increments = array('METRICS_'.$name.'_COUNT' => max(1, min(1000, intval($count))));
+		if( !is_null($ms) )
+			$increments['METRICS_'.$name.'_TIME_MS'] = max(0, min(600000, intval($ms)));
+
+		try
+		{
+			$Redis->incrementMany($increments);
+		}
+		catch(Exception $e)
+		{
+			// Metrics are never worth breaking the request over
+		}
+
+		return true;
+	}
+
+	/**
 	 * Mark the start of a part of the request.
 	 *
 	 * @return array A marker to pass to record() at the end of the part

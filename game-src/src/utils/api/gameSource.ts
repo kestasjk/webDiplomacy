@@ -25,6 +25,7 @@ import {
   ITerritory,
   IUnit,
 } from "../../models/Interfaces";
+import { reportClientMetric, reportClientMetricOnce } from "../clientLog";
 
 /* The new formats */
 
@@ -297,10 +298,12 @@ async function requestContext(
   const query = new URLSearchParams({ gameID, ...params });
   const token = sbToken();
   if (token) query.set("sbToken", token);
+  const started = performance.now();
   const { data } = await http.get(
     `${siteRoot}api.php?route=game/playercontext&${query.toString()}`,
     { timeout: 60000 },
   );
+  reportClientMetric("BOARD_CONTEXT", performance.now() - started);
   const newContext = data as PlayerContext;
   fileURLs = newContext.files;
   gameFileNames.forEach((file) => {
@@ -323,6 +326,9 @@ export async function getContext(gameID: string): Promise<PlayerContext> {
       isFirst ? { orders: "1", messages: "1" } : { orders: "1" },
     )
       .then((newContext) => {
+        // What the player waited through before the board had a game to draw: everything since they opened
+        // the page, not just this request
+        if (isFirst) reportClientMetricOnce("BOARD_LOAD", performance.now());
         if (isFirst) firstMessages = newContext.messages;
         context = newContext;
         contextGameID = gameID;
@@ -345,9 +351,11 @@ async function getFile<T>(file: GameFileName | "variant"): Promise<T> {
   const loaded = loadedFiles[file];
   if (loaded && loaded.version === version) return loaded.contents as T;
 
+  const started = performance.now();
   const { data } = await http.get(`${siteRoot}${ref.url}?v=${version}`, {
     timeout: 60000,
   });
+  reportClientMetric("BOARD_FILES", performance.now() - started);
   // The file says which version it is, which is newer than the one asked for if it was rewritten in between
   const contents = data as { version?: string };
   loadedFiles[file] = { version: contents.version || version, contents };

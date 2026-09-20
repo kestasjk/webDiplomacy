@@ -152,6 +152,7 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, au
         eventSource.onopen = () => {
             console.log('Connected to SSE server');
             hasOpened = true;
+            if( window.wdClientLog ) wdClientLog.metric('SSE_CONNECT');
             // The SSE server should now send anything this page missed and then a catchup event
             catchupTimer = setTimeout(() => {
                 console.log('No catchup event from the SSE server; checking for missed updates');
@@ -177,6 +178,7 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, au
             if( eventSource != null && now >= nextReconnectTime )
             {
                 console.log('Nothing received from server in reconnect timeout period. Reconnecting');
+                if( window.wdClientLog ) wdClientLog.metric('SSE_RECONNECT');
                 eventSource.close();
                 if( catchupTimer ) clearTimeout(catchupTimer);
 
@@ -206,6 +208,7 @@ var configureSSE = function(gameID, countryID, turn, phase, renderTime, auth, au
                     // The SSE server can't tell what this page missed: a key it checks wasn't set, or it lost
                     // its Redis connection
                     console.log(`Resync requested`);
+                    if( window.wdClientLog ) wdClientLog.metric('SSE_RESYNC');
                     checkForMissedUpdates();
                 } else if (data.channel === 'catchup') {
                     console.log(`SSE server has sent anything this page missed`);

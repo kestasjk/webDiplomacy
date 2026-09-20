@@ -671,6 +671,8 @@ class libHTML
 
 			<script type="text/javascript">'.$userOptionsJS.'</script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
+			<script type="text/javascript">var wdClientPage = "'.libMetrics::clientPageName().'";</script>
+			<script type="text/javascript" src="'.l_j('javascript/clientlog.js').'?ver='.JSVERSION.'"></script>
 			<script type="text/javascript" src="'.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.l_j('contrib/js/scriptaculous.js').'"></script>
 			<link rel="stylesheet" type="text/css" href="'.l_s('contrib/js/pushup/src/css/pushup.css').'" />
@@ -1248,17 +1250,7 @@ class libHTML
 		if (isset($Redis) && $Redis !== null && isset($pageStartTime) && $DB instanceof MetricsDatabase) {
 			try {
 				// Get page name from current script
-				$pageName = '';
-				if (isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF']) {
-					$pageName = strtoupper(basename($_SERVER['PHP_SELF'], '.php'));
-				} elseif (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME']) {
-					$pageName = strtoupper(basename($_SERVER['SCRIPT_NAME'], '.php'));
-				}
-
-				// Handle special cases
-				if ($pageName === 'INDEX' || $pageName === '') {
-					$pageName = 'HOME';
-				}
+				$pageName = libMetrics::pageName();
 
 				if ($pageName) {
 					// Calculate page generation time

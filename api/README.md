@@ -196,6 +196,34 @@ the site's own board shows it.
   `game/playercontext`; in a public-draw-votes game every country's draw votes are in the vote log in
   `messages.json`.
 
+#### `client/metrics`
+
+* Type: `JSON`
+* Description: What a page saw of its own loading, added to the `METRICS_CLIENT_*` counters `status.php`
+  lists beside the server's own. Called by the site's own pages (`javascript/clientlog.js` and the game
+  board); a logged-out browser may call it, as no API key is needed and none is read.
+* Parameters:
+  * `metrics`: a list of at most 20 `{ name, ms, count }`. `name` has to be one the server knows
+    (`libMetrics::clientParts()`), since it becomes a Redis key; anything else is ignored. `ms` and `count`
+    are clamped.
+* Return: `data.recorded`, how many of the names given were ones the server counts.
+* Limits: 300 calls per address per five minutes, after which reports are dropped with `recorded: 0`.
+
+#### `client/error`
+
+* Type: `JSON`
+* Description: An error the browser hit, written to the site's error log directory in the same form and with
+  the same de-duplication as a server error, so `admin/adminStatusLists.php` lists both. A logged-out
+  browser may call it: a page that fails to load is most often seen by a guest.
+* Parameters:
+  * `kind`: `script` (`window.onerror`), `promise` (`unhandledrejection`) or `react` (an error boundary).
+  * `message`: required.
+  * `source`, `line`, `column`, `stack`, `componentStack`, `url`: optional context, all truncated.
+* Return: `data.logged`, false when the error was a repeat of one already logged in the last hour, or when
+  the caller has gone over the limit.
+* Limits: 20 errors per address per five minutes. The `CLIENT_ERROR_*` counters are incremented before both
+  the limit and the de-duplication, so the count is right even when the trace wasn't kept.
+
 ### ROUTES REMOVED ON 2026-09-20
 
 | Removed | Use instead |

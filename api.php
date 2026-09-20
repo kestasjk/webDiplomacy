@@ -35,6 +35,7 @@ require_once('api/responses/player_context.php');
 require_once('objects/game.php');
 require_once('objects/user.php');
 require_once('lib/cache.php');
+require_once('lib/metrics.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
@@ -326,6 +327,14 @@ abstract class ApiEntry {
 	 */
 	public function requiresMembership() {
 		return $this->requiresGameID();
+	}
+
+	/**
+	 * Whether a logged-out browser may call this route, with no API key and no session. Only the routes a
+	 * page reports its own health on say yes: everything else needs to know who is asking.
+	 */
+	public function allowsGuest() {
+		return false;
 	}
 
 	/**
@@ -1395,6 +1404,166 @@ class ApiSession extends ApiAuth {
 }
 
 /**
+ * What the two client/* routes have in common: they are called by a page reporting on itself, so the caller
+ * may be a guest, everything in the body is untrusted, and a browser that is broken enough to report in a
+ * loop must not be able to fill Redis or the error log with it.
+ */
+abstract class ClientReportEntry extends ApiEntry {
+	/**
+	 * A page can report without being logged in: a script error on the home page is worth as much as one on
+	 * the board, and a guest is who most often sees a page fail to load.
+	 */
+	public function allowsGuest() {
+		return true;
+	}
+
+	/**
+	 * The address reports are counted against, as elsewhere in the site: the forwarded address when there is
+	 * one, since production and staging both sit behind something.
+	 */
+	protected function clientAddress() {
+		if( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) )
+			return trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+
+		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+	}
+
+	/**
+	 * Whether this address may report again in the current five minute window. Without Redis there is nothing
+	 * to count with, and the limits are low enough that dropping the check is safer than dropping the reports.
+	 *
+	 * @param string $bucket The kind of report, counted separately
+	 * @param int $limit Reports allowed per address per five minutes
+	 * @return bool
+	 */
+	protected function withinRateLimit($bucket, $limit) {
+		global $Redis;
+
+		if( empty($Redis) )
+			return true;
+
+		try
+		{
+			$key = 'CLIENTREPORT_'.$bucket.'_'.md5($this->clientAddress()).'_'.intval(time() / 300);
+			if( intval($Redis->get($key)) >= $limit )
+				return false;
+
+			$Redis->setIfMissing($key, 0, 600);
+			$Redis->incrementMany(array($key => 1));
+		}
+		catch(Exception $e)
+		{
+			// A report is never worth an error of our own
+		}
+
+		return true;
+	}
+}
+
+/**
+ * API entry client/metrics
+ *
+ * What a page saw of its own loading, added to the METRICS_CLIENT_* counters status.php lists beside the
+ * server's own. The names are an allow-list (libMetrics::clientParts()); anything else is ignored, since the
+ * body decides Redis keys.
+ */
+class ClientMetrics extends ClientReportEntry {
+	public function __construct() {
+		parent::__construct('client/metrics', 'JSON', '', array('metrics'));
+	}
+
+	public function run($userID, $permissionIsExplicit) {
+		$args = $this->getArgs();
+
+		if( !is_array($args['metrics']) )
+			throw new RequestException('Body field `metrics` is not an array.');
+
+		// A page sends one of these per load; a page sending more than a report a second for five minutes is
+		// looping, and the counters are worth more without it
+		if( !$this->withinRateLimit('metrics', 300) )
+			return $this->JSONResponse('Reporting too often.', '', true, array('recorded' => 0));
+
+		$recorded = 0;
+		foreach( array_slice($args['metrics'], 0, 20) as $metric )
+		{
+			if( !is_array($metric) || !isset($metric['name']) )
+				continue;
+
+			if( libMetrics::recordClient($metric['name'], $metric['count'] ?? 1,
+					isset($metric['ms']) && is_numeric($metric['ms']) ? $metric['ms'] : null) )
+				$recorded++;
+		}
+
+		return $this->JSONResponse('Recorded.', '', true, array('recorded' => $recorded));
+	}
+}
+
+/**
+ * API entry client/error
+ *
+ * An error a browser hit: window.onerror, an unhandled promise rejection, or a React error boundary. It is
+ * written to the error log directory in the same form as a server error, with the same de-duplication, so
+ * the admin error list holds both.
+ */
+class ClientError extends ClientReportEntry {
+	public function __construct() {
+		parent::__construct('client/error', 'JSON', '',
+			array('kind', 'message', 'source', 'line', 'column', 'stack', 'componentStack', 'url'));
+	}
+
+	public function run($userID, $permissionIsExplicit) {
+		$args = $this->getArgs();
+
+		$kinds = array('script' => 'ERROR_SCRIPT', 'promise' => 'ERROR_PROMISE', 'react' => 'ERROR_REACT');
+		$kind = is_string($args['kind']) ? strtolower($args['kind']) : '';
+		if( !isset($kinds[$kind]) )
+			throw new RequestException('Body field `kind` is not one of script, promise, react.');
+
+		if( !is_string($args['message']) || trim($args['message']) === '' )
+			throw new RequestException('Body field `message` is missing.');
+
+		// Counted before the rate limit and the de-duplication, so the count still says how often it is
+		// happening when only the first trace was kept
+		libMetrics::recordClient($kinds[$kind]);
+
+		if( !$this->withinRateLimit('error', 20) )
+			return $this->JSONResponse('Reporting too often.', '', true, array('logged' => false));
+
+		$logged = libError::logClientError($kind, array(
+			'message' => $args['message'],
+			'source' => $args['source'],
+			'line' => $args['line'],
+			'column' => $args['column'],
+			'stack' => $args['stack'],
+			'componentStack' => $args['componentStack'],
+			'url' => $args['url'],
+			'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+		), intval($userID));
+
+		return $this->JSONResponse('Logged.', '', true, array('logged' => $logged));
+	}
+}
+
+/**
+ * A caller with neither a session nor an API key, for the routes which allow one (ApiEntry::allowsGuest).
+ * It is nobody: userID 0, no permissions, and no database lookup of its own.
+ */
+class ApiGuest extends ApiAuth {
+	public function load($multiplexOffset = 0){
+		$this->userID = 0;
+	}
+
+	public function __construct($route){
+		foreach (self::$permissionFields as $permissionField)
+			$this->permissions[$permissionField] = false;
+
+		$this->cacheKey = 'apiguest'.$route;
+	}
+
+	public function getMultiplexOffsetOrNull() { return null; }
+}
+
+/**
  * API main call to manage calls.
  */
 class Api {
@@ -1448,11 +1617,20 @@ class Api {
 		if (!isset($this->entries[$this->route]))
 			throw new NotImplementedException('Unknown route '.$this->route.'.');
 
+		// Get API entry.
+		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
+
 		if ( !empty( $User ) && ( $User->type['User'] ?? false ) === true ){
 			/**
 			 * If the request is an API call using the existing user session, process using the ApiSession class. 
 			 */
 			$this->authClass = 'ApiSession';
+		}elseif ( $apiEntry->allowsGuest() && getBearerToken() == null ){
+			/**
+			 * A route a page may call while logged out, e.g. to report the errors it hit. Nothing is read or
+			 * written on anyone's behalf, so there is nobody to authenticate.
+			 */
+			$this->authClass = 'ApiGuest';
 		}else{
 			/**
 			 * If the request is an API call using an API key, process using the ApiKey class. 
@@ -1461,8 +1639,6 @@ class Api {
 		}
 
 		$apiAuth = new $this->authClass($this->route);
-		// Get API entry.
-		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
 
 		// If the args contains a game ID which encodes a multiplex offset, which lets one bot enter orders for several bot user accounts,
 		// extract it here and use it to load the correct bot account. (Note has no effect if it's an ApiSession request)
@@ -1517,6 +1693,9 @@ try {
 	$api->load(new MessagesSeen());
 	
 	$api->load(new MarkBackFromLeft());
+
+	$api->load(new ClientMetrics());
+	$api->load(new ClientError());
 
 	$api->load(new SandboxCreate());
 	$api->load(new SandboxCopy());

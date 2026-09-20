@@ -21,3 +21,10 @@ Changelog
   read them - "enabled" 404'd the whole API, which is now how the site's own board talks to the
   server rather than a bots-only thing; "restrictToGameIDs" would have to list every game on the
   site to mean anything; "noPressOnly" had not been read by anything for some time.
+
+- Browsers now report their own errors and timings. Script errors, unhandled promise rejections and
+  React errors from the game board are sent to the new client/error API route and written to the
+  error log directory beside the server's own errors, with the same de-duplication, so they show up
+  in the admin error list. Timings go to client/metrics and appear on status.php under "Reported by
+  browsers" as METRICS_CLIENT_* counters. Both routes accept a logged-out browser and are rate
+  limited per address. Nothing new is stored in the database.
