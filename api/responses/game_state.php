@@ -23,6 +23,11 @@ namespace webdiplomacy_api;
 use libVariant;
 
 defined('IN_CODE') or die('This script can not be run by itself.');
+/*
+ * These classes built the game/status and game/data responses. Those routes are gone (2026-09-20); what is
+ * left is here for lib/gamefiles.php, which builds history.json from GameState so that a game replayed from
+ * the files is the same game the old API gave.
+ */
 require_once(l_r('api/responses/message.php'));
 require_once(l_r('api/responses/vote_message.php'));
 require_once(l_r('api/responses/order.php'));
