@@ -85,9 +85,19 @@ class libGameMessage
 						'".$Game->phase."',
 						".$timeSent.")");
 
+		// Notes whether this message belongs in the game's public messages.json
+		libGameFiles::messageSent($Game->id, $toCountryID, $fromCountryID, $message, $DB->last_inserted());
+
 		if ($toCountryID != $fromCountryID || $fromCountryID == 0)
 		{
 			libGameMessage::notify($toCountryID, $fromCountryID);
+		}
+
+		if ($toCountryID == 0)
+		{
+			// notify() has committed the message. (The log of a vote is sent from a country to itself and isn't committed
+			// here; whatever changes the vote rewrites the file once it has committed.)
+			libGameFiles::refresh($Game->id, array('messages'));
 		}
 
 		$channel = "private-game" . $Game->id . "-country";

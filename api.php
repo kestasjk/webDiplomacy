@@ -35,6 +35,7 @@ require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
 require_once('api/responses/active_games.php');
 require_once('api/responses/player_pulse.php');
+require_once('api/responses/player_context.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
 require_once('objects/user.php');
@@ -323,6 +324,21 @@ abstract class ApiEntry {
 		return in_array('gameID', $this->requirements);
 	}
 
+	/**
+	 * Whether a route which takes a gameID can only be called by a member of that game, when the caller hasn't been
+	 * given the route's permission explicitly. A route which returns false has to decide for itself what a
+	 * non-member may be given.
+	 */
+	public function requiresMembership() {
+		return $this->requiresGameID();
+	}
+
+	/**
+	 * Whether the caller is a logged-in user's browser rather than an API key. Set by Api::run() before run().
+	 * @var bool
+	 */
+	public $isSessionAuth = false;
+
 	public function isUserMemberOfGame($userID)
 	{
 		global $DB;
@@ -512,6 +528,9 @@ class ToggleVote extends ApiEntry {
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
+		// Without this a member could log a vote as any country in the game, though not change its votes
+		if( !$currentVotes )
+			throw new ClientForbiddenException('A user can only vote for the country it controls.');
 		$currentVotes = $currentVotes['votes'] ?? ''; // If no votes are set, default to empty string
 
 		// Keep a log that a vote was set in the game messages, so the vote time is recorded
@@ -541,6 +560,9 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."', votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+
+		// The vote, and for games with public draw votes the log of it
+		libGameFiles::refresh($gameID, array('status', 'messages'));
 
 		$Redis->trigger("private-game" . $gameID, 'overview', 'set-vote');
 		
@@ -574,6 +596,9 @@ class SetVote extends ApiEntry {
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
+		// Without this a member could log a vote as any country in the game, though not change its votes
+		if( !$currentVotes )
+			throw new ClientForbiddenException('A user can only vote for the country it controls.');
 		$currentVotes = $currentVotes['votes'] ?? ''; // If no votes are set, default to empty string
 
 		if( $voteOn === in_array($vote, explode(',',$currentVotes)) )
@@ -581,8 +606,9 @@ class SetVote extends ApiEntry {
 			return $currentVotes;
 		}
 		// Keep a log that a vote was set in the game messages, so the vote time is recorded
+		// ($voteOn is the state asked for here, where in game/togglevote it is the state before the toggle)
 		require_once(l_r('lib/gamemessage.php'));
-		libGameMessage::send($countryID, $countryID, ($voteOn?'Un-':'').'Voted for '.$vote, $gameID);
+		libGameMessage::send($countryID, $countryID, ($voteOn?'':'Un-').'Voted for '.$vote, $gameID);
 
 		$newVotes = '';
 		if( strpos($currentVotes, $vote) !== false )
@@ -606,7 +632,10 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."', votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		
+
+		// The vote, and for games with public draw votes the log of it
+		libGameFiles::refresh($gameID, array('status', 'messages'));
+
 		$Redis->trigger("private-game" . $gameID, 'overview', 'set-vote');
 		
 		return $newVotes;
@@ -764,6 +793,9 @@ class MarkBackFromLeft extends ApiEntry {
 		$member = $Game->Members->ByUserID[$userID];
 		$member->markBackFromLeft();
 		$DB->sql_put("COMMIT");
+
+		// The member's status is back to Playing
+		libGameFiles::refresh($Game->id, array('game', 'status'));
 	}
 }
 
@@ -906,6 +938,39 @@ class GetGamePulse extends ApiEntry {
 			'lastMessageTimeSent' => $lastMessageTimeSent,
 			'lastVoteTime' => $lastVoteTime,
 		));
+	}
+}
+
+/**
+ * API entry game/playercontext
+ * Everything about a game which depends on who is asking: their orders, messages, votes, order status and SSE token,
+ * and where the game's public JSON files are. Without a gameID, a row for each of the caller's active games.
+ * See doc/gamedata/02-spec.md and api/responses/player_context.php
+ * *Multiplexed
+ */
+class GetPlayerContext extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/playercontext', 'GET', '',
+			array('gameID', 'countryID', 'orders', 'messages', 'messagesSince', 'messageTurns', 'sbToken'), false);
+	}
+	/**
+	 * Anyone may ask about any game; someone who isn't playing in it is only told what is public.
+	 */
+	public function requiresMembership() {
+		return false;
+	}
+	public function run($userID, $permissionIsExplicit) {
+		if( empty($userID) )
+			throw new ClientUnauthorizedException('Not logged in.');
+
+		$args = $this->getArgs();
+
+		if( is_null($args['gameID']) )
+			$context = \webdiplomacy_api\PlayerContext::forUser($this, $userID);
+		else
+			$context = \webdiplomacy_api\PlayerContext::forGame($this, $userID, $this->isSessionAuth, $args);
+
+		return json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -1566,6 +1631,10 @@ class SetOrders extends ApiEntry {
 		$orderInterface->writeOrderStatus();
         $DB->sql_put("COMMIT");
 
+		// Let the other players' clients see the new order status (where the game shows it). The member's status may
+		// also have changed above, from Left back to Playing.
+		libGameFiles::refresh($gameID, array('game', 'status'));
+
 		// Return current orders.
 		$currentOrders = array();
 		$currentOrdersTabl = $DB->sql_tabl(
@@ -1849,7 +1918,7 @@ abstract class ApiAuth {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
-			if ($apiEntry->requiresGameID() && !$apiEntry->isUserMemberOfGame($this->userID))
+			if ($apiEntry->requiresMembership() && !$apiEntry->isUserMemberOfGame($this->userID))
 				throw new ClientForbiddenException('Access denied. User '.$this->userID.' is not member of associated game.');
 			
 		} else {
@@ -2056,6 +2125,7 @@ class Api {
 		// Execute request.
 		
 		$userID = $apiAuth->getUserID();
+		$apiEntry->isSessionAuth = ( $this->authClass === 'ApiSession' );
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
 		
 		return $result;
@@ -2089,6 +2159,7 @@ try {
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
 	$api->load(new GetGameMembers());
+	$api->load(new GetPlayerContext());
 	
 	$api->load(new JoinGame());
 	$api->load(new LeaveGame());

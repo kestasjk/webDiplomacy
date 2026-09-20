@@ -120,11 +120,20 @@ try
 			{
 				if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
 
+				$votesToggled = false;
 				foreach(Members::$votes as $possibleVoteType) {
 					if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
 					{
 						$Member->toggleVote($possibleVoteType);
+						$votesToggled = true;
 					}
+				}
+				if( $votesToggled )
+				{
+					// Tell the other players' clients, as a vote through the API does
+					$DB->sql_put("COMMIT");
+					libGameFiles::refresh($Game->id, array('status', 'messages'));
+					$Redis->trigger("private-game" . $Game->id, 'overview', 'set-vote');
 				}
 
 				if ( $Game->phase !='Finished' )

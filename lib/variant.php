@@ -139,6 +139,11 @@ class libVariant {
 
 				// The object will have loaded all the cacheable data and be ready to be saved for next time
 				file_put_contents($variantCache, serialize($Variant));
+
+				// The map has just been reinstalled, so the public variant.json made from it is out of date;
+				// libGameFiles::variantURL() writes it again when it is next wanted
+				if( file_exists(self::cacheDir($variantName).'/variant.json') )
+					unlink(self::cacheDir($variantName).'/variant.json');
 			}
 			else
 			{

@@ -143,6 +143,10 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		$O->writeOrderStatus();
 		$DB->sql_put("COMMIT");
 
+		// Let the other players' clients see the new order status (where the game shows it)
+		if( $O->orderStatus->updated )
+			libGameFiles::refresh($O->gameID, array('status'));
+
 		$results = $O->getResults();
 
 		if( $newReady && !$oldReady )

@@ -28,6 +28,14 @@ require_once(l_r('gamemaster/game.php'));
 require_once(l_r('gamemaster/misc.php'));
 require_once(l_r('lib/metrics.php'));
 
+// A site sharing another's database, like stg.webdiplomacy.net, sets this so that only the live site processes games.
+// It can't be a setting in the database (like Panic below), as that is shared.
+if ( property_exists('Config', 'gamemasterDisabled') && Config::$gamemasterDisabled )
+{
+	libHTML::notice(l_t('Game processing disabled'),
+		l_t("Games are not processed from this site; they are processed by the site which owns the database."));
+}
+
 if ( $Misc->Panic )
 {
 	libHTML::notice(l_t('Game processing disabled'),
@@ -265,6 +273,9 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 				processGame::backupGame($Game->id, false);
 			}
 
+			// Rewrite the game's public JSON files before telling clients it was processed, so that they find the new ones
+			libGameFiles::refresh($Game->id);
+
 			$Redis->trigger("private-game" . $Game->id, 'overview', 'processed');
 		}
 	}
@@ -285,6 +296,9 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			Game::wipeTurnPhaseCache($gameRow['id']);
 			print l_t('Crashed: "%s".',$e->getMessage());
 		}
+
+		// Removes the public JSON files if the game is gone, and otherwise leaves them as they were
+		libGameFiles::refresh($gameRow['id']);
 	}
 
 	if( $gameUpdated )

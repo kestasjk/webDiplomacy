@@ -153,6 +153,7 @@ ob_start(); // Buffer output. libHTML::footer() flushes.
 
 // All the standard includes.
 require_once('lib/cache.php');
+require_once('lib/gamefiles.php');
 require_once('lib/time.php');
 require_once('lib/group.php');
 require_once('lib/html.php');
@@ -296,7 +297,12 @@ function close()
 		$Misc->write();
 
 		if( !defined('ERROR'))
+		{
 			$DB->sql_put("COMMIT");
+
+			// Rewrite the public JSON files of any games this page changed, now that the changes are committed
+			libGameFiles::runDeferred();
+		}
 
 		unset($DB);
 	}

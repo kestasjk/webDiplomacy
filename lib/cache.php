@@ -12,11 +12,15 @@ class libCache
 		return $cache[$name];
 	}
 
-	public static function wipeDir($dir, $glob='*.*')
+	/**
+	 * @param callable|null $keep Given a file's path, returns true if the file is to be left alone
+	 */
+	public static function wipeDir($dir, $glob='*.*', $keep=null)
 	{
 		if( $files = glob($dir.'/'.$glob) )
 			foreach($files as $file)
-				unlink($file);
+				if( is_null($keep) || !call_user_func($keep, $file) )
+					unlink($file);
 	}
 
 	public static function privateFilename($dir, $filename)

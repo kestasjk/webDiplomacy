@@ -222,6 +222,10 @@ class adminActionsForms
 				{
 					$details = $this->{$actionName}($paramValues);
 
+					// Whatever the action changed about the game, its public JSON files are brought up to date once this page commits
+					if ( isset($paramValues['gameID']) )
+						libGameFiles::refreshAfterCommit((int)$paramValues['gameID']);
+
 					self::save($name, $paramValues, $details);
 
 					$description = '<p class="notice">'.$details.'</p>

@@ -73,6 +73,10 @@ class processMember extends Member
 			$Game = $this->Game;
 		}
 
+		// The notice below ends the page, which commits; the game's public JSON files then lose the member (or, if
+		// the game was erased, are removed)
+		libGameFiles::refreshAfterCommit($this->gameID, array('game', 'status'));
+
 		header('refresh: 4; url=index.php');
 		$this->send('No','No', $leftMessage);
 		libHTML::notice('Left game', $leftMessage);

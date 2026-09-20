@@ -341,6 +341,10 @@ class Member
 			unset($GLOBALS['Game']);
 			$GLOBALS['Game'] = $previousGame;
 		}
+
+		// For board.php, which commits when the page ends. (The game/markbackfromleft API route commits and
+		// refreshes the files itself.)
+		libGameFiles::refreshAfterCommit($this->gameID, array('game', 'status'));
 	}
 }
 ?>

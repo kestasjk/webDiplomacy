@@ -126,10 +126,12 @@ class Game
 
 		$dir = self::gameFolder($gameID);
 
+		// The game's public JSON files are in the same folder, but aren't wiped; libGameFiles rewrites them as
+		// the game changes, so there are always files for clients to load.
 		if( defined('DATC') )
 			libCache::wipeDir($dir, '*json*');
 		else
-			libCache::wipeDir($dir, ( $turn===false ? '*.*' : '*'.$turn.'-*.*'));
+			libCache::wipeDir($dir, ( $turn===false ? '*.*' : '*'.$turn.'-*.*'), array('libGameFiles', 'isGameFile'));
 	}
 
 	/**

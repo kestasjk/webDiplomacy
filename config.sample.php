@@ -511,6 +511,19 @@ class Config
 	}
 
 	/**
+	 * Set to true on a site that shares another site's database, such as a staging site, so that gamemaster.php only
+	 * runs on one of them. Otherwise a moderator opening gamemaster.php there (it is linked from the admin pages), or a
+	 * cron job, would process the live games with that site's code.
+	 */
+	public static $gamemasterDisabled = false;
+
+	/**
+	 * Set to true to stop writing the games' public JSON files (lib/gamefiles.php), which the /game/ board and the
+	 * bots read. Only for if writing them causes trouble: the /game/ board and bots stop seeing updates while it is set.
+	 */
+	public static $gameFilesDisabled = false;
+
+	/**
 	 * If set to true bots are allowed to get messages directly from the unredacted messages table, for use
 	 * with testing bots in a development environment without needing a separate redaction process running.
 	 */

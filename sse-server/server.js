@@ -104,9 +104,16 @@ subscriber.on('error', (err) => {
 // board that is a game/pulse request, which sets both keys again. A catchup event always ends the check,
 // which tells the client that this server does it; a client which doesn't get one checks for itself.
 // The events are in the format PHP publishes them in (RedisInterface::trigger).
+//
+// A client of the game's public JSON files (lib/gamefiles.php) instead says which version of each file it
+// has: have=game:<version>,status:<version>,... That is compared with
+// - gamefiles_{gameID}: {"<file>":{"v":"<version>",..},..}, set whenever a file is rewritten (libGameFiles::refresh)
+// and the client is sent the files event it would have received, on the game's files channel
+// (private-game{gameID}-files), for the files whose versions differ.
 async function sendMissedEvents(write, overviewChannel, countryChannel, query) {
   const hasTurnPhase = query.turn !== undefined && query.phase !== undefined;
   const since = parseInt(query.since, 10);
+  const have = parseHave(query.have);
   let resync = false;
 
   try {
@@ -114,10 +121,24 @@ async function sendMissedEvents(write, overviewChannel, countryChannel, query) {
     if (!match) throw new Error(`Unexpected country channel ${countryChannel}`);
     const [, gameID, countryID] = match;
 
-    const [turnPhase, lastMessageTime] = await Promise.all([
+    const [turnPhase, lastMessageTime, gameFiles] = await Promise.all([
       hasTurnPhase ? redisClient.get(`gameTurnPhase_${gameID}`) : null,
       !isNaN(since) ? redisClient.get(`lastmsgtime_${gameID}_${countryID}`) : null,
+      have ? redisClient.get(`gamefiles_${gameID}`) : null,
     ]);
+
+    if (have) {
+      if (gameFiles === null) resync = true;
+      else {
+        const changed = {};
+        for (const [file, state] of Object.entries(JSON.parse(gameFiles))) {
+          if (state && state.v && have[file] !== state.v) changed[file] = state.v;
+        }
+        if (Object.keys(changed).length > 0) {
+          write(`${overviewChannel}-files`, JSON.stringify({ event: 'files', data: changed }));
+        }
+      }
+    }
 
     if (hasTurnPhase) {
       if (turnPhase === null) resync = true;
@@ -138,6 +159,17 @@ async function sendMissedEvents(write, overviewChannel, countryChannel, query) {
 
   if (resync) write('resync', 'resync');
   write('catchup', 'catchup');
+}
+
+// The have parameter, "game:6aadf087d779bc,status:..", as { game: '6aadf087d779bc', .. }, or null if there isn't one
+function parseHave(have) {
+  if (typeof have !== 'string') return null;
+  const versions = {};
+  for (const part of have.split(',')) {
+    const [file, version] = part.split(':');
+    if (file && version) versions[file.trim()] = version.trim();
+  }
+  return versions;
 }
 
 // Open SSE responses and the channels each is subscribed to, so they can all be told to resync after a
@@ -198,6 +230,16 @@ app.get('/events', async (req, res) => {
   if( !validateAuth(auth, countryChannel[0]) )
   {
     res.status(403).send('Invalid auth token for this channel; may be expired.');
+    return;
+  }
+
+  // The token is for one country of one game (country 0 for someone who is only watching the game), and is good
+  // for that country's channel and the game's own channels (overview and files) and nothing else; without this
+  // check a valid token for one game could be used to listen to any other game's events.
+  const tokenChannel = countryChannel[0].match(/^(private-game\d+)-country\d+$/);
+  if( !tokenChannel || channels.some(c => c !== countryChannel[0] && c !== tokenChannel[1] && c !== `${tokenChannel[1]}-files`) )
+  {
+    res.status(403).send('The auth token does not cover all of the channels asked for.');
     return;
   }
 
@@ -277,7 +319,7 @@ app.get('/events', async (req, res) => {
 
   // Now that nothing new can be missed, send what was missed before this point. Clients from before this
   // was added don't say what they have, and check for themselves.
-  if (req.query.turn !== undefined || req.query.since !== undefined) {
+  if (req.query.turn !== undefined || req.query.since !== undefined || req.query.have !== undefined) {
     const overviewChannel = channels.find(c => !c.includes('country')) || countryChannel[0].replace(/-country\d+$/, '');
     await sendMissedEvents((channel, message) => {
       if (!closed) listener(message, channel);

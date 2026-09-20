@@ -562,6 +562,10 @@ class processMembers extends Members
 		//$this->Game->gamelog(l_t('New member joined'));
 
 		libHTML::analyticsEvent(libHTML::analyticsGameEventName('join_game', $this->Game), array('variant'=>$this->Game->Variant->name));
+
+		// The redirect below ends the page, which commits; the game's public JSON files then get the new member
+		libGameFiles::refreshAfterCommit($this->Game->id, array('game', 'status'));
+
 		$this->joinedRedirect();
 	}
 

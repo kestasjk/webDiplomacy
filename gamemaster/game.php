@@ -369,6 +369,8 @@ class processGame extends Game
 
 		require_once(l_r('lib/gamemessage.php'));
 		libGameMessage::send(0, 'GameMaster', l_t('This game has been moved back to %s',$this->datetxt($lastTurn)), $this->id);
+
+		libGameFiles::refresh($this->id);
 	}
 
 	/**
@@ -389,6 +391,7 @@ class processGame extends Game
 		$DB->sql_put("COMMIT");
 
 		self::wipeCache($gameID);
+		libGameFiles::delete($gameID);
 	}
 
 	/**

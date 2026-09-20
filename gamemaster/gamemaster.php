@@ -511,6 +511,9 @@ class libGameMaster
 				$Game = $Variant->processGame($gameID, UPDATE);
 				$Game->applyVote($vote['name']);
 				$DB->sql_put("COMMIT");
+
+				// The game was paused, unpaused, drawn, conceded or erased; nothing else tells its clients
+				libGameFiles::refresh($gameID);
 			}
 		}
 
