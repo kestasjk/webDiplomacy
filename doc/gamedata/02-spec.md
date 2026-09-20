@@ -532,13 +532,17 @@ Found on the way:
 - `libGameFiles::refresh()` turns PHP warnings into exceptions while it runs (the site's error handler
   would otherwise end the order save, vote or gamemaster run it follows), and `Config::$gameFilesDisabled`
   turns it off without a redeploy.
-- For stg.webdiplomacy.net (the `master` branch on the production database, set up 2026-09-19):
-  `Config::$gamemasterDisabled` stops `gamemaster.php` running on a site sharing another's database. The
-  messages fingerprint also includes `lastmsgtime_<game>_0` and, in public-draw-vote games, the newest
-  `votesChanged`, which every version of the code keeps current, so changes made through a site on older
-  code still get `messages.json` rewritten. The `/game/` board also acts on the older `processed` and
-  `set-vote` events, which a site on older code publishes instead of files events. The two sites must
-  share Redis and the `cache/games` folder, or each would take the other's newer files state for its own.
+- For stg.webdiplomacy.net, the staging site on the `master` branch, set up 2026-09-19. It has its own
+  copy of the production database, cache folder, redis and SSE server, so it shares nothing with the live
+  site and `Config::$gamemasterDisabled` (added for a site that *would* share a database) stays false
+  there. What the staging work left behind is still useful anywhere the code is newer than the gamemaster
+  writing the files: the messages fingerprint includes `lastmsgtime_<game>_0` and, in public-draw-vote
+  games, the newest `votesChanged`, which every version of the code keeps current, so changes made
+  through older code still get `messages.json` rewritten; and the `/game/` board acts on the older
+  `processed` and `set-vote` events as well as files events. Because the staging database is a copy of
+  production's, it holds real addresses and push subscriptions: turn off mail and push there before
+  letting its gamemaster run, or `gamemaster/backgroundTasks.php` will email real players about staging
+  games.
 - The gamemaster can miss that a game's orders are all ready, so the game waits for its deadline:
   `gamemaster.php` reads the `processHint` key and then deletes it, losing any hint added in between,
   and `findGameOrdersReady()` only looks at `orderStatusChanged` from the start of its previous run, so
@@ -547,3 +551,23 @@ Found on the way:
   member rows (seen with a message every 1.5 s during processing). Not fixed.
 - In the live Cicero bot the ready flag compared the deadline from `game/status`, a string, as a number
   (fixed in `webdiplomacy_bots` `ec2d047b`).
+
+### 2026-09-20
+
+Committed locally (not pushed): the docs, `lib/gamefiles.php` and the endpoint, the `/game/` board, the
+`gitpull.php` build step, and the dev docker work below.
+
+Bringing the dev stack up from a bare `git clone` found one thing wrong with the work above: `.gitignore`
+ignored `game/`, which matches any folder of that name, so `game-src/src/state/game/` was never committed
+and the new board didn't build from a clean checkout. Both `beta/` and `game/` are now anchored to the
+root, and the two files are in.
+
+The rest of that session went into the dev stack itself, which couldn't come up from a clean checkout at
+all: `install/gamemaster-entrypoint.sh` now runs `composer install`, generates an SSE secret into
+config.php and `sse-server/.env` (so live updates work in dev without hand-editing two files), installs
+the database again whenever it finds it empty, and clears the variant caches after the install as well as
+before; the SSE server installs its own dependencies; `--profile build` builds both boards. The published
+ports are bound to localhost, phpmyadmin can only reach the dev database, and nginx no longer serves dot
+files. Verified from a clone: READY, all of `test_playercontext.py`, both boards built, the `/game/` board
+loading a game from its files, and the gunboat bots playing a dev game through the new route with
+`equivalence_test.py` clean.
