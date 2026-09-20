@@ -66,6 +66,23 @@ if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 	libHTML::error($message);
 }
 
+/*
+ * Bot accounts are in over a million games each, and the games list at the bottom of this page counts
+ * and sorts every game the account is in, which no index makes cheap. There is nothing else here worth
+ * having for a bot - they have no points, forum posts or reliability rating - so the page isn't built
+ * for one at all. User::profile_link_static prints their names without a link, so nothing links here.
+ */
+if ( $UserProfile->type['Bot'] )
+{
+	$message = htmlspecialchars($UserProfile->username, ENT_QUOTES, 'UTF-8').' is a bot account, and bots do not have '.
+		'profile pages; they play far too many games for this page\'s list of them to be generated.';
+
+	if( $User->type['Moderator'] )
+		$message .= ' '.libHTML::admincpType('User',$UserProfile->id);
+
+	libHTML::error($message);
+}
+
 libHTML::starthtml();
 
 print '<div class="content">';

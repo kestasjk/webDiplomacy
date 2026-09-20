@@ -665,7 +665,11 @@ class User {
 
 		$buffer = '';
 
-		if ( (is_array($type) && $type['User']) || (!is_array($type) && strstr($type, 'User') !== false ) )
+		// A bot is in over a million games, which its profile page can't list, so the page isn't generated for
+		// one at all (see userprofile.php); print a bot's name unlinked, as a non-user account's name is.
+		$isBot = ( is_array($type) ? !empty($type['Bot']) : strstr($type, 'Bot') !== false );
+
+		if ( !$isBot && ( (is_array($type) && $type['User']) || (!is_array($type) && strstr($type, 'User') !== false ) ) )
 		{
 			$buffer .= '<a href="./userprofile.php?userID='.$id.'"';
 

@@ -203,27 +203,37 @@ class Member
 	}
 
 	/**
+	 * Whether a bot is playing as this member. Bots have no profile page, as they are in far too many games
+	 * for it to list (see userprofile.php), so their names are printed without a link to one.
+	 * @return bool
+	 */
+	function isBot()
+	{
+		return strstr(strval($this->userType), 'Bot') !== false;
+	}
+
+	/**
 	 * Generate a profile link
 	 * @return string
 	 */
 	function profile_link()
 	{
-		if ( $this->Game->phase == 'Pre-game' )
+		$attributes = '';
+
+		if ( $this->Game->phase != 'Pre-game' )
 		{
-			$output = '<a href="userprofile.php?userID='.$this->userID.'">'.$this->username;
-		}
-		else
-		{
-			$output = '<a class="country'.$this->countryID.'" ';
+			$attributes = 'class="country'.$this->countryID.'" ';
 
 			if ($this->status == 'Defeated')
 			{
-				$output .= 'style="text-decoration: line-through" ';
+				$attributes .= 'style="text-decoration: line-through" ';
 			}
-
-			$output .= 'href="userprofile.php?userID='.$this->userID.'">'.$this->username;
 		}
-		return $output.' ('.$this->points.User::typeIcon($this->userType).')</a>';
+
+		$element = $this->isBot() ? 'span' : 'a';
+		$output = '<'.$element.' '.$attributes.( $this->isBot() ? '' : 'href="userprofile.php?userID='.$this->userID.'"' ).'>'.$this->username;
+
+		return $output.' ('.$this->points.User::typeIcon($this->userType).')</'.$element.'>';
 	}
 
 	/**

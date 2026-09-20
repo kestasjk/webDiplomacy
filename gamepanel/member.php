@@ -206,7 +206,7 @@ class panelMember extends Member
 		if ($this->isNameHidden())
 			return '('.l_t('Anonymous').')';
 		else
-			return '<a href="userprofile.php?userID='.$this->userID.'">'.$this->username.'</a>
+			return ( $this->isBot() ? $this->username : '<a href="userprofile.php?userID='.$this->userID.'">'.$this->username.'</a>' ).'
 				'.'
 				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).')</span>'
 				.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
@@ -225,6 +225,8 @@ class panelMember extends Member
 
 		if ( $this->isNameHidden() )
 			$buf .= '<span class="country'.$this->countryID.'">'.l_t($this->country).'</span>';
+		elseif ( $this->isBot() )
+			$buf .= '<span class="country'.$this->countryID.'">'.$this->username.'</span>';
 		else
 			$buf .= '<a class="country'.$this->countryID.'" href="userprofile.php?userID='.$this->userID.'">'.$this->username.'</a>';
 
