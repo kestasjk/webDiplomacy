@@ -348,8 +348,11 @@ class processGame extends Game
 		$tabl=$DB->sql_tabl("SELECT countryID FROM wD_Units WHERE gameID = ".$this->id." GROUP BY countryID");
 		while(list($countryID) = $DB->tabl_row($tabl)) $undefeatedCountries[] = $countryID;
 
+		// With no units left on the turn being restored (every power wiped out, or a turn whose
+		// unit archive was never written) implode() gives "countryID IN ()", which is a syntax
+		// error; in that case nobody is still playing.
 		$DB->sql_put("UPDATE wD_Members SET votes='', orderStatus='',
-			status=IF(countryID IN (".implode(',',$undefeatedCountries)."),'Playing','Defeated')
+			status=".( count($undefeatedCountries) ? "IF(countryID IN (".implode(',',$undefeatedCountries)."),'Playing','Defeated')" : "'Defeated'" )."
 			WHERE gameID = ".$this->id);
 
 		// - Delete Archive values if we have moved back a turn
