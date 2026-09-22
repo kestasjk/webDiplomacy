@@ -1039,11 +1039,13 @@ print '</div>';
 	The use of google charts in webdip codebase is currently experimental 
 	and should be done in an easy to remove fashion. -->
 <script type="text/javascript">
-	google.charts.load('current', {'packages':['corechart']});
-
-	// This line is loading the line charts from the google charts packges only, if other chart types are desired they will need to be loaded independently. 
-	google.charts.load('current', {packages: ['corechart', 'line']});
-	google.charts.setOnLoadCallback(drawBackgroundColor);
+	// The loader is on another domain, and a blocker or a crawler rendering the page may not have loaded it
+	if( typeof google !== 'undefined' && google.charts )
+	{
+		// This line is loading the line charts from the google charts packges only, if other chart types are desired they will need to be loaded independently.
+		google.charts.load('current', {packages: ['corechart', 'line']});
+		google.charts.setOnLoadCallback(drawBackgroundColor);
+	}
 
 	function drawBackgroundColor() {
 		var data = new google.visualization.DataTable();

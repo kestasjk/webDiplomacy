@@ -68,7 +68,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				$defaultVariantID = ( isset($_REQUEST['newGame']) && isset($_REQUEST['newGame']['variantID']) ) ? (int)$_REQUEST['newGame']['variantID'] : 1;
 				foreach(Config::$variants as $variantID=>$variantName)
 				{
-					if($variantID != 57)
+					// Must match the variants given a canvasBoardConfigJS entry below
+					if($variantID != 57 && $variantID != 70)
 					{
 						$Variant = libVariant::loadFromVariantName($variantName);
 						if($variantID === $defaultVariantID ) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }

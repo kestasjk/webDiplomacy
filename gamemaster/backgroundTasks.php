@@ -466,9 +466,13 @@ class libBackgroundTasks
          *
          * The work is spread over many runs: each one walks wD_Units from where the last one stopped,
          * in gameID order, which is an index jump per game rather than a scan of the table, until its
-         * budget is used up. Once it reaches the end of the table the next run starts a new pass.
+         * budget is used up. Once a pass reaches the end of the table it stops, and the next pass starts
+         * a day later rather than straight away; walking the table every minute for nothing was most of
+         * the database's time once the backlog was gone.
          */
-        if( self::getRedisTimestamp('lastFinishedBoardTidy') < (time() - 60) )
+        if( self::getRedisTimestamp('lastFinishedBoardTidy') < (time() - 60)
+            && ( self::getRedisTimestamp('finishedBoardTidyCursor') > 0
+                || self::getRedisTimestamp('lastFinishedBoardTidyPass') < (time() - 24*60*60) ) )
         {
             $taskStart = libMetrics::start();
 
@@ -486,7 +490,10 @@ class libBackgroundTasks
 
                 if( count($gameIDs) == 0 )
                 {
-                    $tidyCursor = 0; // The end of the table; the next run starts a new pass
+                    // The end of the table. The next pass starts a day from now: nothing ends a game without
+                    // clearing its board any more, so once the backlog is gone a pass mostly finds nothing
+                    $tidyCursor = 0;
+                    $Redis->set('lastFinishedBoardTidyPass', time());
                     break;
                 }
 

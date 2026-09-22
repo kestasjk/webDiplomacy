@@ -1,4 +1,7 @@
 document.observe("dom:loaded", function() {
+    // The chatbox queues this script but isn't printed on every board.php view (e.g. viewArchive=...)
+    if ( $('message-send') == null ) return;
+
     Event.observe('message-send', 'click', function(event) {
         $('chatForm').request({
             onFailure: function() {

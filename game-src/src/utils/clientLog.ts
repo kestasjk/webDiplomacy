@@ -69,7 +69,13 @@ export function reportClientError(
       source: String(error.source || "").slice(0, 500),
       line: error.line || 0,
       column: error.column || 0,
-      stack: String(error.stack || "").slice(0, 4000),
+      // Whether the browser had translated the page, which rewrites text nodes behind React's back and is
+      // the usual cause of a removeChild error; in the trace rather than the message so it isn't signed on
+      stack: `${String(error.stack || "").slice(0, 4000)}${
+        /\btranslated-/.test(document.documentElement.className)
+          ? "\n(the browser had translated this page)"
+          : ""
+      }`,
       componentStack: String(error.componentStack || "").slice(0, 4000),
       url: String(window.location.href).slice(0, 500),
     });

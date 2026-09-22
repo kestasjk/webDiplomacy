@@ -16,6 +16,10 @@
 	const canvasElementBase = document.getElementById('boardCanvasBase');
 	const ctxBase = canvasElementBase.getContext('2d');
 
+	// Filled in by the variant's territories.js once loadVariant has downloaded it; until then the mouse handlers
+	// may fire with nothing loaded
+	var Territories = {};
+
 	let army = new Image();
 	let fleet = new Image();
 	let map = new Image();
@@ -39,6 +43,9 @@
 	// Uses the currently selected country ID, assignment mode, and highlighted territory ID to assign/clear a unit/SC/both to a territory
 	function applyAssignment()
 	{
+		// Nothing is highlighted if the territories haven't loaded yet, or after an assignment until the mouse moves again
+		if( selectedTerrID <= 0 || !(selectedTerrID in Territories) ) return;
+
 		let highlightedTerr = Territories[selectedTerrID];
 		let highlightedTerrParent = highlightedTerr;
 		if( highlightedTerrParent.coast == 'Child' )
@@ -553,7 +560,7 @@
 		const y = event.clientY - rect.top;
 		const terr = findClosestTerritory(Territories, x, y);
 
-		if( terr.id != selectedTerrID )
+		if( terr && terr.id != selectedTerrID )
 		{
 			selectedTerrID = terr.id;
 			drawHighlight();

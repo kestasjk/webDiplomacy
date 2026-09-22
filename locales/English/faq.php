@@ -344,7 +344,7 @@ foreach( $faq as $q => $a )
 	}
 	else
 	{
-		print '<button class="faq_question" name="faq_'.$section.'_'.$question.'" onclick="FAQShow('.$section.', '.$question.'); return false;">'.$q.'</button>';
+		print '<button class="faq_question" name="faq_'.$section.'_'.$question.'">'.$q.'</button>';
 		print '<div class="faq_answer" style="margin-top:5px; margin-bottom:15px;"><p class = "faq">'.$a.'</p></div>';
 		$question++;
 	}

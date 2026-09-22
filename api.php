@@ -1522,6 +1522,9 @@ class ClientError extends ClientReportEntry {
 		if( !is_string($args['message']) || trim($args['message']) === '' )
 			throw new RequestException('Body field `message` is missing.');
 
+		if( self::isNoise($args) )
+			return $this->JSONResponse('Ignored.', '', true, array('logged' => false));
+
 		// Counted before the rate limit and the de-duplication, so the count still says how often it is
 		// happening when only the first trace was kept
 		libMetrics::recordClient($kinds[$kind]);
@@ -1541,6 +1544,27 @@ class ClientError extends ClientReportEntry {
 		), intval($userID));
 
 		return $this->JSONResponse('Logged.', '', true, array('logged' => $logged));
+	}
+
+	/**
+	 * Whether an error is one nobody here can fix, so is neither logged nor counted: one from a crawler
+	 * rendering a page (Facebook's link previewer doesn't load Google Charts, say), or one raised by a
+	 * browser extension or the browser's own injected scripts rather than the site's.
+	 *
+	 * @param array $args The request body
+	 * @return bool
+	 */
+	private static function isNoise(array $args) {
+		$userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		if( preg_match('/bot|crawl|spider|slurp|facebookexternalhit/i', $userAgent) )
+			return true;
+
+		$where = '';
+		foreach( array('message', 'source', 'stack') as $field )
+			if( isset($args[$field]) && is_string($args[$field]) )
+				$where .= $args[$field]."\n";
+
+		return (bool)preg_match('/(chrome|moz|safari|safari-web|ms-browser)-extension:\/\/|__firefox__|__gCrWeb|\bethereum\b|DarkReader|webkit\.messageHandlers/i', $where);
 	}
 }
 
