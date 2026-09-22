@@ -21,6 +21,7 @@ class main_listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
+			'core.viewtopic_cache_user_data'	=>	'cache_user_like_counts',
 			'core.viewtopic_modify_post_row'	=>	'modify_post_row',
 			'core.user_setup'		=> 'load_language_on_setup',
 			'core.memberlist_view_profile'	       => 'user_profile_likes',
@@ -62,6 +63,22 @@ class main_listener implements EventSubscriberInterface
 	public function load_language_on_setup($event)
 	{
 		$this->user->add_lang_ext('anavaro/postlove', 'postlove');
+	}
+
+	/**
+	* Carry the poster's cached like counts into viewtopic's user cache.
+	*
+	* viewtopic selects u.* for each post, but the row it hands to core.viewtopic_modify_post_row is
+	* its own trimmed copy with a fixed list of post fields, so the webdip_ columns never reach
+	* modify_post_row that way. The user cache is built from the full row and is passed to that event
+	* as user_poster_data, so the counts ride along there.
+	*/
+	public function cache_user_like_counts($event)
+	{
+		$user_cache_data = $event['user_cache_data'];
+		$user_cache_data['webdip_like_count'] = isset($event['row']['webdip_like_count']) ? (int) $event['row']['webdip_like_count'] : 0;
+		$user_cache_data['webdip_like_given_count'] = isset($event['row']['webdip_like_given_count']) ? (int) $event['row']['webdip_like_given_count'] : 0;
+		$event['user_cache_data'] = $user_cache_data;
 	}
 
 	public function modify_post_row($event)
@@ -140,17 +157,18 @@ class main_listener implements EventSubscriberInterface
 		// are given and taken back, and recount_like_counts() puts them right after a post or user is
 		// permanently deleted. They used to be counted here instead, for every post of every topic page:
 		// likes given scanned the likes table, and likes received joined it against the whole posts
-		// table. viewtopic selects the poster's user row into $event['row'], so both are already loaded.
+		// table. cache_user_like_counts() puts both into the poster's user cache, which viewtopic has
+		// already built from the u.* it selects with each post, so this costs no query.
 		if ($this->config['postlove_show_likes'])
 		{
 			$post_row = $event['post_row'];
-			$post_row['USER_LIKES'] = isset($event['row']['webdip_like_given_count']) ? (int) $event['row']['webdip_like_given_count'] : 0;
+			$post_row['USER_LIKES'] = isset($event['user_poster_data']['webdip_like_given_count']) ? (int) $event['user_poster_data']['webdip_like_given_count'] : 0;
 			$event['post_row'] = $post_row;
 		}
 		if ($this->config['postlove_show_liked'])
 		{
 			$post_row = $event['post_row'];
-			$post_row['USER_LIKED'] = isset($event['row']['webdip_like_count']) ? (int) $event['row']['webdip_like_count'] : 0;
+			$post_row['USER_LIKED'] = isset($event['user_poster_data']['webdip_like_count']) ? (int) $event['user_poster_data']['webdip_like_count'] : 0;
 			$event['post_row'] = $post_row;
 		}
 	}
