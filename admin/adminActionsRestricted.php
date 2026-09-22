@@ -891,10 +891,13 @@ class adminActionsRestricted extends adminActionsSeniorMod
 	 * they last opened on board.php had that kept up to date, so every sandbox was drawn a week after
 	 * it was created however much it was being played.
 	 *
-	 * It is recoverable because the cleanup is a single UPDATE of wD_Games: the units, territories and
+	 * It is recoverable because the cleanup was a single UPDATE of wD_Games: the units, territories and
 	 * orders were never deleted, as they are when a game really finishes (see Game::process(), which
 	 * clears them once the phase becomes Finished). A finished game with units still on the table was
 	 * therefore ended by a cleanup and not by being played out, which is what this selects on.
+	 *
+	 * The cleanup now draws a game properly, clearing its board (see libBackgroundTasks::drawIdleGames()),
+	 * so this only finds the games it ended before September 2026.
 	 */
 	public function restoreCancelledSandboxGames(array $params)
 	{

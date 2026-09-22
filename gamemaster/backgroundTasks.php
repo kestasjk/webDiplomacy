@@ -58,6 +58,69 @@ class libBackgroundTasks
     }
 
     /**
+     * End the games a bot game cleanup has picked out the way a draw vote does, through processGame::setDrawn():
+     * the moves and territories are archived, the members drawn and messaged, and the units, territories and
+     * orders cleared, as they are for any game that finishes. The cleanups used to end a game with an UPDATE of
+     * wD_Games instead, which left the board on the table and the final turn out of the archive.
+     *
+     * Each game is ended in its own transaction, and it stops at the deadline rather than holding the gamemaster
+     * up; whatever it didn't get to is picked out again next time.
+     *
+     * @param string $gameIDsSql A query for the id and variantID of the games to end
+     * @param float $deadline The microtime(true) to stop at
+     * @return bool Whether every game selected was dealt with
+     */
+    private static function drawIdleGames($gameIDsSql, $deadline)
+    {
+        global $DB;
+
+        $games = array();
+        $tabl = $DB->sql_tabl($gameIDsSql);
+        while( list($gameID, $variantID) = $DB->tabl_row($tabl) )
+            $games[(int)$gameID] = (int)$variantID;
+        $DB->sql_put("COMMIT");
+
+        $drawn = 0;
+        foreach($games as $gameID => $variantID)
+        {
+            if( microtime(true) > $deadline )
+            {
+                print "Ended ".$drawn." of ".count($games)." idle bot games; the rest are left for the next run\n";
+                return false;
+            }
+
+            try
+            {
+                $DB->sql_put("BEGIN");
+                $Variant = libVariant::loadFromVariantID($variantID);
+                $Game = $Variant->processGame($gameID, UPDATE);
+
+                // Checked again now it's locked, in case it finished between being selected and now
+                if( $Game->gameOver == 'No' && in_array($Game->phase, array('Diplomacy','Retreats','Builds')) )
+                {
+                    $Game->setDrawn();
+                    $drawn++;
+                }
+                $DB->sql_put("COMMIT");
+            }
+            catch(Exception $e)
+            {
+                $DB->sql_put("ROLLBACK");
+                Game::wipeTurnPhaseCache($gameID);
+                print "Couldn't end idle bot game ".$gameID.": ".$e->getMessage()."\n";
+            }
+
+            // Nothing else tells its clients the game has ended
+            libGameFiles::refresh($gameID);
+        }
+
+        if( $drawn > 0 )
+            print "Ended ".$drawn." idle bot games\n";
+
+        return true;
+    }
+
+    /**
      * Run the background tasks; most are on a timer. Background tasks that are important and have to know when they were
      * last run use $Misc to save that data, ad-hoc tasks that just need to be run occasionally use Redis to store the last
      * run time.
@@ -309,8 +372,8 @@ class libBackgroundTasks
             $taskStart = libMetrics::start();
             print "Cleaning up anonymous bot games\n";
 
-            // Cancel bot games that haven't been used for an hour if they are anonymous. Sandbox games are
-            // bot games too and are left to the weekly cleanup below; they were told apart by their SB_ name
+            // End bot games that haven't been used for an hour if they are anonymous. Sandbox games are
+            // bot games too and are left to the 31 day cleanup below; they were told apart by their SB_ name
             // prefix, which is only a convention, where sandboxCreatedByUserID is what actually marks one.
             //
             // A play-now account is never given a wD_Sessions row and so never has its timeLastSessionEnded
@@ -318,10 +381,12 @@ class libBackgroundTasks
             // this game - as the only thing keeping a game they are still playing out of this. Submitting
             // orders (api.php's game/orders) and opening the board (api/responses/player_context.php) both
             // keep it current; board.php used to be the only thing that did.
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished', g.finishTime = UNIX_TIMESTAMP() WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
-            $DB->sql_put("COMMIT");
+            $finished = self::drawIdleGames("SELECT DISTINCT g.id, g.variantID FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL ORDER BY g.id",
+                microtime(true) + 10);
 
-            $Redis->set('lastAnonBotGameCleanup', time());
+            // If it ran out of time it runs again next time rather than in an hour
+            if( $finished )
+                $Redis->set('lastAnonBotGameCleanup', time());
             self::taskDone('ANONBOTGAMES', $taskStart);
         }
 
@@ -340,47 +405,53 @@ class libBackgroundTasks
             $DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE sandboxCreatedByUserID IS NOT NULL AND processStatus <> 'Paused' AND phase NOT IN ('Finished','Pre-game')");
             $DB->sql_put("COMMIT");
 
+            // The cleanups below share this, and if they run out of it the whole task runs again next time
+            $botGameCleanupDeadline = microtime(true) + 20;
+
             /*
-             * Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up.
+             * End sandbox games that haven't been accessed for 31 days, otherwise these clog things up.
              *
              * A sandbox's countries are all held by its creator, and board.php only kept the timeLoggedIn
              * of the one country it mapped them to up to date, so as a join on any member being a week
              * stale this ended every sandbox a week after it was created however much it was being used.
              * (The board marks all of their countries as seen now; see player_context.php.)
-             * It takes a game now only when none of its members has been seen inside the week - and still
+             * It takes a game now only when none of its members has been seen inside 31 days - and still
              * leaves alone any game a member with an API key is in, as the join on wD_ApiKeys did.
              */
-            $DB->sql_put("UPDATE wD_Games g SET g.gameOver='Drawn', g.phase='Finished', g.finishTime = UNIX_TIMESTAMP()
+            $finished = self::drawIdleGames("SELECT g.id, g.variantID FROM wD_Games g
                 WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND g.gameOver = 'No' AND g.sandboxCreatedByUserID IS NOT NULL
                     AND NOT EXISTS (
                         SELECT 1 FROM wD_Members m
                         LEFT JOIN wD_ApiKeys a ON a.userID = m.userID
                         WHERE m.gameID = g.id
-                            AND ( m.timeLoggedIn > UNIX_TIMESTAMP() - 24*60*60*7 OR a.userID IS NOT NULL )
-                    );");
-            $DB->sql_put("COMMIT");
+                            AND ( m.timeLoggedIn > UNIX_TIMESTAMP() - 31*24*60*60 OR a.userID IS NOT NULL )
+                    )
+                ORDER BY g.id", $botGameCleanupDeadline);
 
-            // Cancel bot games that haven't been used for two days if they are not anonymous (sandbox games
+            // End bot games that haven't been used for 31 days if they are not anonymous (sandbox games
             // are excluded by sandboxCreatedByUserID rather than by their name, as above):
-            $DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Drawn', g.phase= 'Finished', g.finishTime = UNIX_TIMESTAMP() WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 4*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 4*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 4*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL;");
-            $DB->sql_put("COMMIT");
+            $finished = self::drawIdleGames("SELECT DISTINCT g.id, g.variantID FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.phase IN ('Diplomacy','Retreats','Builds') AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 31*24*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 31*24*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND g.sandboxCreatedByUserID IS NULL ORDER BY g.id",
+                $botGameCleanupDeadline) && $finished;
 
             // Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
             $DB->sql_put("UPDATE wD_Members m INNER JOIN wD_Games g ON g.id = m.gameID SET m.status = 'Survived' WHERE m.status = 'Playing' AND g.phase = 'Finished';");
             $DB->sql_put("COMMIT");
 
-            $Misc->LastBotGameCleanup = $botGameCleanupTime;
-            $Misc->write();
+            if( $finished )
+            {
+                $Misc->LastBotGameCleanup = $botGameCleanupTime;
+                $Misc->write();
+            }
             $DB->sql_put("COMMIT");
             self::taskDone('BOTGAMECLEANUP', $taskStart);
         }
 
         /*
-         * Clear away the boards left behind by the cleanups above.
+         * Clear away the boards left behind by the cleanups above as they used to be.
          *
-         * They end a game with an UPDATE of wD_Games instead of playing it out, so the units, territory
-         * statuses and orders that Game::process() deletes when a game reaches the Finished phase are
-         * left on the table. That is most of all three tables: in September 2026 6.7m of the 7.4m rows
+         * They ended a game with an UPDATE of wD_Games instead of drawing it (they draw it properly now; see
+         * drawIdleGames()), so the units, territory statuses and orders that Game::process() deletes when a
+         * game reaches the Finished phase were left on the table. That was most of all three tables: in September 2026 6.7m of the 7.4m rows
          * in wD_Units, and a similar share of wD_TerrStatus and wD_Orders, belonged to bot games which
          * had ended, and every live game's queries were carrying them.
          *
