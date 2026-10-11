@@ -26,6 +26,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 define("VERSION", 183);
 
+// The most no-press bot games botgamecreate.php lets run at once: play-now (anonymous) games, and
+// registered users' games. status.php reports against the same numbers. A server can set either in
+// config.php; a config.php from before these settings existed gets these defaults.
+define("BOT_GAME_LIMIT_NOPRESS_ANONYMOUS", property_exists('Config', 'botGameLimitNoPressAnonymous') ? (int)Config::$botGameLimitNoPressAnonymous : 200);
+define("BOT_GAME_LIMIT_NOPRESS", property_exists('Config', 'botGameLimitNoPress') ? (int)Config::$botGameLimitNoPress : 800);
+
 
 // Some integer values which are named for clarity.
 

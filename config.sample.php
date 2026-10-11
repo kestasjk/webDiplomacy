@@ -268,6 +268,19 @@ class Config
 	public static $botVariantIDs = array(1, 15, 23);
 
 	/**
+	 * The most no-press bot games that can run at once, before botgamecreate.php turns new ones away:
+	 * play-now (anonymous) games, and registered users' games. The counts they're checked against are
+	 * refreshed by the gamemaster every seven minutes, so a busy spell can overshoot them a little.
+	 * The real limit is how many games the bots can keep up with, not the web server.
+	 *
+	 * Leave these out of config.php to get the defaults in global/definitions.php.
+	 *
+	 * @var int
+	 */
+	public static $botGameLimitNoPressAnonymous = 200;
+	public static $botGameLimitNoPress = 800;
+
+	/**
 	 * Messages to display when different flags are set via the admin control panel.
 	 *
 	 * If ServerOffline is set it will be displayed and the script will not start.
