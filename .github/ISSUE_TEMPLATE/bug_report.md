@@ -1,3 +1,8 @@
+---
+name: Bug report
+about: Report a reproducible problem with the webDiplomacy software.
+---
+
 <!--- 
    Thanks for submitting an issue!
 
