@@ -427,10 +427,18 @@ class panelGame extends Game
 	 */
 	function pointAndClickBar()
 	{
-		if( !$this->isClassicGame() ) return '';
+		$links = array();
 
-		return '<br /><strong>'.l_t('Point and click UI:').'</strong> 
-			 <a href="board.php?gameID='.$this->id.'&view=pointAndClick">'.l_t('Open').'</a>';
+		if( $this->isClassicGame() )
+			$links[] = '<a href="board.php?gameID='.$this->id.'&view=pointAndClick">'.l_t('Point and click').'</a>';
+
+		// The canvas map draws any variant; the drop-down form is the other way to use this page
+		if( $this->useCanvasBoard() )
+			$links[] = '<a href="board.php?gameID='.$this->id.'&view=dropDown">'.l_t('Drop-down orders').'</a>';
+		else
+			$links[] = '<a href="board.php?gameID='.$this->id.'&view=canvas">'.l_t('Legacy point and click').'</a>';
+
+		return '<br /><strong>'.l_t('Board UI:').'</strong> '.implode(' - ', $links);
 	}
 
 	/**

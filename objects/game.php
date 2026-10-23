@@ -570,10 +570,29 @@ class Game
 	{
 		global $User;
 
-		return $this->isClassicGame() 
+		return $this->isClassicGame()
 			&& (defined('PLAYNOW') || !isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() || (isset($_REQUEST['view']) && $_REQUEST['view'] == 'pointAndClick') )
-			&& !(isset($_REQUEST['view']) && $_REQUEST['view'] == 'dropDown');
+			&& !(isset($_REQUEST['view']) && ( $_REQUEST['view'] == 'dropDown' || $_REQUEST['view'] == 'canvas' ));
 			//&& is_null($this->sandboxCreatedByUserID); // Sandbox games currently not supported for build mode in point and click UI
+	}
+
+	/**
+	 * Whether board.php should show the canvas point-and-click map (javascript/wd/canvasboard.js) instead of the map
+	 * image and the drop-down order form: the user's "Legacy point and click" map UI option, or view=canvas. The
+	 * canvas board draws any variant from its variant.json, so unlike the /game/ board this isn't limited to Classic.
+	 * view=dropDown and view=pointAndClick override the option, as they do for usePointAndClickUI().
+	 */
+	function useCanvasBoard()
+	{
+		global $User;
+
+		// It reads the game through the API, which a logged-out visitor can't call
+		if( !isset($User) || !$User->type['User'] ) return false;
+
+		if( !empty($_REQUEST['view']) )
+			return $_REQUEST['view'] == 'canvas';
+
+		return $User->isMapUILegacyPointAndClick();
 	}
 
 	function watched() 

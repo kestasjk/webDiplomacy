@@ -158,3 +158,35 @@ ajax.php
 	orders/form.js interacts with ajax.php to submit orders, using JSON token data to authenticate
 	as a certain country with control over certain orders without having to authenticate the user
 	first.
+
+wd/
+	The classic board's newer JavaScript, written against the game's public JSON files and the
+	game/playercontext API route (doc/gamedata/02-spec.md), the same sources the /game/ board uses.
+	Plain scripts, one global namespace (wD), no Prototype dependence; each file is one module which
+	says at the top what it does and how it is used. board.php includes them all and calls
+	wD.Board.init() from the footer.
+wd/toast.js
+	- wD.Toast: notices stacked at the bottom-left of the page ("Game processed", "New message").
+wd/gamesource.js
+	- wD.GameSource: loads game/playercontext and the versioned files, keeps the player's messages in
+		localStorage and asks only for new ones, sends messages, saves orders through ajax.php.
+wd/live.js
+	- wD.Live: the server-sent events connection; emits files / message / processed / gap.
+wd/chat.js
+	- wD.Chat: the press panel (tabs, messages, send box, history filter, unread marks).
+wd/variantmap.js
+	- wD.VariantMap: variant.json with the lookups a board needs (provinces, coasts, borders, images).
+wd/legalorders.js
+	- wD.LegalOrders: which orders each unit may be given this phase, for any variant.
+wd/mapcanvas.js
+	- wD.MapCanvas: draws the map on a canvas from the variant's images (territory ownership, units,
+		orders, highlights) and says which territory a click landed on. Game-agnostic: the sandbox
+		set-up and registration pages can use it.
+wd/orderentry.js
+	- wD.OrderEntry: clicks into orders, as the /game/ board does it (unit, then Hold / Move /
+		Support / Convoy, then the targets; builds and retreats), and the orders as ajax.php wants them.
+wd/canvasboard.js
+	- wD.CanvasBoard: the "Legacy point and click" board: map, phase navigation, the Save / Ready
+		bar, live updates.
+wd/board.js
+	- wD.Board: wires the above up for board.php; exposes wD.page for the console.

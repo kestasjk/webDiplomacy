@@ -66,9 +66,16 @@ Generated from `wD_Territories`, `wD_Borders`, `wD_CoastalBorders` and the varia
   "version": "c0ffee12",
   "countries": [ { "countryID": 1, "name": "England" } ],
   "supplyCenterCount": 34, "supplyCenterTarget": 18,
+  "map": {
+    "countryColors": [ [226, 198, 158], [239, 196, 228] ],
+    "small": { "url": "variants/Classic/resources/smallmap.png", "width": 612, "height": 398,
+               "namesUrl": "variants/Classic/resources/smallmapNames.png",
+               "army": "contrib/smallarmy.png", "fleet": "contrib/smallfleet.png", "standoff": "images/icons/cross.png" },
+    "large": { "url": "variants/Classic/resources/map.png", "width": 1300, "height": 1000, "namesUrl": "…", "army": "…", "fleet": "…", "standoff": "…" }
+  },
   "territories": [
     { "id": 1, "name": "Clyde", "type": "Coast", "supply": false, "homeCountryID": null,
-      "coast": "No", "coastParentID": 1, "smallMapX": 144, "smallMapY": 165,
+      "coast": "No", "coastParentID": 1, "smallMapX": 144, "smallMapY": 165, "mapX": 299, "mapY": 336,
       "borders":        [ { "id": 2, "army": true, "fleet": true } ],
       "coastalBorders": [ { "id": 2, "army": true, "fleet": true } ] }
   ]
@@ -76,6 +83,12 @@ Generated from `wD_Territories`, `wD_Borders`, `wD_CoastalBorders` and the varia
 ```
 
 - `name` is the database name, not passed through `l_t()`, so it is a stable join key.
+- `map` (added 2026-10-23) is what a client needs to draw the map itself, as board.php's canvas board
+  (`javascript/wd/mapcanvas.js`) does: the images `map.php` draws from, for both map sizes, and the colours it
+  paints each country's land, `countryColors[0]` being neutral. `smallMapX/Y` and `mapX/Y` are where a
+  territory's unit goes on the small and large image. The images are colour-coded, each land territory one
+  colour of its own, which is how both `map.php` and the canvas recolour a territory. `libGameFiles::variantURL()`
+  rewrites a `variant.json` older than `VARIANT_FORMAT_CHANGED`, so adding fields needs no cache wipe.
 - `coast` keeps the database enum (`"No"`, `"Parent"`, `"Child"`). `coastParentID` equals `id` for
   territories that aren't child coasts, as in the database.
 - `homeCountryID` is `wD_Territories.countryID` (the starting owner), `null` for neutral.
@@ -630,3 +643,27 @@ Later still, after the first staging deploy of all of the above:
   does the new steps. `deploySSE()` now also stops if `npm ci` fails instead of killing a working
   server and starting one that can't load its dependencies, which is what happened on staging when
   `sse-server/node_modules` turned out to be owned by another user.
+
+### 2026-10-23: the classic board reads and writes through the same sources
+
+board.php now uses the files and `game/playercontext` for everything its JavaScript does, as the `/game/` board
+does, through the modules in `javascript/wd/` (see `doc/javascript.txt`):
+
+- **Press.** The server-rendered chatbox and `message.php` are gone. `wD.Chat` draws the panel from
+  `messages.json` and the player's messages from `game/playercontext`, sends with `game/sendmessage` and marks
+  tabs read with `game/messagesseen`. The messages are kept in `localStorage` per game and country with the
+  `cursor`, so a later visit asks only for `messagesSince` the cursor, and a "Show: last N turns" filter
+  (`messageTurns`) limits how far back the first load goes. `game/sendmessage` now returns each message's `id`
+  and `phase`, and lets a moderator (through their session) or the game's director post to everyone as
+  country 0, named, as the chatbox did.
+- **Live updates.** `wD.Live` is the SSE listener, connected for every logged-in viewer (spectators get the
+  game's channel with their context's `sseAuth`), telling the server what the page has with `have=` and
+  `since=`. The "Game has been processed" notice at the top of the page is a toast at the bottom-left
+  (`wD.Toast`); the map image and drop-down form still need a reload, which the toast offers.
+- **The canvas board.** A third map UI option, "Legacy point and click" (`wD_UserOptions.mapUI`, 1.84), or
+  `board.php?view=canvas`, replaces the map image and the drop-down form with `wD.CanvasBoard`: a `wD.MapCanvas`
+  drawn from `variant.json`'s new `map` block and the game's files, phase navigation over `history.json`,
+  order entry by clicking (`wD.OrderEntry`, with `wD.LegalOrders` a port of the `/game/` board's
+  precomputeLegalOrders to any variant) and saving through `ajax.php` with the context from
+  `game/playercontext`, so a sandbox game works as it does on the `/game/` board. The renderer and order
+  entry know nothing about the page, so the sandbox set-up and registration pages can use them later.

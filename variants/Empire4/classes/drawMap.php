@@ -60,10 +60,10 @@ class Empire4Variant_drawMap extends drawMap {
 		}
 	}
 
-	public function __construct($smallmap)
+	public function __construct($smallmap, $load=true)
 	{
 		// Map is too big, so up the memory-limit
-		parent::__construct($smallmap);
+		parent::__construct($smallmap, $load);
 		if ( !$this->smallmap )
 			ini_set('memory_limit',"32M");
 	}

@@ -610,6 +610,15 @@ class User {
 	}
 
 	/**
+	 * Whether this user has chosen the classic board.php page with the canvas point-and-click map in place of
+	 * the map image and drop-down order form (see Game::useCanvasBoard()).
+	 */
+	function isMapUILegacyPointAndClick()
+	{
+		return $this->getOptions()->value['mapUI'] == 'Legacy point and click';
+	}
+
+	/**
 	 * A coarse label for the kind of account, sent to Google Analytics as the user_type user property (see
 	 * libHTML::analyticsUserProperties()). Never a name or ID, as Google Analytics must not receive personal data.
 	 * @return string banned, guest, admin, moderator, bot, playnow (anonymous play-now account), donator or user

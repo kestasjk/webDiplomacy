@@ -24,7 +24,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-define("VERSION", 183);
+define("VERSION", 184);
 
 // The most no-press bot games botgamecreate.php lets run at once: play-now (anonymous) games, and
 // registered users' games. status.php reports against the same numbers. A server can set either in
@@ -49,5 +49,5 @@ define("JSDIR", 'javascript');
 define("CSSDIR", 'css');
 
 //Increment these versions whenever you update any js or css files for cachebusting
-define("JSVERSION",1.95);
-define("CSSVERSION",1.38);
+define("JSVERSION",1.96);
+define("CSSVERSION",1.39);

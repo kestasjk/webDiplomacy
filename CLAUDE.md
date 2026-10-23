@@ -12,6 +12,7 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 
 - **PHP Backend**: Main application logic written in PHP with MySQL database
 - **React Frontend**: The game board, in `game-src/`, built with TypeScript, Redux Toolkit and Tailwind CSS. It builds to `/game/` and reads games from their public JSON files and `game/playercontext` (see `doc/gamedata/02-spec.md`). It replaced the `beta-src/` board on 2026-09-20; `/beta/` now redirects to `/game/`
+- **Classic board (`board.php`)**: its JavaScript lives in `javascript/wd/` (plain scripts, namespace `wD`, documented in `doc/javascript.txt`) and reads the same files and `game/playercontext`. The press panel, live-update toasts and the "Legacy point and click" map UI option (a canvas map with click-to-order, `wD.CanvasBoard`) are there; the map image and drop-down order form remain for the "Dropdown menus" option
 - **SSE Server**: Node.js server for real-time events in `sse-server/` directory
 - **Game Engine**: Sophisticated adjudicator system in `gamemaster/` for processing game moves and rules
 - **Variant System**: Extensible game variant framework in `variants/` directory

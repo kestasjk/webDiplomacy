@@ -20,310 +20,96 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once(l_r('lib/gamemessage.php'));
-
 /**
- * The chat-box for the board. From the tabs to the messages to the send-box, also
- * takes responsibility for sending any messages it recieves.
+ * The chat-box for the board. On board.php the panel itself is drawn by javascript/wd/chat.js, which reads the
+ * messages from the game's messages.json and game/playercontext and sends through the API as the /game/ board
+ * does; this class gives that panel its place on the page and what it needs to know (panelHTML(), panelConfig()),
+ * handles "Mark unread", which has no API route, and renders messages as HTML for the messages archive.
  *
  * @package Board
  */
 class Chatbox
 {
 	/**
-	 * Find the tab which the user has requested to see, and return the country name. (Can also be 'Global')
+	 * Mark the messages from a country unread again, which the panel's "Mark unread" link posts back for.
 	 *
-	 * Will set the countryID as a session var, so will remember the countryID selected once even if not specified afterwards.
+	 * @param int $countryID
+	 */
+	public function markUnread($countryID)
+	{
+		global $Member, $Game, $DB;
+
+		$countryID = (int)$countryID;
+		if( !isset($Member) || $countryID < 0 || $countryID > count($Game->Variant->countries) ) return;
+		if( in_array($countryID, $Member->newMessagesFrom) ) return;
+
+		$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$countryID."', CONCAT_WS(',',newMessagesFrom,'".$countryID."') )
+					WHERE gameID = ".$Game->id." AND countryID=".$Member->countryID);
+		$Member->newMessagesFrom[]=$countryID;
+		$DB->sql_put("COMMIT");
+	}
+
+	/**
+	 * The chat panel's place on the page: an element javascript/wd/chat.js fills in, and the form "Mark unread" posts.
 	 *
 	 * @return string
 	 */
-	public function findTab()
+	public function panelHTML()
 	{
-		global $Member, $Game, $User;
+		global $Game, $Member;
 
-		$msgCountryID = 0;
+		$html = '<a name="chatboxanchor"></a><a name="chatbox"></a>
+			<div id="wdChat" class="wdchat variant'.$Game->Variant->name.'">
+				<div class="wdchat-loading notice">'.l_t('Loading messages...').'</div>
+			</div>';
 
-		// Find which member's messages we're looking at
-		if( isset($_REQUEST['msgCountryID']) )
-		{
-			$msgCountryID = (int)$_REQUEST['msgCountryID'];
-		}
-		elseif( isset($_SESSION[$Game->id.'_msgCountryID']) )
-		{
-			/*
-			 * This should only be used when entering a board, while within the board the msgCountryID
-			 * should be passed with REQUEST, or else problems arise with multiple tabs
-			 */
-			$msgCountryID = $_SESSION[$Game->id.'_msgCountryID'];
-		}
-		$msgCountryID=(int)$msgCountryID;
-
-		if ( $msgCountryID<=0 || $msgCountryID>count($Game->Variant->countries) )
-			$msgCountryID = 0;
-
-		// Enforce Global and Notes tabs when its not Regular press game.
-		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned()))
-		&& !(isset($Member) && $Member->countryID == $msgCountryID) )
-			$msgCountryID = 0;
-
-		$_SESSION[$Game->id.'_msgCountryID'] = $msgCountryID;
-
-		if ( isset($Member) and in_array($msgCountryID, $Member->newMessagesFrom) )
-		{
-			/*
-			 * The countryID we are viewing has new messages, which we are about to view.
-			 * Register the new messages as seen
-			 */
-			$Member->seen($msgCountryID);
-		}
-		return $msgCountryID;
-	}
-
-	/**
-	 * Post a message to the given countryID, if there is one to be posted. Will also send messages as a
-	 * GameMaster if the user is a moderator which isn't joined into the game.
-	 *
-	 * @param $msgCountryID The countryID to post to, may include 0 (Global)
-	 */
-	public function postMessage($msgCountryID)
-	{
-		global $Member, $Game, $User, $DB;
-		
-		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
-		{
-			$newmessage = trim($_REQUEST['newmessage']);
-
-			if ( isset($Member) &&
-			     ( $Game->pressType == 'Regular' ||                                        // All tabs allowed for Regular
-				   $Member->countryID == $msgCountryID ||                                  // Notes tab always allowed
-				   ($Game->pressType == 'RulebookPress' && 								   // In rulebook press... allow
-				   			($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||// press only in diplomacy or after the game
-			       ( $msgCountryID == 0 &&                                                 // Global tab allowed for...
-			         ( $Game->pressType == 'PublicPressOnly' ||                            // public press and
-			           ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' ))))) // finished nopress.
-			{
-				$sendingToMuted = false;
-
-				if( $msgCountryID != 0 ) {
-					$SendToUser = new User($Game->Members->ByCountryID[$msgCountryID]->userID);
-					if( $SendToUser->isCountryMuted($Game->id, $Member->countryID) )
-						$sendingToMuted = true;
-				}
-
-				if( $sendingToMuted )
-					libGameMessage::send($Member->countryID, $msgCountryID, l_t("Cannot send message; this country has muted you."));
-				else
-				{
-					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
-
-					if( $msgCountryID != $Member->countryID ) // Not a note to self
-						libHTML::analyticsEvent(libHTML::analyticsGameEventName('send_message', $Game));
-				}
-			}
-			elseif ( $msgCountryID == 0 ) {
-				if( $User->type['Moderator'] )
-				{
-					libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
-				}
-				elseif( $Game->isDirector($User->id) )
-				{
-					libGameMessage::send(0, 'Game/Tournament Director', '('.$User->username.'): '.$newmessage);
-				}
-			}
-		}
-
-		if( isset($_REQUEST['MarkAsUnread']) )
-		{
-			$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$msgCountryID."', CONCAT_WS(',',newMessagesFrom,'".$msgCountryID."') )
-						WHERE gameID = ".$Game->id." AND countryID=".$Member->countryID);
-			$Member->newMessagesFrom[]=$msgCountryID;
-		}
-	}
-
-	/**
-	 * Output the chatbox HTML; output the tabs, then the information about the player we're talking to,
-	 * then the correspondance we have with the current msgCountryID at the moment, then the post-box for
-	 * new messages we want to send
-	 *
-	 * @param string $msgCountryID The id of the country/tab which we have open
-	 * @return string The HTML for the chat-box
-	 */
-	public function output ($msgCountryID)
-	{
-		global $Game, $User, $Member;
-
-		$chatbox = '<a name="chatboxanchor"></a><a name="chatbox"></a>';
-
-		// Print each user's tab
 		if( isset($Member) )
-			$chatbox .= $this->outputTabs($msgCountryID);
+			$html .= '<form method="post" id="wdChatMarkUnread" action="board.php?gameID='.$Game->id.'#chatboxanchor" style="display:none">
+				<input type="hidden" name="MarkAsUnread" value="on" />
+				<input type="hidden" name="msgCountryID" value="" />
+				<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
+			</form>';
 
-		// Create the chatbox
-
-		// Print info on the user we're messaging
-		// Are we viewing another user, or the global chatbox?
-
-		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'">
-					<TABLE class="chatbox">
-					<TR class="barAlt2 membersList">
-					<TD>';
-
-		if ( $msgCountryID == 0 )
-		{
-			$memList=array();
-			for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
-				$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
-			$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
-		}
-		else if (!isset($Member) || $Member->countryID != $msgCountryID)
-		{
-			$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
-		}
-
-		$chatbox .= '</TD></TR></TABLE></DIV>';
-
-		// Print the messages in the chatbox
-		$chatbox .= '<DIV id="chatboxscroll" class="chatbox"><TABLE class="chatbox">';
-
-		$messages = $this->getMessages($msgCountryID);
-
-		if ( $messages == "" )
-		{
-			$chatbox .= '<TR class="barAlt1"><td class="notice">
-					'.l_t('No messages yet posted.').
-					'</td></TR>';
-		}
-		else
-		{
-			$chatbox .= $messages;
-		}
-
-		$chatbox .= '</TABLE></DIV>';
-
-		if ( ($msgCountryID == 0 && ( $User->type['Moderator'] || $Game->isDirector($User->id) )) || // A moderator / directory can see the global tab
-		     ( isset($Member) &&
-		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
-		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
-				   ($Game->pressType == 'RulebookPress' && 								   // In rulebook press... allow
-				   			($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||// press only in diplomacy or after the game
-		         ( $msgCountryID == 0 &&                                                  // Global tab allowed for...
-		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
-		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
-		{
-            libHTML::$footerIncludes[] = l_j('message.js');
-            $chatbox .= '<DIV class="chatbox">
-					<form method="post" class="safeForm" action="message.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'" id="chatForm">
-					<TABLE>
-					<TR class="barAlt2">
-						<TD class="left">
-						'.(($msgCountryID == 0) ? '' : '
-							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="3">Mark unread</a>
-						').'
-						</TD>
-						<TD class="right" rowspan="2">
-							<TEXTAREA id="sendbox" tabindex="1" NAME="newmessage" style="width:98% !important" width="100%" ROWS="5"></TEXTAREA>
-						</TD>
-					</TR>
-					<TR class="barAlt2">
-						<TD class="left send">
-							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" onclick="return false;" id="message-send"/><br/>
-
-
-					'.'
-						</TD>
-					</TR>
-				</TABLE>
-				</form>
-				</DIV></div>'.
-                (($msgCountryID == 0) ? '' : '
-						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
-							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />
-						</form>
-					');
-		}
-		else if ($Game->pressType == 'RulebookPress' && $Game->phase != 'Diplomacy' && $msgCountryID != 0)  {
-				$chatbox .= '<div class="chatbox"><TABLE><TR class="barAlt2"><TD class="center">
-						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
-							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />
-							</form>
-							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="3">Mark unread</a>
-							</TD></TR></TABLE></div>';
-
-		}
-		else
-		{
-			$chatbox .= '</div>';
-		}
-
-		libHTML::$footerScript[] = '
-			var cbs = $("chatboxscroll");
-
-			cbs.scrollTop = cbs.scrollHeight;
-			';
-
-		// Don't focus the chatbox if the user is entering orders
-		if ( isset($_REQUEST['msgCountryID']) )
-			libHTML::$footerScript[] = '
-				var sb = $("sendbox");
-				if( sb != null && !Object.isUndefined(sb) ) {
-					$("sendbox").focus();
-				}
-			';
-
-		return $chatbox;
+		return $html;
 	}
 
 	/**
-	 * Output the tabs which go on top of the chat-box, along with online notifications and message notifications
-	 * where applicable
-	 * @param string $msgCountryID The name of the countryID/tab which we have open
-	 * @return string The HTML for the chat-box tabs
+	 * What the panel needs to know about the game and the viewer, for wD.Chat (javascript/wd/chat.js): the
+	 * viewer's country, who may be written to, and how the players are named to this viewer.
+	 *
+	 * @return array
 	 */
-	protected function outputTabs ( $msgCountryID )
+	public function panelConfig()
 	{
-		global $Member, $Game;
+		global $Game, $Member, $User;
 
-		$tabs = '<div id="chatboxtabs" class="gamelistings-tabs">';
-
-		for( $countryID=0; $countryID<=count($Game->Variant->countries); $countryID++)
+		$countries = array();
+		$members = array();
+		foreach($Game->Variant->countries as $index => $countryName)
 		{
-			// Do not allow country specific tabs for restricted press games.
-			if (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') && $countryID != 0 && $countryID != $Member->countryID ) continue;
-
-			$tabs .= ' <a href="./board.php?gameID='.$Game->id.'&amp;msgCountryID='.$countryID.'&amp;rand='.rand(1,100000).'#chatboxanchor" '.
-				'class="country'.$countryID.' '.( $msgCountryID == $countryID ? 'current"'
-					: '" title="'.l_t('Open %s chatbox tab"',( $countryID == 0 ? 'the global' : $this->countryName($countryID)."'s" )) ).'>';
-
-			if ( $countryID == $Member->countryID )
-			{
-				$tabs .= l_t('Notes');
-			}
-			elseif(isset($Game->Members->ByCountryID[$countryID]))
-			{
-				$tabs .= $Game->Members->ByCountryID[$countryID]->memberCountryName();
-			}
-			else
-			{
-				$tabs .= l_t('Global');
-			}
-
-			if ( $msgCountryID != $countryID and in_array($countryID, $Member->newMessagesFrom) )
-			{
-				// This isn't the tab I am currently viewing, and it has sent me new messages
-				$tabs .= ' '.libHTML::unreadMessages();
-			}
-
-			// Mark as unread patch!
-			if ( $msgCountryID == $countryID and isset($_REQUEST['MarkAsUnread']))
-				$tabs .= ' '.libHTML::unreadMessages();
-
-			$tabs .= '</a>';
+			$countryID = $index + 1;
+			$countries[] = array('countryID' => $countryID, 'name' => l_t($countryName));
+			if( isset($Game->Members->ByCountryID[$countryID]) )
+				$members[] = array('countryID' => $countryID, 'name' => $Game->Members->ByCountryID[$countryID]->memberNameCountry());
 		}
 
-		$tabs .= '</div>';
+		$isMember = ( isset($Member) && is_a($Member, 'userMember') );
 
-		return $tabs;
+		return array(
+			'countryID' => $isMember ? (int)$Member->countryID : 0,
+			'isMember' => $isMember,
+			// A moderator or director who isn't playing may post to everyone, as game/sendmessage allows
+			'canPostGlobal' => ( !$isMember && ( $User->type['Moderator'] || $Game->isDirector($User->id) ) ),
+			'pressType' => $Game->pressType,
+			'phase' => $Game->phase,
+			'turn' => (int)$Game->turn,
+			'countries' => $countries,
+			'members' => $members,
+			'colourblind' => ( $User->getOptions()->value['colourblind'] != 'No' ),
+			'variantName' => $Game->Variant->name,
+			'markUnreadForm' => $isMember ? 'wdChatMarkUnread' : null,
+			'analyticsEventName' => libHTML::analyticsGameEventName('send_message', $Game),
+		);
 	}
 
 	protected function countryName($countryID) {

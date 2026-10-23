@@ -2292,3 +2292,192 @@ input[id^="FinalizeButton"]{
 		margin-right:0px;
 	}
 }
+/* --- Toasts (javascript/wd/toast.js): notices stacked at the bottom-left of the page --- */
+.wdtoasts {
+	position: fixed;
+	left: 12px;
+	bottom: 12px;
+	z-index: 10001;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-width: min(380px, calc(100vw - 24px));
+	pointer-events: none;
+}
+.wdtoast {
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	background: #2d3748;
+	color: #fff;
+	font-size: 13px;
+	line-height: 1.35;
+	box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+	border-left: 4px solid #7a8aa6;
+	text-align: left;
+	animation: wdtoast-in 0.2s ease-out;
+}
+.wdtoast-success { border-left-color: #3fa34d; }
+.wdtoast-error { border-left-color: #d9372b; }
+.wdtoast-warning { border-left-color: #e0a526; }
+.wdtoast-body { flex: 1 1 auto; }
+.wdtoast-body a { color: #cfe3ff; }
+.wdtoast-actions { display: flex; gap: 6px; }
+.wdtoast-action {
+	background: #fff;
+	color: #1f2a3a;
+	border: 0;
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: bold;
+	cursor: pointer;
+}
+.wdtoast-action:hover { background: #e6edf7; }
+.wdtoast-close {
+	background: none;
+	border: 0;
+	color: #bbb;
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0 2px;
+}
+.wdtoast-close:hover { color: #fff; }
+.wdtoast-leaving { opacity: 0; transition: opacity 0.25s; }
+@keyframes wdtoast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* --- Chat panel (javascript/wd/chat.js) --- */
+.wdchat { text-align: left; }
+.wdchat-tabs { font-size: 14px !important; }
+.wdchat-tabs a { cursor: pointer; }
+.wdchat-tabs a.current { font-weight: bold; }
+.wdchat-unread { vertical-align: middle; }
+.wdchat-panel { border-radius: 7px; overflow: hidden; }
+.wdchat-header { padding: 4px 8px; font-size: 12px; text-align: center; }
+.wdchat-messages {
+	max-height: 260px;
+	min-height: 60px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	font-size: 13px;
+}
+.wdchat-message {
+	display: flex;
+	gap: 8px;
+	padding: 3px 8px;
+	align-items: baseline;
+	overflow-wrap: anywhere;
+}
+.wdchat-time { flex: 0 0 auto; font-size: 11px; color: #777; min-width: 52px; }
+.wdchat-text { flex: 1 1 auto; }
+.wdchat-text .messageFromMe { color: inherit; }
+.wdchat-mine .wdchat-text { font-style: italic; }
+.wdchat-empty { padding: 12px; text-align: center; }
+.wdchat-footer { padding: 6px 8px; }
+.wdchat-compose { display: flex; gap: 8px; align-items: stretch; }
+.wdchat-input {
+	flex: 1 1 auto;
+	resize: vertical;
+	font: inherit;
+	font-size: 13px;
+	padding: 4px 6px;
+	min-height: 48px;
+	box-sizing: border-box;
+}
+.wdchat-send { flex: 0 0 auto; min-width: 64px; }
+.wdchat-tools {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-top: 6px;
+	font-size: 12px;
+	color: #555;
+}
+.wdchat-filter { font-size: 12px; }
+.wdchat-notice { color: #a33; }
+.wdchat-loading { padding: 12px; text-align: center; }
+
+/* --- Canvas board (javascript/wd/canvasboard.js, mapcanvas.js) --- */
+.wdcb { text-align: center; margin: 0 auto; }
+.wdcb-map { position: relative; width: 100%; }
+.wdcb-loading { padding: 40px 0; color: #666; }
+.wdmap { position: relative; display: block; width: 100%; line-height: 0; }
+.wdmap-canvas { display: block; width: 100%; height: auto; cursor: pointer; border-radius: 4px; }
+.wdmap-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; line-height: normal; }
+.wdcb-flyout {
+	position: absolute;
+	transform: translate(-50%, -100%) translateY(-14px);
+	display: flex;
+	gap: 3px;
+	padding: 4px;
+	border-radius: 6px;
+	background: rgba(28, 43, 51, 0.95);
+	box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+	pointer-events: auto;
+	white-space: nowrap;
+	z-index: 5;
+}
+.wdcb-flyout::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: -7px;
+	margin-left: -7px;
+	border: 7px solid transparent;
+	border-top-color: rgba(28, 43, 51, 0.95);
+	border-bottom: 0;
+}
+.wdcb-flyout-btn {
+	border: 0;
+	border-radius: 4px;
+	padding: 5px 9px;
+	font-size: 12px;
+	font-weight: bold;
+	background: #fff;
+	color: #1c2b33;
+	cursor: pointer;
+}
+.wdcb-flyout-btn:hover { background: #dbe8f5; }
+.wdcb-flyout-cancel { background: transparent; color: #ccc; padding: 5px 6px; }
+.wdcb-flyout-cancel:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.wdcb-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px 16px;
+	padding: 8px 10px;
+	margin-top: 6px;
+	border-radius: 7px;
+	background: #f1f1f1;
+	font-size: 13px;
+	text-align: left;
+}
+.wdcb-nav { display: flex; align-items: center; gap: 4px; }
+.wdcb-navbtn { margin: 0 2px; line-height: 0; }
+.wdcb-navbtn-disabled { cursor: default; }
+.wdcb-phase { min-width: 150px; text-align: center; line-height: 1.2; padding: 0 6px; }
+.wdcb-phase-date { font-weight: bold; }
+.wdcb-phase-name { font-size: 11px; color: #555; text-transform: uppercase; }
+.wdcb-phase-history .wdcb-phase-date { color: #7a5200; }
+.wdcb-tools { display: flex; align-items: center; gap: 12px; color: #555; }
+.wdcb-size { font-size: 12px; }
+.wdcb-orders { display: flex; align-items: center; gap: 8px; }
+.wdcb-status { font-size: 12px; color: #555; min-width: 130px; }
+.wdcb-status-unsaved { color: #a85a00; font-weight: bold; }
+.wdcb button.form-submit { padding: 6px 16px; }
+.wdcb button:disabled { opacity: 0.45; cursor: default; }
+.wdcb-glow { animation: wdcb-glow 1.4s ease-in-out infinite; }
+@keyframes wdcb-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.0); } 50% { box-shadow: 0 0 10px 3px rgba(255, 170, 0, 0.8); } }
+.wdcb-notice { font-size: 12px; margin-top: 6px; min-height: 1em; text-align: left; }
+.wdcb-notice-error { color: #b22; }
+.wdcb-notice-warning { color: #8a5a00; }
+@media (max-width: 600px) {
+	.wdcb-bar { justify-content: center; }
+	.wdcb-phase { min-width: 110px; }
+}

@@ -219,14 +219,16 @@ abstract class drawMap
 	 * Initialize the image resource, getting it ready to be drawn to
 	 *
 	 * @param bool $smallmap True if displaying the smallmap, false if the large map
+	 * @param bool $load False to only describe the map (getColors(), getMapURL() and the other getters) without
+	 * 	loading the images or territories; for variant.json, which lets clients draw the map themselves
 	 */
-	public function __construct($smallmap)
+	public function __construct($smallmap, $load=true)
 	{
 		$this->smallmap = (bool) $smallmap;
 
 		// This is an annoying hack needed to extract the country colors which are protected, without
 		// loading unnecessary resources. If the variant is fully loaded MAPID will be set
-		if( defined('MAPID') )
+		if( $load && defined('MAPID') )
 		{
 			// TODO: Remove the MAPID constant
 			$this->mapID = MAPID;
@@ -1247,7 +1249,12 @@ abstract class drawMap
 		return $this->resources()['map'];
 	}
 	public function getNamesURL() {
-		return $this->resources()['names'];
+		$resources = $this->resources();
+		// Names are optional; without an overlay the territory names are drawn on
+		return isset($resources['names']) ? $resources['names'] : null;
+	}
+	public function getStandoffURL() {
+		return $this->resources()['standoff'];
 	}
 }
 

@@ -1136,8 +1136,15 @@ class SendMessage extends ApiEntry {
 	public function __construct() {
 		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), false);
 	}
+	/**
+	 * Members send as their country. A moderator, or the game's director, who isn't playing may post to everyone as
+	 * board.php's chatbox let them; run() checks who is asking.
+	 */
+	public function requiresMembership() {
+		return false;
+	}
 	public function run($userID, $permissionIsExplicit) {
-		global $Game, $DB;
+		global $Game, $DB, $User;
 		$args = $this->getArgs();
 		$messages = array();
 
@@ -1155,50 +1162,65 @@ class SendMessage extends ApiEntry {
 
 		$Game = $this->getAssociatedGame();
 
-		$allowed = ($Game->phase == 'Finished') ||
-		           ($Game->pressType == 'Regular') || 
-		           ($countryID == $toCountryID) ||
-		           ($Game->pressType == 'RulebookPress' && ($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||
-		           ($Game->pressType == 'PublicPressOnly' && $toCountryID == 0);
-		if (!$allowed) {
-			throw new RequestException("Message is invalid in $Game->pressType");
-		}
+		$isMember = ( isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID );
 
-		if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
-			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
-		}
+		if (!$isMember) {
+			// Not playing: only a moderator (through their own session) or a director may post, and only to everyone,
+			// named, from the GameMaster's country 0
+			$isModerator = ( $this->isSessionAuth && isset($User) && intval($User->id) == intval($userID) && $User->type['Moderator'] );
+			$isDirector = $Game->isDirector($userID);
 
-		if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
-			throw new RequestException('Invalid toCountryID');
-		}
-
-		if ($toCountryID != 0) {
-			$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
-			if($toUser->isCountryMuted($Game->id, $countryID)) {
-				return json_encode(["messages" => []]);
+			if ($countryID != 0 || $toCountryID != 0 || !($isModerator || $isDirector)) {
+				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 			}
-		}
 
-		$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
+			$poster = ( isset($User) && intval($User->id) == intval($userID) ) ? $User : new User($userID);
+			$timeSent = libGameMessage::send(0, $isModerator ? 'Moderator' : 'Game/Tournament Director', '('.$poster->username.'): '.$message);
+		} else {
+			$allowed = ($Game->phase == 'Finished') ||
+			           ($Game->pressType == 'Regular') ||
+			           ($countryID == $toCountryID) ||
+			           ($Game->pressType == 'RulebookPress' && ($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||
+			           ($Game->pressType == 'PublicPressOnly' && $toCountryID == 0);
+			if (!$allowed) {
+				throw new RequestException("Message is invalid in $Game->pressType");
+			}
+
+			if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
+				throw new RequestException('Invalid toCountryID');
+			}
+
+			if ($toCountryID != 0) {
+				$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
+				if($toUser->isCountryMuted($Game->id, $countryID)) {
+					return json_encode(["messages" => []]);
+				}
+			}
+
+			$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
+		}
 
 		// now fetch this message back out of the table.
 		// This is the safest way to make sure all the escaping is correct.
 		// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
-		$tabl = $DB->sql_tabl("SELECT message, turn 
-			FROM wD_GameMessages WHERE 
-			gameID = $gameID AND 
-			timeSent = $timeSent AND 
-			fromCountryID = $countryID AND 
+		$tabl = $DB->sql_tabl("SELECT id, message, turn, phaseMarker
+			FROM wD_GameMessages WHERE
+			gameID = $gameID AND
+			timeSent = $timeSent AND
+			fromCountryID = $countryID AND
 			toCountryID = $toCountryID
 		");
 
+		// The same shape as a message in messages.json or game/playercontext, so clients can merge it by id
 		while ($msg = $DB->tabl_hash($tabl)) {
 			$messages[] = [
+				'id' => (int) $msg['id'],
 				'fromCountryID' => $countryID,
 				'message' => $msg['message'],
 				'timeSent' => (int) $timeSent,
 				'toCountryID' => $toCountryID,
-				'turn' => $msg['turn'],
+				'turn' => (int) $msg['turn'],
+				'phase' => $msg['phaseMarker'],
 			];
 		}
 		$ret = [

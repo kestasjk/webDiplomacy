@@ -328,20 +328,8 @@ class OrderInterface
 		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
 			libHTML::$footerScript[] = l_jf($jf).'();';
 
-		if( isset(Config::$sseSecret) )
-		{
-			// The turn, phase and time this page shows, so the SSE server can tell if it missed an update while not
-			// connected, and the token which lets this member connect (only the member playing this country is given
-			// an order interface, so it doesn't need requesting from sse/authentication)
-			libHTML::$footerScript[] = "configureSSE(".
-				$this->gameID.",".
-				$this->countryID.",".
-				$this->turn.",".
-				"'".$this->phase."',".
-				time().",".
-				json_encode(libAuth::sseToken($this->gameID, $this->countryID)).
-			");";
-		}
+		// Live updates (a processed game, a new message) come through javascript/wd/live.js, which board.php sets up
+		// for every logged-in viewer, not only members with an order form
 	}
 
 	protected function jsInitForm() {

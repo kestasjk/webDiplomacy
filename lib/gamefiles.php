@@ -868,6 +868,13 @@ class libGameFiles
 	}
 
 	/**
+	 * When variant.json last gained fields (Unix time). A file written before then is rewritten by variantURL(), so a
+	 * deploy which changes the format doesn't need every variant's cache wiping. Move it forward when the format changes.
+	 * 2026-10-23: large-map coordinates, the map images and the country colours, for the canvas board.
+	 */
+	const VARIANT_FORMAT_CHANGED = 1792713600;
+
+	/**
 	 * @return array array('url' => .., 'version' => ..) of the variant's variant.json, which is written if it is missing
 	 */
 	public static function variantURL($variantID)
@@ -880,7 +887,7 @@ class libGameFiles
 		if( !isset(Config::$variants[$variantID]) ) return array('url' => null, 'version' => null);
 
 		$path = 'variants/'.Config::$variants[$variantID].'/cache/variant.json';
-		if( !file_exists($path) ) self::writeVariant($variantID);
+		if( !file_exists($path) || filemtime($path) < self::VARIANT_FORMAT_CHANGED ) self::writeVariant($variantID);
 
 		// The file only changes when the variant is reinstalled, so when it was written will do for a version
 		$cache[$variantID] = array('url' => $path, 'version' => file_exists($path) ? dechex(filemtime($path)) : null);
@@ -904,7 +911,7 @@ class libGameFiles
 			$mapID = intval($Variant->mapID);
 
 			$territories = array();
-			$tabl = $DB->sql_tabl("SELECT id, name, type, supply, countryID, coast, coastParentID, smallMapX, smallMapY
+			$tabl = $DB->sql_tabl("SELECT id, name, type, supply, countryID, coast, coastParentID, smallMapX, smallMapY, mapX, mapY
 				FROM wD_Territories WHERE mapID = ".$mapID." ORDER BY id");
 			while( $row = $DB->tabl_hash($tabl) )
 				$territories[intval($row['id'])] = array(
@@ -915,8 +922,11 @@ class libGameFiles
 					'homeCountryID' => intval($row['countryID']) > 0 ? intval($row['countryID']) : null,
 					'coast' => $row['coast'],
 					'coastParentID' => intval($row['coastParentID']),
+					// Where the territory's units and labels go on each map image, in that image's pixels
 					'smallMapX' => intval($row['smallMapX']),
 					'smallMapY' => intval($row['smallMapY']),
+					'mapX' => intval($row['mapX']),
+					'mapY' => intval($row['mapY']),
 					'borders' => array(),
 					'coastalBorders' => array(),
 				);
@@ -956,6 +966,7 @@ class libGameFiles
 				'supplyCenterCount' => intval($Variant->supplyCenterCount),
 				'supplyCenterTarget' => intval($Variant->supplyCenterTarget),
 				'rules' => new stdClass(),
+				'map' => self::variantMap($Variant),
 				'territories' => array_values($territories),
 			));
 		}
@@ -964,6 +975,61 @@ class libGameFiles
 			error_log('libGameFiles::writeVariant('.$variantID.'): '.$e->getMessage());
 			return false;
 		}
+	}
+
+	/**
+	 * The images map.php draws a game's map from, and the colours it paints the countries' supply centres, so that a
+	 * client can draw the map itself (javascript/wd/mapcanvas.js). Each territory's position on the images is its
+	 * smallMapX/Y and mapX/Y. The images are colour-coded, each territory one colour of its own, which is what lets
+	 * map.php and the canvas board recolour a territory by its colour at that position.
+	 *
+	 * @return array array('countryColors' => [[r,g,b] by countryID, 0 neutral], 'small' => {url, width, height,
+	 * 	namesUrl, army, fleet, standoff}, 'large' => the same)
+	 */
+	private static function variantMap(WDVariant $Variant)
+	{
+		require_once(l_r('map/drawMap.php'));
+
+		$map = array('countryColors' => array(), 'small' => null, 'large' => null);
+		foreach(array('small' => true, 'large' => false) as $size => $isSmall)
+		{
+			// Constructed without loading the images or territories; it only names them
+			$drawMap = $Variant->drawMap($isSmall, false);
+
+			$url = $drawMap->getMapURL();
+			list($width, $height) = self::imageSize($url);
+			$map[$size] = array(
+				'url' => $url,
+				'width' => $width,
+				'height' => $height,
+				'namesUrl' => $drawMap->getNamesURL(),
+				'army' => $drawMap->getArmyURL(),
+				'fleet' => $drawMap->getFleetURL(),
+				'standoff' => $drawMap->getStandoffURL(),
+			);
+
+			if( !count($map['countryColors']) )
+			{
+				$colors = $drawMap->getColors();
+				ksort($colors);
+				foreach($colors as $color)
+					$map['countryColors'][] = array_values(array_map('intval', $color));
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * @param string $url A URL relative to the web root
+	 * @return array array(width, height), zeros if the file can't be read
+	 */
+	private static function imageSize($url)
+	{
+		$size = @getimagesize(dirname(__DIR__).'/'.$url);
+		if( $size === false ) return array(0, 0);
+
+		return array(intval($size[0]), intval($size[1]));
 	}
 }
 

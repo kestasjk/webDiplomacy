@@ -73,11 +73,6 @@ class panelMember extends Member
 				$buf .= '<div class="panelAnonOnlyFlag"><b>All countries have entered orders.</b></div>';
 			}
 
-			// Create placeholders for users to receive a notice that the game has processed
-			$buf .= '<div style="text-align:center" class="panelAnonOnlyFlag">';
-			$buf .= '<span id="sseGameProcessed"></span>';
-			$buf .= '<span id="sseMessageSent"></span>';
-			$buf .= '</div>';
 		}
 
 		if ( $this->Game->phase != 'Pre-game' )

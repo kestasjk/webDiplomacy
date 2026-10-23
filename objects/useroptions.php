@@ -54,7 +54,7 @@ class UserOptions
 	);
 
 	public static $possibleValues = array(
-		'mapUI' => array('Point and click','Dropdown menus'),
+		'mapUI' => array('Point and click','Dropdown menus','Legacy point and click'),
 		'colourblind' => array('No','Protanope','Deuteranope','Tritanope'),
 		'darkMode' => array('Yes', 'No'),
 		'displayUpcomingLive' => array('Yes','No'),

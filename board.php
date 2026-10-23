@@ -136,7 +136,8 @@ try
 					$Redis->trigger("private-game" . $Game->id, 'overview', 'set-vote');
 				}
 
-				if ( $Game->phase !='Finished' )
+				// The canvas board enters orders through the API instead of the drop-down form (see below)
+				if ( $Game->phase !='Finished' && !$Game->useCanvasBoard() )
 				{
 					$OI = OrderInterface::newBoard();
 					$OI->load(false);
@@ -156,17 +157,16 @@ try
 		}
 	}
 
-	// Process the chatbox / game messages
+	// The chatbox: drawn by javascript/wd/chat.js from the game's messages.json and game/playercontext, and sending
+	// through the API as the /game/ board does. The page only handles "Mark unread", which has no API route.
 	if( $Game->phase != 'Pre-game' && ( (isset($Member) && is_a($Member, 'userMember') ) || $User->type['Moderator'] || $Game->isDirector($User->id) ) )
 	{
 		$CB = $Game->Variant->Chatbox();
-		// Now that we have retrieved the latest messages we can update the time we last viewed the messages
-		// Post messages we sent, and get the user we're speaking to
-		$msgCountryID = $CB->findTab();
-		$CB->postMessage($msgCountryID);
-		$forum = $CB->output($msgCountryID);
+		if( isset($Member) && isset($_REQUEST['MarkAsUnread']) && isset($_REQUEST['msgCountryID']) && libHTML::checkTicket() )
+			$CB->markUnread((int)$_REQUEST['msgCountryID']);
+		$forum = $CB->panelHTML();
+		$chatConfig = $CB->panelConfig();
 		unset($CB);
-		libHTML::$footerScript[] = 'makeFormsSafe();';
 	}
 }
 catch(ClientForbiddenException $e)
@@ -229,7 +229,40 @@ if ( isset($_REQUEST['viewArchive']) || isset($_REQUEST['lodgeSuspicion']) )
 
 // The error where this isn't a panelGameBoard but is probably a processGame appears to be related to someone rejoining a game they were previously
 // in civil disorder for. Need to trace how $Game gets set up when rejoining from a CD TODO
-$map = $Game->mapHTML();
+if( $Game->useCanvasBoard() )
+{
+	// The canvas map with its history and order entry, drawn by javascript/wd/canvasboard.js from the game's files
+	$map = '<div id="wdCanvasBoard" class="wdcb"><noscript><p class="notice">'.l_t('The point and click map needs JavaScript.').'</p></noscript></div>';
+	$canvasConfig = array(
+		'memberID' => isset($Member) ? (int)$Member->id : null,
+		'countryID' => isset($Member) ? (int)$Member->countryID : 0,
+		'isMember' => isset($Member) && is_a($Member, 'userMember'),
+		'analyticsEventName' => libHTML::analyticsGameEventName('submit_orders', $Game),
+	);
+}
+else
+	$map = $Game->mapHTML();
+
+// The page's JavaScript: the chat panel, the live updates and their toasts, and the canvas board if it was chosen.
+// Only for logged-in users, as it reads the game through the API.
+if( $User->type['User'] )
+{
+	foreach(array('toast','gamesource','live','chat','variantmap','legalorders','mapcanvas','orderentry','canvasboard','board') as $module)
+		libHTML::$footerIncludes[] = l_j('wd/'.$module.'.js');
+
+	$boardConfig = array(
+		'gameID' => (int)$Game->id,
+		'sbToken' => isset($_REQUEST['sbToken']) ? (string)$_REQUEST['sbToken'] : null,
+		'turn' => (int)$Game->turn,
+		'phase' => $Game->phase,
+		'chat' => isset($chatConfig) ? $chatConfig : null,
+		'canvas' => isset($canvasConfig) ? $canvasConfig : null,
+	);
+	libHTML::$footerScript[] = 'turnToText = '.$Game->Variant->turnAsDateJS().'
+		var wdBoardConfig = '.json_encode($boardConfig).';
+		if( wdBoardConfig.chat ) wdBoardConfig.chat.turnText = turnToText;
+		wD.Board.init(wdBoardConfig);';
+}
 
 /*
  * Now there is $orders, $form, and $map. That's all the HTML cached, now begin printing

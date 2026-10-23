@@ -2312,7 +2312,7 @@ CREATE TABLE IF NOT EXISTS `wD_UserConnections` (
 -- Prevent full table scanes in phpBB like module
 ALTER TABLE IF EXISTS `phpbb_posts_likes` ADD INDEX `CountLikes` (`user_id`, `post_id`);
 
-ALTER TABLE `wD_UserOptions` ADD COLUMN `mapUI` enum('Point and click','Dropdown menus') NOT NULL DEFAULT 'Point and click';
+ALTER TABLE `wD_UserOptions` ADD COLUMN `mapUI` enum('Point and click','Dropdown menus','Legacy point and click') NOT NULL DEFAULT 'Point and click';
 ALTER TABLE `wD_UserOptions` CHANGE COLUMN `displayUpcomingLive` `displayUpcomingLive` enum('No','Yes') NOT NULL DEFAULT 'No';
 
 UPDATE wD_UserOptions SET mapUI = 'Point and click';
@@ -2604,4 +2604,4 @@ ALTER TABLE `wD_Games` ADD INDEX `playerTypesPhasePot` (`playerTypes`, `phase`, 
 -- -- phpbb_posts_likes with only PRIMARY KEY (post_id, user_id):
 -- ALTER TABLE `phpbb_posts_likes` ADD INDEX `user_id` (`user_id`);
 
-UPDATE `wD_Misc` SET `value` = '183' WHERE `name` = 'Version';
+UPDATE `wD_Misc` SET `value` = '184' WHERE `name` = 'Version';
