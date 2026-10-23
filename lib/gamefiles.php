@@ -664,7 +664,9 @@ class libGameFiles
 				'countryID' => intval($row['countryID']),
 				'type' => $row['type'],
 				'terrID' => intval($row['terrID']),
-				'retreating' => isset($retreatingUnitIDs[intval($row['id'])]),
+				// Only while the retreats are being entered: a territory still names the unit which retreated from it
+				// until the next turn's TerrStatus is written
+				'retreating' => ( $gameRow['phase'] == 'Retreats' && isset($retreatingUnitIDs[intval($row['id'])]) ),
 			);
 
 		// Who left the game in civil disorder names users, so it is only for finished games, as on board.php

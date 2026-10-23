@@ -18,18 +18,22 @@
  */
 
 /**
- * wD.Chat: the board's press panel, drawn by the browser from the same sources the /game/ board uses: everyone's
- * messages from messages.json, the player's own from game/playercontext (kept in localStorage, so only new ones
- * are asked for), sent with game/sendmessage and marked read with game/messagesseen. It replaces the
- * server-rendered Chatbox on board.php.
+ * wD.Chat: the board's press panel, drawn by the browser with the markup and styles the server-rendered Chatbox
+ * had (board/chatbox.php's output(), as it was), from the same sources the /game/ board uses: everyone's messages
+ * from messages.json, the player's own from game/playercontext (kept in localStorage, so only new ones are asked
+ * for), sent with game/sendmessage and marked read with game/messagesseen.
+ *
+ * The last few turns' messages are shown to start with; a line at the top of the messages offers the earlier ones
+ * when there are any, so scrolling to the top is how to read back.
  *
  *   var chat = new wD.Chat(document.getElementById('wdChat'), { source: source, live: live, config: {...} });
  *   chat.prepare();   // before anything asks the source for a context
  *   chat.start();
  *
- * config, from board.php: { countryID, isMember, canPostGlobal, pressType, phase, countries: [{countryID, name}],
- *   members: [{countryID, name: HTML of the player's name or the country}], colourblind, variantName,
- *   turnText: function(turn) -> "Spring, 1901", markUnreadForm: id of a form posting MarkAsUnread }
+ * config, from board/chatbox.php: { countryID, isMember, canPostGlobal, pressType, phase, turn,
+ *   countries: [{countryID, name}], members: [{countryID, name: HTML of the player's name, tabName: HTML of the
+ *   country's name as the tabs show it}], colourblind, variantName, turnText: function(turn) -> "Spring, 1901",
+ *   markUnreadForm: id of a form posting MarkAsUnread, analyticsEventName }
  */
 var wD = window.wD || {};
 window.wD = wD;
@@ -37,14 +41,9 @@ window.wD = wD;
 wD.Chat = (function () {
 	'use strict';
 
-	var TURN_FILTERS = [
-		{ value: '0', label: 'This turn' },
-		{ value: '3', label: 'Last 3 turns' },
-		{ value: '10', label: 'Last 10 turns' },
-		{ value: 'all', label: 'All turns' }
-	];
-	var DEFAULT_FILTER = '10';
-	var FILTER_STORAGE_KEY = 'wD.chat.turns';
+	// How many turns back the messages are shown to start with, and how many more each "earlier messages" asks for
+	var FIRST_TURNS = 5;
+	var MORE_TURNS = 10;
 	var ALLOWED_TAGS = { BR: true, STRONG: true, B: true, EM: true, I: true, U: true, SPAN: true, A: true };
 
 	function el(tag, className, text) {
@@ -52,14 +51,6 @@ wD.Chat = (function () {
 		if (className) node.className = className;
 		if (text !== undefined && text !== null) node.textContent = text;
 		return node;
-	}
-
-	function storage(key, value) {
-		try {
-			if (value === undefined) return window.localStorage.getItem(key);
-			window.localStorage.setItem(key, value);
-		} catch (e) { /* unavailable */ }
-		return null;
 	}
 
 	function session(key, value) {
@@ -103,13 +94,22 @@ wD.Chat = (function () {
 		return template.content;
 	}
 
-	function formatTime(unixTime) {
+	/** libTime::text()'s wording, for when the page's own timestamp code isn't there to localise it */
+	function timeText(unixTime) {
 		var date = new Date(unixTime * 1000);
-		var now = new Date();
-		var sameDay = date.toDateString() === now.toDateString();
-		var time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-		if (sameDay) return time;
-		return date.toLocaleDateString([], { day: 'numeric', month: 'short' }) + ' ' + time;
+		var difference = Math.abs(Date.now() / 1000 - unixTime);
+		var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+		var hours12 = function () {
+			var h = date.getHours() % 12;
+			return (h === 0 ? 12 : h);
+		};
+		var ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+		var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		if (difference < 22 * 60 * 60) return pad(hours12()) + ':' + pad(date.getMinutes()) + ' ' + ampm;
+		if (difference < 4 * 24 * 60 * 60) return days[date.getDay()] + ' ' + pad(hours12()) + ' ' + ampm;
+		if (difference < 3 * 7 * 22 * 60 * 60) return days[date.getDay()] + ' ' + pad(date.getDate()) + ' ' + months[date.getMonth()];
+		return pad(date.getDate()) + ' ' + months[date.getMonth()] + ' ' + String(date.getFullYear()).slice(2);
 	}
 
 	function Chat(container, options) {
@@ -128,27 +128,31 @@ wD.Chat = (function () {
 		this.mutedCountryIDs = [];
 		this.loading = null;
 		this.refreshQueued = false;
+		this.loadingEarlier = false;
 
-		this.filter = storage(FILTER_STORAGE_KEY) || DEFAULT_FILTER;
-		if (!TURN_FILTERS.some(function (f) { return f.value === this.filter; }, this)) this.filter = DEFAULT_FILTER;
+		// How many turns back are shown; grows when earlier messages are asked for
+		this.windowTurns = FIRST_TURNS;
+		// The earliest turn the player's private messages have been fetched from (0: all of them), once known
+		this.loadedFromTurn = null;
 
 		this.countries = {};
 		(this.config.countries || []).forEach(function (country) { this.countries[country.countryID] = country.name; }, this);
-		this.memberNames = {};
-		(this.config.members || []).forEach(function (member) { this.memberNames[member.countryID] = member.name; }, this);
+		this.members = {};
+		(this.config.members || []).forEach(function (member) { this.members[member.countryID] = member; }, this);
 
 		// The tab last open in this browser tab, as the old chatbox remembered it in the session
 		var savedTab = session('wD.chat.tab.' + this.source.gameID);
 		this.tab = this.allowedTab(savedTab === null ? 0 : parseInt(savedTab, 10));
 	}
 
-	Chat.prototype.filterTurns = function () {
-		return this.filter === 'all' ? null : parseInt(this.filter, 10);
+	/** The earliest turn whose messages are shown */
+	Chat.prototype.fromTurn = function () {
+		return Math.max(0, this.currentTurn - this.windowTurns);
 	};
 
 	/** Decide what the first context request should ask for; call before anything loads the context */
 	Chat.prototype.prepare = function () {
-		this.source.initialMessageParams(this.isMember ? this.countryID : 0, this.filterTurns(), this.currentTurn);
+		this.source.initialMessageParams(this.isMember ? this.countryID : 0, this.windowTurns, this.currentTurn);
 	};
 
 	/* Who may talk to whom */
@@ -181,10 +185,14 @@ wD.Chat = (function () {
 		return false;
 	};
 
-	Chat.prototype.messagesForTab = function (countryID) {
+	/**
+	 * @param {number} countryID The tab
+	 * @param {boolean} everyTurn Whether to include messages from before the turns being shown
+	 */
+	Chat.prototype.messagesForTab = function (countryID, everyTurn) {
 		var me = this.countryID;
 		var muted = this.mutedCountryIDs;
-		var fromTurn = this.filterTurns() === null ? 0 : Math.max(0, this.currentTurn - this.filterTurns());
+		var fromTurn = everyTurn ? 0 : this.fromTurn();
 		return this.messages.filter(function (m) {
 			if (m.turn < fromTurn) return false;
 			if (muted.indexOf(m.fromCountryID) !== -1 && m.fromCountryID !== me) return false;
@@ -192,6 +200,15 @@ wD.Chat = (function () {
 			if (countryID === me) return (m.fromCountryID === me && m.toCountryID === me) || (m.fromCountryID === 0 && m.toCountryID === me);
 			return (m.toCountryID === me && m.fromCountryID === countryID) || (m.fromCountryID === me && m.toCountryID === countryID);
 		});
+	};
+
+	/** Whether there are, or may be, messages for the open tab from before the turns being shown */
+	Chat.prototype.hasEarlier = function () {
+		var fromTurn = this.fromTurn();
+		if (fromTurn <= 0) return false;
+		if (this.messagesForTab(this.tab, true).some(function (m) { return m.turn < fromTurn; })) return true;
+		// The player's own messages are only fetched back to loadedFromTurn; the server may hold older ones
+		return this.tab !== 0 && this.isMember && (this.loadedFromTurn === null || this.loadedFromTurn > 0);
 	};
 
 	/* Loading */
@@ -211,9 +228,13 @@ wD.Chat = (function () {
 		}
 	};
 
-	/** Load whatever is new and redraw; one load at a time, with a load asked for meanwhile run afterwards */
-	Chat.prototype.refresh = function () {
+	/**
+	 * Load whatever is new and redraw; one load at a time, with a load asked for meanwhile run afterwards.
+	 * @param {Object} opts { keepOffset: keep the messages where they are on screen while earlier ones go in above }
+	 */
+	Chat.prototype.refresh = function (opts) {
 		var self = this;
+		opts = opts || {};
 		if (this.loading) {
 			this.refreshQueued = true;
 			return this.loading;
@@ -224,16 +245,19 @@ wD.Chat = (function () {
 		this.loading = this.source.getContext().then(function (context) {
 			self.currentTurn = context.game.turn;
 			if (context.member) self.mutedCountryIDs = context.member.mutedCountryIDs || [];
-			return self.source.loadMessages({ countryID: self.isMember ? self.countryID : 0, turns: self.filterTurns() });
+			return self.source.loadMessages({ countryID: self.isMember ? self.countryID : 0, turns: self.windowTurns });
 		}).then(function (result) {
 			self.messages = result.messages;
 			self.newMessagesFrom = result.newMessagesFrom || [];
+			if (self.isMember) self.loadedFromTurn = result.fromTurn;
 			var arrived = result.messages.filter(function (m) { return !before[m.id]; });
-			self.renderMessages();
+			self.loadingEarlier = false;
+			self.renderMessages(opts);
 			self.renderTabs();
 			self.announce(arrived, Object.keys(before).length > 0);
 		}).catch(function (error) {
 			if (window.console) console.error('Chat: ' + (error && error.message ? error.message : error));
+			self.loadingEarlier = false;
 			self.showNotice('Could not load messages: ' + (error && error.message ? error.message : 'unknown error'));
 		}).finally(function () {
 			self.loading = null;
@@ -243,6 +267,15 @@ wD.Chat = (function () {
 			}
 		});
 		return this.loading;
+	};
+
+	/** Show, and if need be fetch, the messages of the turns before those shown */
+	Chat.prototype.loadEarlier = function () {
+		if (this.loadingEarlier || this.fromTurn() <= 0) return;
+		this.windowTurns += MORE_TURNS;
+		this.loadingEarlier = true;
+		this.renderMessages({ keepOffset: true });
+		this.refresh({ keepOffset: true });
 	};
 
 	/** Tell the viewer about messages which arrived for a tab they don't have open */
@@ -274,7 +307,7 @@ wD.Chat = (function () {
 		return this.countries[countryID] || ('Country ' + countryID);
 	};
 
-	/* Rendering */
+	/* Rendering: the Chatbox's own markup, so that its styles apply unchanged */
 
 	Chat.prototype.render = function () {
 		var self = this;
@@ -283,66 +316,86 @@ wD.Chat = (function () {
 		root.classList.add('wdchat');
 		if (this.config.variantName) root.classList.add('variant' + this.config.variantName);
 
-		this.tabsEl = el('div', 'wdchat-tabs gamelistings-tabs');
-		root.appendChild(this.tabsEl);
+		this.tabsEl = null;
+		if (this.isMember) {
+			this.tabsEl = el('div', 'gamelistings-tabs');
+			this.tabsEl.id = 'chatboxtabs';
+			root.appendChild(this.tabsEl);
+		}
 
-		var panel = el('div', 'wdchat-panel chatWrapper');
-		root.appendChild(panel);
+		var wrapper = el('div', 'chatWrapper');
+		root.appendChild(wrapper);
 
-		this.headerEl = el('div', 'wdchat-header barAlt2');
-		panel.appendChild(this.headerEl);
+		// Who is being talked to
+		var headerBox = el('div', 'chatbox' + (this.isMember ? '' : ' chatboxnotabs'));
+		var headerTable = el('table', 'chatbox');
+		this.headerRow = el('tr', 'barAlt2 membersList');
+		headerTable.appendChild(this.headerRow);
+		headerBox.appendChild(headerTable);
+		wrapper.appendChild(headerBox);
 
-		this.listEl = el('div', 'wdchat-messages');
-		panel.appendChild(this.listEl);
+		// The messages
+		this.scrollEl = el('div', 'chatbox');
+		this.scrollEl.id = 'chatboxscroll';
+		this.listTable = el('table', 'chatbox');
+		this.scrollEl.appendChild(this.listTable);
+		wrapper.appendChild(this.scrollEl);
 
-		var footer = el('div', 'wdchat-footer barAlt2');
-		panel.appendChild(footer);
-
-		this.composeEl = el('div', 'wdchat-compose');
-		this.textarea = el('textarea', 'wdchat-input');
-		this.textarea.rows = 3;
-		this.textarea.setAttribute('aria-label', 'Message');
+		// The send box
+		this.composeBox = el('div', 'chatbox');
+		var form = el('form', 'safeForm');
+		form.id = 'chatForm';
+		form.method = 'post';
+		form.action = '#';
+		form.addEventListener('submit', function (e) { e.preventDefault(); self.send(); });
+		var table = el('table');
+		var row1 = el('tr', 'barAlt2');
+		this.markUnreadCell = el('td', 'left');
+		row1.appendChild(this.markUnreadCell);
+		var sendCell = el('td', 'right');
+		sendCell.rowSpan = 2;
+		this.textarea = el('textarea');
+		this.textarea.id = 'sendbox';
+		this.textarea.name = 'newmessage';
+		this.textarea.tabIndex = 1;
+		this.textarea.rows = 5;
+		this.textarea.style.setProperty('width', '98%', 'important');
 		this.textarea.addEventListener('keydown', function (e) {
-			if (e.key === 'Enter' && !e.shiftKey) {
+			if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
 				e.preventDefault();
 				self.send();
 			}
 		});
-		this.composeEl.appendChild(this.textarea);
-		this.sendButton = el('button', 'form-submit wdchat-send', 'Send');
-		this.sendButton.type = 'button';
-		this.sendButton.addEventListener('click', function () { self.send(); });
-		this.composeEl.appendChild(this.sendButton);
-		footer.appendChild(this.composeEl);
-
-		var tools = el('div', 'wdchat-tools');
-		var filterLabel = el('label', 'wdchat-filter-label', 'Show: ');
-		this.filterSelect = el('select', 'wdchat-filter');
-		TURN_FILTERS.forEach(function (f) {
-			var option = el('option', null, f.label);
-			option.value = f.value;
-			if (f.value === self.filter) option.selected = true;
-			self.filterSelect.appendChild(option);
-		});
-		this.filterSelect.addEventListener('change', function () {
-			self.filter = self.filterSelect.value;
-			storage(FILTER_STORAGE_KEY, self.filter);
-			self.refresh().then(function () { self.scrollToEnd(); });
-		});
-		filterLabel.appendChild(this.filterSelect);
-		tools.appendChild(filterLabel);
-
-		this.markUnreadLink = el('a', 'wdchat-markunread light', 'Mark unread');
-		this.markUnreadLink.href = '#';
-		this.markUnreadLink.addEventListener('click', function (e) {
-			e.preventDefault();
-			self.markUnread();
-		});
-		tools.appendChild(this.markUnreadLink);
-
+		sendCell.appendChild(this.textarea);
+		row1.appendChild(sendCell);
+		table.appendChild(row1);
+		var row2 = el('tr', 'barAlt2');
+		var buttonCell = el('td', 'left send');
+		this.sendButton = el('input', 'form-submit');
+		this.sendButton.type = 'submit';
+		this.sendButton.tabIndex = 2;
+		this.sendButton.value = 'Send';
+		this.sendButton.name = 'Send';
+		this.sendButton.id = 'message-send';
+		buttonCell.appendChild(this.sendButton);
+		buttonCell.appendChild(el('br'));
 		this.noticeEl = el('span', 'wdchat-notice');
-		tools.appendChild(this.noticeEl);
-		footer.appendChild(tools);
+		buttonCell.appendChild(this.noticeEl);
+		row2.appendChild(buttonCell);
+		table.appendChild(row2);
+		form.appendChild(table);
+		this.composeBox.appendChild(form);
+		wrapper.appendChild(this.composeBox);
+
+		// "Mark unread" on its own, for a rulebook-press game between diplomacy phases
+		this.markUnreadBox = el('div', 'chatbox');
+		var muTable = el('table');
+		var muRow = el('tr', 'barAlt2');
+		this.markUnreadOnlyCell = el('td', 'center');
+		muRow.appendChild(this.markUnreadOnlyCell);
+		muTable.appendChild(muRow);
+		this.markUnreadBox.appendChild(muTable);
+		wrapper.appendChild(this.markUnreadBox);
 
 		this.renderTabs();
 		this.renderHeader();
@@ -351,21 +404,20 @@ wD.Chat = (function () {
 
 	Chat.prototype.renderTabs = function () {
 		var self = this;
+		if (!this.tabsEl) return;
 		this.tabsEl.innerHTML = '';
-		var tabs = this.tabsAllowed();
-		if (tabs.length <= 1 && !this.isMember) {
-			this.tabsEl.style.display = 'none';
-			return;
-		}
-		tabs.forEach(function (countryID) {
-			var link = el('a', 'country' + countryID + (countryID === self.tab ? ' current' : ''));
-			link.href = '#chatbox';
-			var label = countryID === self.countryID ? 'Notes' : self.countryName(countryID);
-			link.appendChild(document.createTextNode(label));
-			link.title = countryID === 0 ? 'Open the global chatbox tab' : 'Open ' + label + "'s chatbox tab";
-			if (countryID !== self.tab && self.newMessagesFrom.indexOf(countryID) !== -1) {
+		this.tabsAllowed().forEach(function (countryID) {
+			var current = countryID === self.tab;
+			var link = el('a', 'country' + countryID + (current ? ' current' : ''));
+			link.href = '#chatboxanchor';
+			var member = self.members[countryID];
+			if (countryID === self.countryID) link.appendChild(document.createTextNode('Notes'));
+			else if (member && member.tabName) link.innerHTML = member.tabName;
+			else link.appendChild(document.createTextNode(self.countryName(countryID)));
+			if (!current) link.title = 'Open ' + (countryID === 0 ? 'the global' : self.countryName(countryID) + "'s") + ' chatbox tab';
+			if (!current && self.newMessagesFrom.indexOf(countryID) !== -1) {
 				link.appendChild(document.createTextNode(' '));
-				var icon = el('img', 'wdchat-unread');
+				var icon = el('img');
 				icon.src = 'images/icons/mail.png';
 				icon.alt = 'Unread message';
 				icon.title = 'Unread message';
@@ -375,80 +427,171 @@ wD.Chat = (function () {
 				e.preventDefault();
 				self.openTab(countryID);
 			});
+			self.tabsEl.appendChild(document.createTextNode(' '));
 			self.tabsEl.appendChild(link);
 		});
 	};
 
+	/**
+	 * The cells of a member's row in the members table at the foot of the page, which is the member bar the old
+	 * chatbox showed above a country's messages.
+	 */
+	Chat.prototype.memberBarCells = function (countryID) {
+		var rows = document.querySelectorAll('.membersFullTable tr.member');
+		for (var i = 0; i < rows.length; i++) {
+			if (!rows[i].querySelector('.memberCountryName .country' + countryID)) continue;
+			return Array.prototype.map.call(rows[i].children, function (cell) {
+				var copy = cell.cloneNode(true);
+				Array.prototype.forEach.call(copy.querySelectorAll('[id]'), function (node) { node.removeAttribute('id'); });
+				copy.removeAttribute('id');
+				return copy;
+			});
+		}
+		return null;
+	};
+
 	Chat.prototype.renderHeader = function () {
-		this.headerEl.innerHTML = '';
 		var self = this;
+		var row = this.headerRow;
+		row.innerHTML = '';
+		var cell = el('td');
 		if (this.tab === 0) {
 			var names = Object.keys(this.countries).map(Number).sort(function (a, b) { return a - b; }).map(function (countryID) {
-				return self.memberNames[countryID] || ('<span class="country' + countryID + '">' + self.countryName(countryID) + '</span>');
+				var member = self.members[countryID];
+				return (member && member.name) || ('<span class="country' + countryID + '">' + self.countryName(countryID) + '</span>');
 			});
-			this.headerEl.innerHTML = '<div class="chatboxMembersList">' + names.join(', ') + '</div>';
+			var list = el('div', 'chatboxMembersList');
+			list.innerHTML = names.join(', ');
+			cell.appendChild(list);
+			row.appendChild(cell);
 		} else if (this.tab === this.countryID) {
-			this.headerEl.innerHTML = '<div class="chatboxMembersList">Notes to yourself, and messages from the GameMaster</div>';
+			row.appendChild(cell);
 		} else {
-			this.headerEl.innerHTML = '<div class="chatboxMembersList">' + (this.memberNames[this.tab] || this.countryName(this.tab)) + '</div>';
+			var cells = this.memberBarCells(this.tab);
+			if (cells) {
+				cells.forEach(function (c) { row.appendChild(c); });
+			} else {
+				var member = self.members[this.tab];
+				var name = el('div', 'chatboxMembersList');
+				name.innerHTML = (member && member.name) || self.countryName(this.tab);
+				cell.appendChild(name);
+				row.appendChild(cell);
+			}
 		}
 	};
 
 	Chat.prototype.renderCompose = function () {
+		var self = this;
 		var canPost = this.canPostTo(this.tab);
-		this.composeEl.style.display = canPost ? '' : 'none';
-		this.markUnreadLink.style.display = (this.isMember && this.tab !== 0 && this.tab !== this.countryID && this.config.markUnreadForm) ? '' : 'none';
+		var canMarkUnread = this.isMember && this.tab !== 0 && this.tab !== this.countryID && !!this.config.markUnreadForm;
+		var markUnreadLink = function () {
+			var link = el('a', null, 'Mark unread');
+			link.href = '#';
+			link.tabIndex = 3;
+			link.addEventListener('click', function (e) {
+				e.preventDefault();
+				self.markUnread();
+			});
+			return link;
+		};
+
+		this.composeBox.style.display = canPost ? '' : 'none';
+		this.markUnreadCell.innerHTML = '';
+		if (canPost && canMarkUnread) this.markUnreadCell.appendChild(markUnreadLink());
+
+		var unreadOnly = !canPost && canMarkUnread && this.config.pressType === 'RulebookPress' && this.config.phase !== 'Diplomacy';
+		this.markUnreadBox.style.display = unreadOnly ? '' : 'none';
+		this.markUnreadOnlyCell.innerHTML = '';
+		if (unreadOnly) this.markUnreadOnlyCell.appendChild(markUnreadLink());
 	};
 
-	Chat.prototype.renderMessages = function () {
+	/**
+	 * The messages of the open tab, as Chatbox::renderMessages() laid them out, with the "earlier messages" line
+	 * above them when there are turns not shown.
+	 */
+	Chat.prototype.renderMessages = function (opts) {
 		var self = this;
-		var list = this.listEl;
-		var atEnd = (list.scrollHeight - list.scrollTop - list.clientHeight) < 40;
-		list.innerHTML = '';
-		var messages = this.messagesForTab(this.tab);
+		opts = opts || {};
+		var scroll = this.scrollEl;
+		var table = this.listTable;
+		var beforeHeight = scroll.scrollHeight;
+		var beforeTop = scroll.scrollTop;
+		var atEnd = (beforeHeight - beforeTop - scroll.clientHeight) < 40;
+		table.innerHTML = '';
 
+		if (this.hasEarlier() || this.loadingEarlier) {
+			var moreRow = el('tr', 'barAlt1 wdchat-more');
+			var moreCell = el('td', 'notice');
+			moreCell.colSpan = 2;
+			if (this.loadingEarlier) {
+				moreCell.appendChild(document.createTextNode('Loading earlier messages...'));
+			} else {
+				var link = el('a', 'light', 'Show earlier messages');
+				link.href = '#';
+				link.title = 'Messages from before ' + (this.config.turnText ? this.config.turnText(this.fromTurn()) : 'the turns shown');
+				link.addEventListener('click', function (e) {
+					e.preventDefault();
+					self.loadEarlier();
+				});
+				moreCell.appendChild(link);
+			}
+			moreRow.appendChild(moreCell);
+			table.appendChild(moreRow);
+		}
+
+		var messages = this.messagesForTab(this.tab, false);
 		if (!messages.length) {
-			list.appendChild(el('div', 'wdchat-empty notice', 'No messages yet posted.'));
-			return;
+			var emptyRow = el('tr', 'barAlt1');
+			emptyRow.appendChild(el('td', 'notice', 'No messages yet posted.'));
+			table.appendChild(emptyRow);
 		}
 
 		var alternate = false;
 		messages.forEach(function (m) {
 			alternate = !alternate;
-			var row = el('div', 'wdchat-message replyalternate' + (alternate ? '1' : '2') + ' gameID' + self.source.gameID + 'countryID' + m.fromCountryID);
-			if (m.fromCountryID === self.countryID && self.isMember) row.classList.add('wdchat-mine');
+			var fromMe = self.isMember && m.fromCountryID === self.countryID;
+			var row = el('tr', 'replyalternate' + (alternate ? '1' : '2') + ' gameID' + self.source.gameID + 'countryID' + m.fromCountryID);
 
-			var time = el('span', 'wdchat-time', formatTime(m.timeSent));
-			time.title = new Date(m.timeSent * 1000).toLocaleString();
-			row.appendChild(time);
+			var timeCell = el('td', 'left time');
+			var stamp = el('span', 'timestamp', timeText(m.timeSent) + ' UTC');
+			stamp.setAttribute('unixtime', String(m.timeSent));
+			timeCell.appendChild(stamp);
+			row.appendChild(timeCell);
 
-			var body = el('span', 'wdchat-text' + (m.fromCountryID !== 0 ? ' country' + m.fromCountryID : ''));
-
+			var textCell = el('td', 'right' + (m.fromCountryID !== 0 ? ' country' + m.fromCountryID : ''));
 			if (m.turn < self.currentTurn && self.config.turnText) {
-				var turn = el('strong', 'wdchat-turn', self.config.turnText(m.turn) + ': ');
-				body.appendChild(turn);
+				textCell.appendChild(el('strong', null, self.config.turnText(m.turn)));
+				textCell.appendChild(document.createTextNode(': '));
 			}
-
-			// The sender's name, for everyone in the global tab and for the colour-blind elsewhere
-			var showName = self.tab === 0 || self.config.colourblind || m.fromCountryID === 0;
-			if (showName) {
-				var name = m.fromCountryID === 0 ? 'GameMaster' : (m.fromCountryID === self.countryID && self.isMember ? 'You' : self.countryName(m.fromCountryID));
-				var fromEl = el('strong', 'wdchat-from', name + ': ');
-				body.appendChild(fromEl);
+			// The country's name in front of the text, for the colour-blind
+			if (self.config.colourblind) {
+				if (fromMe) textCell.appendChild(el('strong', null, 'You:'));
+				else if (m.fromCountryID !== 0) textCell.appendChild(el('strong', null, self.countryName(m.fromCountryID) + ':'));
+				if (fromMe || m.fromCountryID !== 0) textCell.appendChild(document.createTextNode(' '));
 			}
-
-			var text = el('span', m.fromCountryID === self.countryID && self.isMember ? 'messageFromMe' : null);
-			text.appendChild(sanitize(m.message));
-			body.appendChild(text);
-			row.appendChild(body);
-			list.appendChild(row);
+			var text = sanitize(m.message);
+			if (fromMe) {
+				var mine = el('span', 'messageFromMe');
+				mine.appendChild(text);
+				textCell.appendChild(mine);
+			} else {
+				textCell.appendChild(text);
+			}
+			row.appendChild(textCell);
+			table.appendChild(row);
 		});
 
-		if (atEnd) this.scrollToEnd();
+		// The page's own timestamp code puts the times into the viewer's timezone
+		if (typeof window.updateTimestamps === 'function') {
+			try { window.updateTimestamps(); } catch (e) { /* the UTC text stays */ }
+		}
+
+		if (opts.keepOffset) scroll.scrollTop = scroll.scrollHeight - beforeHeight + beforeTop;
+		else if (atEnd) this.scrollToEnd();
 	};
 
 	Chat.prototype.scrollToEnd = function () {
-		this.listEl.scrollTop = this.listEl.scrollHeight;
+		this.scrollEl.scrollTop = this.scrollEl.scrollHeight;
 	};
 
 	Chat.prototype.scrollIntoView = function () {
@@ -473,6 +616,9 @@ wD.Chat = (function () {
 		this.renderMessages();
 		this.scrollToEnd();
 		if (this.isMember && this.newMessagesFrom.indexOf(countryID) !== -1) this.markSeen(countryID);
+		if (this.canPostTo(countryID)) {
+			try { this.textarea.focus({ preventScroll: true }); } catch (e) { /* older browsers */ }
+		}
 	};
 
 	Chat.prototype.markSeen = function (countryID) {
@@ -503,7 +649,7 @@ wD.Chat = (function () {
 		this.source.sendMessage(fromCountryID, this.tab, text).then(function (messages) {
 			self.textarea.value = '';
 			if (!messages.length) {
-				self.showNotice('Message not delivered: this country has muted you.');
+				self.showNotice('Not delivered: this country has muted you.');
 				return;
 			}
 			var known = {};

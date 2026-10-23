@@ -142,7 +142,9 @@ Visibility rules, which follow board.php (`audit/board-php.md` section 3):
   last entry of `history.json`, a phase named `"Finished"`.
 - `isPrivate` is a boolean. The invite code hash is never selected by the generator.
 - `turnText` is `$Variant->turnAsDate($turn)`, so clients need no per-variant date logic.
-- `retreating` and `retreatingUnitID` are explicit, instead of being inferred by the client.
+- `retreating` and `retreatingUnitID` are explicit, instead of being inferred by the client. `retreating` is
+  only ever true in the Retreats phase: a territory's `retreatingUnitID` can still name the unit which retreated
+  from it during the Builds phase, and that unit is not retreating.
 
 ### 2.3 `status.json`
 

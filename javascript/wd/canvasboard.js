@@ -18,14 +18,19 @@
  */
 
 /**
- * wD.CanvasBoard: the "Legacy point and click" board on board.php. A wD.MapCanvas showing the game, the phases of
- * its history to step through, point-and-click order entry (wD.OrderEntry) and a bar beneath the map with the
- * phase, the history arrows, the map size and the Save / Ready buttons. It reads the game through wD.GameSource
- * and keeps up to date through wD.Live, exactly as the /game/ board does.
+ * wD.CanvasBoard: the "Legacy point and click" board on board.php. It looks like the board with the map image did:
+ * the small map at its own size with the same history icons beneath it, stepping through the game a turn at a time
+ * as map.php drew it, the large map opening over the page, and the Save and Ready buttons under the icons; only the
+ * drop-down order form is gone, orders being given by clicking units and territories on the map (wD.OrderEntry).
+ * It reads the game through wD.GameSource and keeps up to date through wD.Live, as the /game/ board does.
  *
  *   wD.CanvasBoard.create(document.getElementById('wdCanvasBoard'), { source, live, toast, config });
  *
- * config: { memberID, countryID, isMember, siteRoot }
+ * config: { memberID, countryID, isMember, siteRoot, turnText: function(turn) -> "Spring, 1901", analyticsEventName }
+ *
+ * What the latest map shows is what map.php showed: during Diplomacy the previous turn's moves, during Retreats and
+ * Builds the moves of this turn so far. Once the player has entered an order the map shows their orders instead, as
+ * map.php's Preview did; the Preview icon switches between the two.
  */
 var wD = window.wD || {};
 window.wD = wD;
@@ -33,26 +38,14 @@ window.wD = wD;
 wD.CanvasBoard = (function () {
 	'use strict';
 
-	var MAP_SIZE_KEY = 'wD.map.size';
 	var ORDER_PHASES = ['Diplomacy', 'Retreats', 'Builds'];
+	var ICONS = 'images/historyicons/';
 
 	function el(tag, className, text) {
 		var node = document.createElement(tag);
 		if (className) node.className = className;
 		if (text !== undefined && text !== null) node.textContent = text;
 		return node;
-	}
-
-	function storage(key, value) {
-		try {
-			if (value === undefined) return window.localStorage.getItem(key);
-			window.localStorage.setItem(key, value);
-		} catch (e) { /* unavailable */ }
-		return null;
-	}
-
-	function phaseKey(turn, phase) {
-		return turn + '|' + phase;
 	}
 
 	function CanvasBoard(container, options) {
@@ -62,20 +55,29 @@ wD.CanvasBoard = (function () {
 		this.toast = options.toast || null;
 		this.config = options.config || {};
 		this.siteRoot = this.config.siteRoot || '';
+		this.turnText = (typeof this.config.turnText === 'function') ? this.config.turnText
+			: function (turn) { return turn === -1 ? 'Pre-game' : 'Turn #' + turn; };
 
-		this.mapSize = storage(MAP_SIZE_KEY) === 'large' ? 'large' : 'small';
 		this.context = null;
 		this.game = null;
 		this.history = null;
 		this.variant = null;
-		this.map = null;
+		this.maps = { small: null, large: null };
+		this.activeMap = null;
+		this.controls = [];
+		this.overlay = null;
+		this.flyout = null;
+
+		this.viewTurn = null;
+		this.previewFlip = false;
+
 		this.entry = null;
 		this.legal = null;
-		this.phases = [];
-		this.viewIndex = 0;
 		this.orderContext = null;
+		this.orderStatus = [];
 		this.saving = null;
 		this.reloading = null;
+		this.serverNotice = '';
 
 		this.build();
 	}
@@ -87,71 +89,23 @@ wD.CanvasBoard = (function () {
 
 	/* Page */
 
+	/** The map's place on the page, laid out as panelGameBoard::mapHTML() laid the map image out */
 	CanvasBoard.prototype.build = function () {
 		var self = this;
 		var root = this.container;
 		root.innerHTML = '';
 		root.classList.add('wdcb');
 
-		this.mapHolder = el('div', 'wdcb-map');
-		root.appendChild(this.mapHolder);
+		var store = el('div');
+		store.id = 'mapstore';
+		root.appendChild(store);
 
-		this.loadingEl = el('div', 'wdcb-loading', 'Loading the board…');
+		this.mapHolder = el('div', 'wdcb-map');
+		store.appendChild(this.mapHolder);
+		this.loadingEl = el('div', 'wdcb-loading', 'Loading the map...');
 		this.mapHolder.appendChild(this.loadingEl);
 
-		var bar = el('div', 'wdcb-bar');
-		root.appendChild(bar);
-
-		var nav = el('div', 'wdcb-nav');
-		bar.appendChild(nav);
-		this.navButtons = {};
-		[['first', 'Start', 'View the map from the first turn'], ['back', 'Backward', 'View the previous phase']].forEach(function (spec) {
-			nav.appendChild(self.navButton(spec[0], spec[1], spec[2]));
-		});
-		this.phaseEl = el('div', 'wdcb-phase');
-		this.phaseDateEl = el('div', 'wdcb-phase-date');
-		this.phaseNameEl = el('div', 'wdcb-phase-name');
-		this.phaseEl.appendChild(this.phaseDateEl);
-		this.phaseEl.appendChild(this.phaseNameEl);
-		nav.appendChild(this.phaseEl);
-		[['forward', 'Forward', 'View the next phase'], ['last', 'End', 'View the current phase']].forEach(function (spec) {
-			nav.appendChild(self.navButton(spec[0], spec[1], spec[2]));
-		});
-
-		var tools = el('div', 'wdcb-tools');
-		bar.appendChild(tools);
-		var sizeLabel = el('label', 'wdcb-size-label', 'Map: ');
-		this.sizeSelect = el('select', 'wdcb-size');
-		[['small', 'Small'], ['large', 'Large']].forEach(function (spec) {
-			var option = el('option', null, spec[1]);
-			option.value = spec[0];
-			if (spec[0] === self.mapSize) option.selected = true;
-			self.sizeSelect.appendChild(option);
-		});
-		this.sizeSelect.addEventListener('change', function () { self.setMapSize(self.sizeSelect.value); });
-		sizeLabel.appendChild(this.sizeSelect);
-		tools.appendChild(sizeLabel);
-
-		this.largeMapLink = el('a', 'wdcb-largemap light', 'Open large map');
-		this.largeMapLink.target = '_blank';
-		this.largeMapLink.rel = 'noopener';
-		tools.appendChild(this.largeMapLink);
-
-		this.ordersEl = el('div', 'wdcb-orders');
-		bar.appendChild(this.ordersEl);
-		this.statusEl = el('span', 'wdcb-status');
-		this.ordersEl.appendChild(this.statusEl);
-		this.saveButton = el('button', 'form-submit wdcb-save', 'Save');
-		this.saveButton.type = 'button';
-		this.saveButton.addEventListener('click', function () { self.save(false); });
-		this.ordersEl.appendChild(this.saveButton);
-		this.readyButton = el('button', 'form-submit wdcb-ready', 'Ready');
-		this.readyButton.type = 'button';
-		this.readyButton.addEventListener('click', function () { self.save(true); });
-		this.ordersEl.appendChild(this.readyButton);
-
-		this.noticeEl = el('div', 'wdcb-notice');
-		root.appendChild(this.noticeEl);
+		this.controls.push(this.buildControls(store, true));
 
 		document.addEventListener('keydown', function (e) { self.onKey(e); });
 		window.addEventListener('beforeunload', function (e) {
@@ -164,20 +118,78 @@ wD.CanvasBoard = (function () {
 		});
 	};
 
-	CanvasBoard.prototype.navButton = function (key, icon, title) {
+	/**
+	 * The history icons, the turn being viewed, and the Save and Ready buttons: under the map on the page, and again
+	 * in the bar at the foot of the large map. Only the page's own set carries the ids the old page used.
+	 *
+	 * @param {boolean} main Whether this is the page's set
+	 */
+	CanvasBoard.prototype.buildControls = function (parent, main) {
 		var self = this;
-		var link = el('a', 'wdcb-navbtn mapnav');
-		link.href = '#';
-		link.title = title;
-		var image = el('img');
-		image.alt = icon;
-		link.appendChild(image);
-		link.addEventListener('click', function (e) {
-			e.preventDefault();
-			self.navigate(key);
-		});
-		this.navButtons[key] = { link: link, image: image, icon: icon };
-		return link;
+		var set = { main: main, icons: {} };
+		var memberID = this.config.memberID;
+
+		var nav = el('p', 'lightgrey');
+		nav.style.textAlign = 'center';
+		parent.appendChild(nav);
+
+		var icon = function (key, alt, title, onClick) {
+			var link = el('a', 'mapnav');
+			link.href = '#';
+			var image = el('img');
+			image.alt = alt;
+			image.title = title;
+			if (main && key !== 'LargeMap') image.id = key;
+			link.appendChild(image);
+			link.addEventListener('click', function (e) {
+				e.preventDefault();
+				onClick();
+			});
+			nav.appendChild(link);
+			nav.appendChild(document.createTextNode(' '));
+			set.icons[key] = { link: link, image: image };
+			return link;
+		};
+
+		icon('Start', 'Start', 'View the map from the first turn', function () { self.navigate('first'); });
+		icon('Backward', 'Backward', 'View the map from the previous turn', function () { self.navigate('back'); });
+		var large = icon('LargeMap', 'Open large map', main ? 'Open the large map over the page. The large map shows all the moves, and is useful when the small map isn\'t clear enough.' : 'Close the large map',
+			function () { if (main) self.openLargeMap(); else self.closeLargeMap(); });
+		if (main) large.id = 'LargeMapLink';
+		set.icons.LargeMap.image.src = this.siteRoot + ICONS + 'external.png';
+		icon('Forward', 'Forward', 'View the map from the next turn', function () { self.navigate('forward'); });
+		icon('End', 'End', 'View the map from the most recent turn', function () { self.navigate('last'); });
+		icon('Preview', 'PreviewMoves', 'Switch the map between the last moves and the orders you are entering', function () { self.togglePreview(); });
+		set.icons.Preview.image.src = this.siteRoot + ICONS + 'Preview.png';
+
+		set.history = el('p', 'lightgrey');
+		if (main) set.history.id = 'History';
+		set.history.style.display = 'none';
+		parent.appendChild(set.history);
+
+		set.orders = el('div', 'wdcb-orders');
+		set.orders.style.textAlign = 'center';
+		parent.appendChild(set.orders);
+		set.notice = el('span', 'wdcb-notice');
+		if (main) set.notice.id = 'ordersNoticeArea' + memberID;
+		set.orders.appendChild(set.notice);
+		set.orders.appendChild(el('br'));
+		set.save = el('input', 'form-submit spaced-button');
+		set.save.type = 'button';
+		set.save.value = 'Save';
+		set.save.disabled = true;
+		if (main) set.save.id = 'UpdateButton' + memberID;
+		set.save.addEventListener('click', function () { self.save(false); });
+		set.orders.appendChild(set.save);
+		set.ready = el('input', 'form-submit spaced-button');
+		set.ready.type = 'button';
+		set.ready.value = 'Ready';
+		set.ready.disabled = true;
+		if (main) set.ready.id = 'FinalizeButton' + memberID;
+		set.ready.addEventListener('click', function () { self.save(true); });
+		set.orders.appendChild(set.ready);
+
+		return set;
 	};
 
 	/* Loading */
@@ -186,41 +198,54 @@ wD.CanvasBoard = (function () {
 		var self = this;
 		return this.source.getContext().then(function (context) {
 			self.context = context;
-			return self.source.getFiles(['variant', 'game', 'status', 'history']);
+			return self.source.getFiles(['variant', 'game', 'history']);
 		}).then(function (files) {
 			self.variant = new wD.VariantMap(files.variant);
 			self.game = files.game;
-			self.status = files.status;
 			self.history = files.history;
-			self.phases = self.buildPhases();
-			self.viewIndex = self.phases.length - 1;
+			self.viewTurn = self.latestTurn();
 
-			self.map = new wD.MapCanvas(self.mapHolder, self.variant, { size: self.mapSize, siteRoot: self.siteRoot });
-			self.map.onClick = function (hit, e) { self.onMapClick(hit, e); };
-			return self.map.load();
+			var map = new wD.MapCanvas(self.mapHolder, self.variant, { size: 'small', siteRoot: self.siteRoot });
+			map.onClick = function (hit, e, from) { self.onMapClick(hit, from); };
+			self.maps.small = map;
+			self.activeMap = map;
+			return map.load();
 		}).then(function () {
 			if (self.loadingEl.parentNode) self.loadingEl.parentNode.removeChild(self.loadingEl);
 			self.setupOrderEntry();
 			self.render();
 			self.listen();
 		}).catch(function (error) {
-			self.loadingEl.textContent = 'The board could not be loaded: ' + (error && error.message ? error.message : error);
+			self.loadingEl.textContent = 'The map could not be loaded: ' + (error && error.message ? error.message : error);
 			if (window.console) console.error(error);
 			throw error;
 		});
 	};
 
-	/** The phases to step through: history.json's, the last being the phase being played */
-	CanvasBoard.prototype.buildPhases = function () {
-		var phases = (this.history && this.history.phases) ? this.history.phases.slice() : [];
-		if (!phases.length && this.game) {
-			phases.push({ turn: this.game.turn, phase: this.game.phase, turnText: this.game.turnText, units: [], centers: [], orders: [] });
-		}
-		return phases;
+	/* Turns */
+
+	/** The turn the latest map shows: as map.php, the previous turn while this one's moves are still being entered */
+	CanvasBoard.prototype.latestTurn = function () {
+		var phase = this.game.phase;
+		return (phase === 'Diplomacy' || phase === 'Pre-game') ? this.game.turn - 1 : this.game.turn;
 	};
 
 	CanvasBoard.prototype.isLatestView = function () {
-		return this.viewIndex >= this.phases.length - 1;
+		return this.viewTurn >= this.latestTurn();
+	};
+
+	CanvasBoard.prototype.phasesOfTurn = function (turn) {
+		var phases = (this.history && this.history.phases) ? this.history.phases : [];
+		return phases.filter(function (phase) { return phase.turn === turn; });
+	};
+
+	/** Every archived order of a turn, from all its phases */
+	CanvasBoard.prototype.movesOfTurn = function (turn) {
+		var moves = [];
+		this.phasesOfTurn(turn).forEach(function (phase) {
+			(phase.orders || []).forEach(function (order) { moves.push(order); });
+		});
+		return moves;
 	};
 
 	CanvasBoard.prototype.ownCountryIDs = function () {
@@ -238,8 +263,11 @@ wD.CanvasBoard = (function () {
 	/** The live board as a unit map and province statuses, from game.json */
 	CanvasBoard.prototype.liveBoard = function () {
 		var units = {};
+		// A unit is only dislodged while the retreats are being entered; a territory can still name the unit which
+		// retreated from it in the Builds phase
+		var retreats = (this.game.phase === 'Retreats');
 		(this.game.units || []).forEach(function (unit) {
-			units[unit.id] = { id: unit.id, type: unit.type, countryID: unit.countryID, terrID: unit.terrID, retreating: !!unit.retreating };
+			units[unit.id] = { id: unit.id, type: unit.type, countryID: unit.countryID, terrID: unit.terrID, retreating: retreats && !!unit.retreating };
 		});
 		var provinceStatus = {};
 		var ownership = {};
@@ -256,6 +284,7 @@ wD.CanvasBoard = (function () {
 		this.entry = null;
 		this.legal = null;
 		this.orderContext = null;
+		this.orderStatus = [];
 		if (!this.canEnterOrders()) return;
 
 		var board = this.liveBoard();
@@ -283,6 +312,96 @@ wD.CanvasBoard = (function () {
 		this.orderStatus = this.context.member.orderStatus.slice();
 	};
 
+	/* Scenes */
+
+	/**
+	 * Whether the latest map shows the player's own orders rather than the last moves: once they have entered or
+	 * saved any this phase (new orders come from the server as Holds, so what has been saved is the only sign)
+	 */
+	CanvasBoard.prototype.showingOrders = function () {
+		if (!this.entry || !this.entry.orders.length) return false;
+		var status = this.orderStatus || [];
+		var touched = this.entry.hasUnsaved() || ['Saved', 'Completed', 'Ready'].some(function (s) { return status.indexOf(s) !== -1; });
+		return touched !== this.previewFlip;
+	};
+
+	/** What a map is to draw for the turn being viewed, as map.php would draw that turn */
+	CanvasBoard.prototype.sceneFor = function (turn, isLarge) {
+		var self = this;
+		var scene = { ownership: {}, standoffs: [], ops: [], highlights: {} };
+		var phases = this.phasesOfTurn(turn);
+		var allPhases = (this.history && this.history.phases) ? this.history.phases : [];
+
+		if (turn >= this.latestTurn()) {
+			var board = this.liveBoard();
+			scene.ownership = board.ownership;
+			if (!Object.keys(scene.ownership).length) scene.ownership = this.homeOwnership();
+			// map.php draws standoffs during Retreats, and always on the large map
+			if (this.game.phase === 'Retreats' || isLarge) scene.standoffs = board.standoffs;
+
+			var units = [];
+			var dislodged = [];
+			Object.keys(board.units).forEach(function (id) {
+				var unit = board.units[id];
+				if (unit.retreating) dislodged.push({ op: 'dislodgedUnit', terrID: unit.terrID, type: unit.type, countryID: unit.countryID });
+				else units.push({ op: 'unit', terrID: unit.terrID, type: unit.type, countryID: unit.countryID });
+			});
+
+			var ops;
+			if (this.showingOrders()) {
+				ops = wD.MapCanvas.previewOps(this.entry.pendingOrders());
+			} else {
+				ops = wD.MapCanvas.composeMoves(this.variant, this.movesOfTurn(turn), { units: false });
+				// The dislodged units themselves are drawn, so their bare markers aren't needed
+				if (dislodged.length) ops = ops.filter(function (op) { return op.op !== 'dislodged'; });
+			}
+			scene.ops = units.concat(ops, dislodged);
+			if (this.entry && this.isLatestView()) scene.highlights = this.entry.highlights();
+
+			var caption = this.gameOverCaption();
+			if (caption) scene.ops.push({ op: 'caption', text: caption });
+			return scene;
+		}
+
+		if (turn < 0 || !phases.length) {
+			// Before the first move: the starting units and home centres
+			var first = allPhases[0];
+			if (first) {
+				(first.centers || []).forEach(function (center) { if (center.countryID) scene.ownership[center.terrID] = center.countryID; });
+				scene.ops = (first.units || []).map(function (unit) {
+					return { op: 'unit', terrID: unit.terrID, type: unit.type, countryID: unit.countryID };
+				});
+			}
+			if (!Object.keys(scene.ownership).length) scene.ownership = this.homeOwnership();
+			return scene;
+		}
+
+		var last = phases[phases.length - 1];
+		(last.centers || []).forEach(function (center) { if (center.countryID) scene.ownership[center.terrID] = center.countryID; });
+		scene.ops = wD.MapCanvas.composeMoves(self.variant, self.movesOfTurn(turn), { units: true });
+		return scene;
+	};
+
+	/** The variant's home supply centres, for a board which has no ownership yet */
+	CanvasBoard.prototype.homeOwnership = function () {
+		var self = this;
+		var ownership = {};
+		this.variant.territoryIDs().forEach(function (terrID) {
+			var territory = self.variant.territory(terrID);
+			if (territory.homeCountryID && territory.coast !== 'Child' && territory.type !== 'Sea') ownership[terrID] = territory.homeCountryID;
+		});
+		return ownership;
+	};
+
+	CanvasBoard.prototype.gameOverCaption = function () {
+		if (!this.game || this.game.phase !== 'Finished') return null;
+		var self = this;
+		if (this.game.gameOver === 'Drawn') return 'Game drawn';
+		var winner = (this.game.members || []).filter(function (m) { return m.status === 'Won'; })[0];
+		if (winner) return 'Game won by ' + self.variant.countryName(winner.countryID);
+		return 'Game over';
+	};
+
 	/* Rendering */
 
 	CanvasBoard.prototype.render = function () {
@@ -292,111 +411,74 @@ wD.CanvasBoard = (function () {
 
 	CanvasBoard.prototype.renderMap = function () {
 		var self = this;
-		var phase = this.phases[this.viewIndex];
-		if (!phase || !this.map) return;
-		var state;
-
-		if (this.isLatestView() && this.game.phase !== 'Finished') {
-			var board = this.liveBoard();
-			var units = Object.keys(board.units).map(function (id) { return board.units[id]; });
-			state = {
-				ownership: board.ownership,
-				units: units,
-				standoffs: this.game.phase === 'Retreats' ? board.standoffs : [],
-				orders: this.entry ? this.entry.pendingOrders() : [],
-				highlights: this.entry ? this.entry.highlights() : {}
-			};
-		} else {
-			var ownership = {};
-			(phase.centers || []).forEach(function (center) { ownership[center.terrID] = center.countryID; });
-			var historyUnits = (phase.units || []).map(function (unit, i) {
-				return { id: 'h' + i, type: unit.type, countryID: unit.countryID, terrID: unit.terrID, retreating: !!unit.retreating };
-			});
-			var orders = (phase.orders || []).map(function (order) {
-				return {
-					type: order.type, countryID: order.countryID, unitType: order.unitType, terrID: order.terrID,
-					toTerrID: order.toTerrID, fromTerrID: order.fromTerrID, viaConvoy: order.viaConvoy,
-					success: order.success, dislodged: order.dislodged, pending: false
-				};
-			});
-			state = { ownership: ownership, units: historyUnits, standoffs: [], orders: orders, highlights: {} };
-		}
-		this.map.setState(state);
+		['small', 'large'].forEach(function (size) {
+			var map = self.maps[size];
+			if (map && map.loaded) map.setScene(self.sceneFor(self.viewTurn, size === 'large'));
+		});
 		this.renderFlyout();
-		this.largeMapLink.href = this.siteRoot + 'map.php?gameID=' + this.source.gameID + '&turn=' + self.mapTurnFor(phase) + '&mapType=large';
-	};
-
-	/** The turn map.php names a phase's map by: the turn whose results it shows */
-	CanvasBoard.prototype.mapTurnFor = function (phase) {
-		if (this.isLatestView()) return (this.game.phase === 'Diplomacy' || this.game.phase === 'Pre-game') ? this.game.turn - 1 : this.game.turn;
-		return phase.turn;
 	};
 
 	CanvasBoard.prototype.renderBar = function () {
 		var self = this;
-		var phase = this.phases[this.viewIndex] || {};
 		var latest = this.isLatestView();
-		var canBack = this.viewIndex > 0;
-		var canForward = this.viewIndex < this.phases.length - 1;
-
-		Object.keys(this.navButtons).forEach(function (key) {
-			var button = self.navButtons[key];
-			var enabled = (key === 'first' || key === 'back') ? canBack : canForward;
-			button.image.src = self.siteRoot + 'images/historyicons/' + button.icon + (enabled ? '' : '_disabled') + '.png';
-			button.link.classList.toggle('wdcb-navbtn-disabled', !enabled);
-		});
-
-		this.phaseDateEl.textContent = phase.turnText || this.game.turnText || '';
-		var name = phase.phase || this.game.phase || '';
-		if (latest && this.game.phase === 'Finished') name = 'Finished';
-		this.phaseNameEl.textContent = name + (latest ? '' : ' (history)');
-		this.phaseEl.classList.toggle('wdcb-phase-history', !latest);
-
-		if (!this.entry) {
-			this.ordersEl.style.display = 'none';
-			return;
-		}
-		this.ordersEl.style.display = '';
-
-		var status = this.orderStatus || [];
-		var ready = status.indexOf('Ready') !== -1;
+		var canBack = this.viewTurn > -1;
+		var canForward = !latest;
+		var entry = this.entry;
+		var ready = (this.orderStatus || []).indexOf('Ready') !== -1;
 		var saving = !!this.saving;
-		var unsaved = this.entry.hasUnsaved();
+		var hasOrders = !!(entry && entry.orders.length);
 
-		if (!this.entry.orders.length) {
-			this.statusEl.textContent = 'No orders to enter this phase';
-			this.saveButton.style.display = 'none';
-			this.readyButton.style.display = 'none';
-			return;
-		}
-		this.saveButton.style.display = '';
-		this.readyButton.style.display = '';
+		this.controls.forEach(function (set) {
+			var icons = set.icons;
+			icons.Start.image.src = self.siteRoot + ICONS + 'Start' + (canBack ? '' : '_disabled') + '.png';
+			icons.Backward.image.src = self.siteRoot + ICONS + 'Backward' + (canBack ? '' : '_disabled') + '.png';
+			icons.Forward.image.src = self.siteRoot + ICONS + 'Forward' + (canForward ? '' : '_disabled') + '.png';
+			icons.End.image.src = self.siteRoot + ICONS + 'End' + (canForward ? '' : '_disabled') + '.png';
+			icons.Preview.link.style.display = hasOrders ? '' : 'none';
+			icons.Preview.link.classList.toggle('wdcb-preview-on', hasOrders && self.showingOrders());
 
-		var statusText;
-		if (saving) statusText = this.saving === 'ready' ? 'Readying…' : (this.saving === 'notready' ? 'Unreadying…' : 'Saving…');
-		else if (ready) statusText = 'Ready';
-		else if (unsaved) statusText = 'Unsaved changes';
-		else if (status.indexOf('Completed') !== -1) statusText = 'Saved and complete';
-		else if (status.indexOf('Saved') !== -1) statusText = 'Saved';
-		else statusText = 'No orders saved yet';
-		this.statusEl.textContent = statusText;
-		this.statusEl.classList.toggle('wdcb-status-unsaved', unsaved && !saving);
+			if (latest) {
+				set.history.style.display = 'none';
+			} else {
+				set.history.textContent = self.turnText(self.viewTurn);
+				set.history.style.display = '';
+			}
 
-		this.saveButton.disabled = saving || ready || !unsaved;
-		this.saveButton.classList.toggle('wdcb-glow', !saving && !ready && unsaved);
-		this.readyButton.textContent = ready ? 'Unready' : 'Ready';
-		this.readyButton.disabled = saving || (!ready && !this.entry.allEntered());
+			if (!entry) {
+				set.orders.style.display = 'none';
+				return;
+			}
+			set.orders.style.display = '';
+			if (!hasOrders) {
+				set.notice.innerHTML = 'No orders to enter this phase';
+				set.save.style.display = 'none';
+				set.ready.style.display = 'none';
+				return;
+			}
+			set.save.style.display = '';
+			set.ready.style.display = '';
+			set.notice.innerHTML = self.noticeHTML();
+			set.save.disabled = saving || ready || !entry.hasUnsaved();
+			set.ready.value = ready ? 'Not ready' : 'Ready';
+			set.ready.disabled = saving || (!ready && !entry.allEntered());
+		});
 	};
 
-	CanvasBoard.prototype.notice = function (html, kind) {
-		this.noticeEl.innerHTML = html || '';
-		this.noticeEl.className = 'wdcb-notice' + (kind ? ' wdcb-notice-' + kind : '');
+	/** What the notice area under the buttons says: that a save is under way, or what the server said of the last */
+	CanvasBoard.prototype.noticeHTML = function () {
+		if (this.saving) return this.saving === 'ready' ? 'Readying...' : (this.saving === 'notready' ? 'Unreadying...' : 'Saving...');
+		return this.serverNotice || '';
+	};
+
+	CanvasBoard.prototype.setServerNotice = function (html) {
+		this.serverNotice = html || '';
 	};
 
 	/* Order entry */
 
-	CanvasBoard.prototype.onMapClick = function (hit) {
+	CanvasBoard.prototype.onMapClick = function (hit, map) {
 		var self = this;
+		if (map) this.activeMap = map;
 		if (!hit) { this.hideFlyout(); return; }
 
 		if (!this.entry) {
@@ -407,9 +489,9 @@ wD.CanvasBoard = (function () {
 		}
 		if (!this.isLatestView()) {
 			if (this.toast) this.toast.show({
-				text: 'You are viewing a past phase. Switch to the current phase to enter orders.',
+				text: 'You are viewing a past turn. Go to the current turn to enter orders.',
 				key: 'orders', timeout: 6000,
-				actions: [{ label: 'Current phase', onClick: function () { self.navigate('last'); } }]
+				actions: [{ label: 'Current turn', onClick: function () { self.navigate('last'); } }]
 			});
 			return;
 		}
@@ -425,16 +507,17 @@ wD.CanvasBoard = (function () {
 
 	CanvasBoard.prototype.afterEntry = function (result) {
 		if (result.result === 'invalid' && result.terrID) this.flashInvalid(result.terrID);
-		this.renderMap();
-		this.renderBar();
-		if (result.result === 'changed' || result.result === 'cancelled') this.notice('');
+		if (result.result === 'changed') this.setServerNotice('');
+		this.render();
 	};
 
 	CanvasBoard.prototype.flashInvalid = function (terrID) {
 		var self = this;
 		var highlights = this.entry ? this.entry.highlights() : {};
 		highlights[terrID] = 'invalid';
-		this.map.setState({ highlights: highlights });
+		['small', 'large'].forEach(function (size) {
+			if (self.maps[size] && self.maps[size].loaded) self.maps[size].setScene({ highlights: highlights });
+		});
 		setTimeout(function () { self.renderMap(); }, 350);
 	};
 
@@ -442,7 +525,9 @@ wD.CanvasBoard = (function () {
 	CanvasBoard.prototype.renderFlyout = function () {
 		var self = this;
 		this.hideFlyout();
-		if (!this.entry || !this.entry.current) return;
+		if (!this.entry || !this.entry.current || !this.isLatestView()) return;
+		var map = this.activeMap || this.maps.small;
+		if (!map || !map.loaded) return;
 		var current = this.entry.current;
 		var options;
 		var at;
@@ -451,13 +536,13 @@ wD.CanvasBoard = (function () {
 			options = current.options.map(function (option) {
 				return { label: option.label, onClick: function () { self.afterEntry(self.entry.chooseBuild(option.type, option.terrID)); } };
 			});
-			at = this.map.position(current.provinceID);
+			at = map.position(current.provinceID);
 		} else if (!current.type) {
 			options = this.entry.flyoutOptions().map(function (option) {
 				return { label: option.label, shortcut: option.shortcut, onClick: function () { self.afterEntry(self.entry.chooseType(option.key)); } };
 			});
 			var unit = this.entry.units[current.unitID];
-			at = this.map.position(unit.terrID);
+			at = map.position(unit.terrID);
 		} else {
 			return;
 		}
@@ -476,10 +561,10 @@ wD.CanvasBoard = (function () {
 		cancel.addEventListener('click', function (e) { e.stopPropagation(); self.afterEntry(self.entry.cancel()); });
 		flyout.appendChild(cancel);
 
-		var local = this.map.mapToLocal(at.x, at.y);
+		var local = map.mapToLocal(at.x, at.y);
 		flyout.style.left = local.x + 'px';
 		flyout.style.top = local.y + 'px';
-		this.map.overlay.appendChild(flyout);
+		map.overlay.appendChild(flyout);
 		this.flyout = flyout;
 	};
 
@@ -490,9 +575,14 @@ wD.CanvasBoard = (function () {
 
 	CanvasBoard.prototype.onKey = function (e) {
 		if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].indexOf(e.target.tagName) !== -1) return;
-		if (e.key === 'Escape' && this.entry && this.entry.current) {
-			e.preventDefault();
-			this.afterEntry(this.entry.cancel());
+		if (e.key === 'Escape') {
+			if (this.entry && this.entry.current) {
+				e.preventDefault();
+				this.afterEntry(this.entry.cancel());
+			} else if (this.overlay) {
+				e.preventDefault();
+				this.closeLargeMap();
+			}
 			return;
 		}
 		if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
@@ -501,7 +591,8 @@ wD.CanvasBoard = (function () {
 			return;
 		}
 		if (this.entry && this.entry.current && !this.entry.current.type) {
-			var option = this.entry.flyoutOptions().filter(function (o) { return o.shortcut === e.key.toLowerCase(); })[0];
+			var key = e.key.toLowerCase();
+			var option = this.entry.flyoutOptions().filter(function (o) { return o.shortcut === key; })[0];
 			if (option) {
 				e.preventDefault();
 				this.afterEntry(this.entry.chooseType(option.key));
@@ -512,29 +603,80 @@ wD.CanvasBoard = (function () {
 	/* Navigation */
 
 	CanvasBoard.prototype.navigate = function (key) {
-		var last = this.phases.length - 1;
-		var index = this.viewIndex;
-		if (key === 'first') index = 0;
-		else if (key === 'back') index -= 1;
-		else if (key === 'forward') index += 1;
-		else if (key === 'last') index = last;
-		index = Math.max(0, Math.min(last, index));
-		if (index === this.viewIndex) return;
-		this.viewIndex = index;
+		var last = this.latestTurn();
+		var turn = this.viewTurn;
+		if (key === 'first') turn = -1;
+		else if (key === 'back') turn -= 1;
+		else if (key === 'forward') turn += 1;
+		else if (key === 'last') turn = last;
+		turn = Math.max(-1, Math.min(last, turn));
+		if (turn === this.viewTurn) return;
+		this.viewTurn = turn;
 		if (this.entry && this.entry.current) this.entry.cancel();
 		this.render();
 	};
 
-	CanvasBoard.prototype.setMapSize = function (size) {
+	CanvasBoard.prototype.togglePreview = function () {
+		this.previewFlip = !this.previewFlip;
+		if (!this.isLatestView()) this.viewTurn = this.latestTurn();
+		this.render();
+	};
+
+	/* The large map */
+
+	/** The large map at its own size, over the page, with the history icons and the buttons in a bar at the foot */
+	CanvasBoard.prototype.openLargeMap = function () {
 		var self = this;
-		this.mapSize = size === 'large' ? 'large' : 'small';
-		storage(MAP_SIZE_KEY, this.mapSize);
-		this.hideFlyout();
-		this.map.setSize(this.mapSize).then(function () {
+		if (this.overlay) { this.closeLargeMap(); return; }
+
+		var overlay = el('div', 'wdcb-overlay');
+		overlay.addEventListener('click', function (e) {
+			if (e.target === overlay) self.closeLargeMap();
+		});
+		var holder = el('div', 'wdcb-overlay-map');
+		var loading = el('div', 'wdcb-loading', 'Loading the large map...');
+		holder.appendChild(loading);
+		overlay.appendChild(holder);
+
+		var bar = el('div', 'wdcb-overlay-bar');
+		var close = el('a', 'wdcb-overlay-close', '×');
+		close.href = '#';
+		close.title = 'Close the large map (Esc)';
+		close.addEventListener('click', function (e) { e.preventDefault(); self.closeLargeMap(); });
+		bar.appendChild(close);
+		var set = this.buildControls(bar, false);
+		this.controls.push(set);
+		overlay.appendChild(bar);
+
+		document.body.appendChild(overlay);
+		this.overlay = overlay;
+		this.bodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		var map = new wD.MapCanvas(holder, this.variant, { size: 'large', siteRoot: this.siteRoot });
+		map.onClick = function (hit, e, from) { self.onMapClick(hit, from); };
+		this.maps.large = map;
+		this.renderBar();
+		map.load().then(function () {
+			if (loading.parentNode) loading.parentNode.removeChild(loading);
+			self.activeMap = map;
 			self.renderMap();
 		}).catch(function (error) {
-			if (self.toast) self.toast.show({ text: 'Could not load the ' + size + ' map: ' + error.message, kind: 'error' });
+			loading.textContent = 'The large map could not be loaded: ' + (error && error.message ? error.message : error);
 		});
+	};
+
+	CanvasBoard.prototype.closeLargeMap = function () {
+		if (!this.overlay) return;
+		this.hideFlyout();
+		if (this.maps.large) this.maps.large.destroy();
+		this.maps.large = null;
+		this.activeMap = this.maps.small;
+		this.controls = this.controls.filter(function (set) { return set.main; });
+		if (this.overlay.parentNode) this.overlay.parentNode.removeChild(this.overlay);
+		this.overlay = null;
+		document.body.style.overflow = this.bodyOverflow || '';
+		this.renderFlyout();
 	};
 
 	/* Saving */
@@ -555,8 +697,8 @@ wD.CanvasBoard = (function () {
 			else submission.ready = true;
 		}
 		this.saving = toggleReady ? (ready ? 'notready' : 'ready') : 'save';
+		this.setServerNotice('');
 		this.renderBar();
-		this.notice('');
 
 		this.source.saveOrders(submission).then(function (result) {
 			self.saving = null;
@@ -569,14 +711,14 @@ wD.CanvasBoard = (function () {
 			}
 
 			var html = '';
-			if (result.statusIcon && result.statusIcon.indexOf('<') !== -1) html += result.statusIcon + ' '; // '-' when there are no orders
 			if (result.notice) html += result.notice;
 			outcome.notices.forEach(function (n) {
 				var order = self.entry.orders.filter(function (o) { return o.id === n.orderID; })[0];
-				var where = order && order.terrID ? self.variant.territory(order.terrID).name : 'Order ' + n.orderID;
+				var territory = order && order.terrID ? self.variant.territory(order.terrID) : null;
+				var where = territory ? territory.name : 'Order ' + n.orderID;
 				html += (html ? '<br />' : '') + '<strong>' + where + ':</strong> ' + n.notice;
 			});
-			self.notice(html, outcome.invalid ? 'error' : (result.notice ? 'warning' : ''));
+			self.setServerNotice(html);
 
 			if (outcome.invalid && self.toast) self.toast.show({ text: 'Some orders were not accepted; see the notice under the map.', kind: 'error', key: 'save' });
 			else if (toggleReady && self.toast) {
@@ -589,7 +731,7 @@ wD.CanvasBoard = (function () {
 			self.render();
 		}).catch(function (error) {
 			self.saving = null;
-			self.notice('Could not save: ' + (error && error.message ? error.message : 'network error'), 'error');
+			self.setServerNotice('Could not save: ' + (error && error.message ? error.message : 'network error'));
 			self.render();
 		});
 	};
@@ -618,38 +760,37 @@ wD.CanvasBoard = (function () {
 	};
 
 	/**
-	 * Fetch what changed and redraw. If the game moved on, the view stays on the phase it was showing, which now has
-	 * its results, and a toast offers the new phase; the orders being entered belonged to the old phase and are gone.
+	 * Fetch what changed and redraw. If the game moved on the latest map now shows the new turn, as a refresh of the
+	 * old page would have, and a toast says so; the orders being entered belonged to the old phase and are gone.
 	 */
 	CanvasBoard.prototype.reload = function () {
 		var self = this;
 		if (this.reloading) return this.reloading;
-		var before = phaseKey(this.game.turn, this.game.phase);
+		var before = this.game.turn + '|' + this.game.phase;
 		var wasLatest = this.isLatestView();
 		var hadUnsaved = this.entry && this.entry.hasUnsaved();
 
 		this.reloading = this.source.getContext().then(function (context) {
 			self.context = context;
-			return self.source.getFiles(['game', 'status', 'history']);
+			return self.source.getFiles(['game', 'history']);
 		}).then(function (files) {
 			self.game = files.game;
-			self.status = files.status;
 			self.history = files.history;
-			var oldCount = self.phases.length;
-			self.phases = self.buildPhases();
-			var after = phaseKey(self.game.turn, self.game.phase);
+			var after = self.game.turn + '|' + self.game.phase;
 
 			if (after !== before) {
-				// Processed: show the results of the phase that was being played, and offer the new one
-				if (wasLatest) self.viewIndex = Math.min(oldCount - 1, self.phases.length - 1);
+				if (wasLatest) self.viewTurn = self.latestTurn();
+				self.viewTurn = Math.min(self.viewTurn, self.latestTurn());
 				self.hideFlyout();
+				self.previewFlip = false;
+				self.setServerNotice('');
 				self.setupOrderEntry();
 				if (self.toast) {
-					var text = 'Game processed: now ' + (self.game.turnText || '') + ' ' + self.game.phase;
+					var text = 'The game has been processed: it is now ' + (self.game.turnText || '') + ', ' + self.game.phase + '.';
 					if (self.game.phase === 'Finished') text = 'The game has finished.';
 					self.toast.show({
 						text: text, key: 'processed', timeout: 0, kind: 'success',
-						actions: [{ label: 'Show', onClick: function () { self.navigate('last'); } }]
+						actions: [{ label: 'Refresh page', onClick: function () { window.location.reload(); } }]
 					});
 				}
 			} else if (!hadUnsaved) {

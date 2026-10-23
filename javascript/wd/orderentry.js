@@ -494,17 +494,35 @@ wD.OrderEntry = (function () {
 		return Object.keys(this.meta).some(function (orderID) { return !self.meta[orderID].saved; });
 	};
 
+	/** Whether an order, as it stands, is something the server could accept as complete */
+	OrderEntry.prototype.isEntered = function (order) {
+		var update = this.meta[order.id].update;
+		if (this.phase === 'Builds') return true; // Waiting is allowed
+		if (!update.type || update.type === '') return false;
+		if (['Hold', 'Disband', 'Destroy'].indexOf(update.type) !== -1) return true;
+		if (update.type === 'Support move' || update.type === 'Convoy') return !!(update.toTerrID && update.fromTerrID);
+		return !!update.toTerrID;
+	};
+
 	/** Whether every order has been given something the server could accept as complete */
 	OrderEntry.prototype.allEntered = function () {
 		var self = this;
 		if (!this.orders.length) return false;
-		return this.orders.every(function (order) {
+		return this.orders.every(function (order) { return self.isEntered(order); });
+	};
+
+	/** How many orders have been given something complete */
+	OrderEntry.prototype.enteredCount = function () {
+		var self = this;
+		return this.orders.filter(function (order) { return self.isEntered(order); }).length;
+	};
+
+	/** Whether anything at all has been ordered yet: any order with a type, or in Builds anything but Wait */
+	OrderEntry.prototype.anyEntered = function () {
+		var self = this;
+		return this.orders.some(function (order) {
 			var update = self.meta[order.id].update;
-			if (self.phase === 'Builds') return true; // Waiting is allowed
-			if (!update.type || update.type === '') return false;
-			if (['Hold', 'Disband', 'Destroy'].indexOf(update.type) !== -1) return true;
-			if (update.type === 'Support move' || update.type === 'Convoy') return !!(update.toTerrID && update.fromTerrID);
-			return !!update.toTerrID;
+			return !!update.type && update.type !== '' && update.type !== 'Wait';
 		});
 	};
 

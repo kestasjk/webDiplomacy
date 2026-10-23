@@ -2626,7 +2626,7 @@ input[id^="FinalizeButton"]{
 	position: fixed;
 	left: 12px;
 	bottom: 12px;
-	z-index: 10001;
+	z-index: 10002;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -2678,69 +2678,21 @@ input[id^="FinalizeButton"]{
 .wdtoast-close:hover { color: #fff; }
 .wdtoast-leaving { opacity: 0; transition: opacity 0.25s; }
 @keyframes wdtoast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* --- Chat panel (javascript/wd/chat.js): the classic chatbox's own markup and styles, plus these --- */
+.wdchat-loading { padding: 12px; text-align: center; font-size: 13px; }
+#chatboxtabs a { cursor: pointer; }
+tr.wdchat-more td.notice { font-weight: normal; font-size: 12px; padding: 3px; }
+.wdchat-notice { font-weight: normal; font-size: 11px; color: #f08080; }
 
-/* --- Chat panel (javascript/wd/chat.js) --- */
-.wdchat { text-align: left; }
-.wdchat-tabs { font-size: 14px !important; }
-.wdchat-tabs a { cursor: pointer; }
-.wdchat-tabs a.current { font-weight: bold; }
-.wdchat-unread { vertical-align: middle; }
-.wdchat-panel { border-radius: 7px; overflow: hidden; background-color: #333; }
-.wdchat-header { padding: 4px 8px; font-size: 12px; text-align: center; }
-.wdchat-messages {
-	max-height: 260px;
-	min-height: 60px;
-	overflow-y: auto;
-	overflow-x: hidden;
-	font-size: 13px;
-}
-.wdchat-message {
-	display: flex;
-	gap: 8px;
-	padding: 3px 8px;
-	align-items: baseline;
-	overflow-wrap: anywhere;
-}
-.wdchat-time { flex: 0 0 auto; font-size: 11px; color: #aaa; min-width: 52px; }
-.wdchat-text { flex: 1 1 auto; }
-.wdchat-text .messageFromMe { color: inherit; }
-.wdchat-mine .wdchat-text { font-style: italic; }
-.wdchat-empty { padding: 12px; text-align: center; }
-.wdchat-footer { padding: 6px 8px; }
-.wdchat-compose { display: flex; gap: 8px; align-items: stretch; }
-.wdchat-input {
-	flex: 1 1 auto;
-	resize: vertical;
-	font: inherit;
-	font-size: 13px;
-	padding: 4px 6px;
-	min-height: 48px;
-	box-sizing: border-box;
-	background: #222;
-	color: #eee;
-	border: 1px solid #555;
-}
-.wdchat-send { flex: 0 0 auto; min-width: 64px; }
-.wdchat-tools {
-	display: flex;
-	gap: 14px;
-	align-items: center;
-	flex-wrap: wrap;
-	margin-top: 6px;
-	font-size: 12px;
-	color: #bbb;
-}
-.wdchat-filter { font-size: 12px; background: #222; color: #eee; border: 1px solid #555; }
-.wdchat-notice { color: #f08080; }
-.wdchat-loading { padding: 12px; text-align: center; }
-
-/* --- Canvas board (javascript/wd/canvasboard.js, mapcanvas.js) --- */
-.wdcb { text-align: center; margin: 0 auto; }
-.wdcb-map { position: relative; width: 100%; }
-.wdcb-loading { padding: 40px 0; color: #aaa; }
-.wdmap { position: relative; display: block; width: 100%; line-height: 0; }
-.wdmap-canvas { display: block; width: 100%; height: auto; cursor: pointer; border-radius: 4px; }
+/* --- Canvas board (javascript/wd/canvasboard.js, mapcanvas.js): the map at its own size, as the image was --- */
+.wdcb-map { line-height: 0; }
+.wdcb-loading { padding: 40px 0; color: #aaa; font-size: 13px; line-height: normal; }
+.wdmap { position: relative; display: inline-block; max-width: 100%; line-height: 0; }
+.wdmap-canvas { display: block; max-width: 100%; height: auto; cursor: pointer; }
 .wdmap-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; line-height: normal; }
+.wdcb-preview-on img { outline: 2px solid #4fbf5f; border-radius: 2px; }
+.wdcb-orders input.form-submit { margin-top: 10px; width: auto !important; }
+.wdcb-notice { font-size: 12px; }
 .wdcb-flyout {
 	position: absolute;
 	transform: translate(-50%, -100%) translateY(-14px);
@@ -2777,40 +2729,35 @@ input[id^="FinalizeButton"]{
 .wdcb-flyout-btn:hover { background: #fff; }
 .wdcb-flyout-cancel { background: transparent; color: #bbb; padding: 5px 6px; }
 .wdcb-flyout-cancel:hover { background: rgba(255,255,255,0.15); color: #fff; }
-.wdcb-bar {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: space-between;
-	gap: 8px 16px;
-	padding: 8px 10px;
-	margin-top: 6px;
-	border-radius: 7px;
+
+/* The large map, over the page */
+.wdcb-overlay {
+	position: fixed;
+	left: 0; top: 0; right: 0; bottom: 0;
+	z-index: 10001;
+	background: rgba(0, 0, 0, 0.78);
+	overflow: auto;
+	text-align: center;
+}
+.wdcb-overlay-map { display: inline-block; margin: 16px auto 140px; line-height: 0; background: #222; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+.wdcb-overlay-map .wdcb-loading { padding: 40px 60px; color: #ddd; }
+.wdcb-overlay-bar {
+	position: fixed;
+	left: 0; right: 0; bottom: 0;
 	background: #333;
 	color: #ddd;
-	font-size: 13px;
-	text-align: left;
+	border-top: 1px solid #555;
+	box-shadow: 0 -2px 10px rgba(0,0,0,0.6);
+	padding: 2px 0 8px;
+	text-align: center;
 }
-.wdcb-nav { display: flex; align-items: center; gap: 4px; }
-.wdcb-navbtn { margin: 0 2px; line-height: 0; }
-.wdcb-navbtn-disabled { cursor: default; }
-.wdcb-phase { min-width: 150px; text-align: center; line-height: 1.2; padding: 0 6px; }
-.wdcb-phase-date { font-weight: bold; }
-.wdcb-phase-name { font-size: 11px; color: #aaa; text-transform: uppercase; }
-.wdcb-phase-history .wdcb-phase-date { color: #e8b43a; }
-.wdcb-tools { display: flex; align-items: center; gap: 12px; color: #bbb; }
-.wdcb-size { font-size: 12px; background: #222; color: #eee; border: 1px solid #555; }
-.wdcb-orders { display: flex; align-items: center; gap: 8px; }
-.wdcb-status { font-size: 12px; color: #bbb; min-width: 130px; }
-.wdcb-status-unsaved { color: #f0b040; font-weight: bold; }
-.wdcb button.form-submit { padding: 6px 16px; }
-.wdcb button:disabled { opacity: 0.45; cursor: default; }
-.wdcb-glow { animation: wdcb-glow 1.4s ease-in-out infinite; }
-@keyframes wdcb-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.0); } 50% { box-shadow: 0 0 10px 3px rgba(255, 170, 0, 0.8); } }
-.wdcb-notice { font-size: 12px; margin-top: 6px; min-height: 1em; text-align: left; }
-.wdcb-notice-error { color: #f08080; }
-.wdcb-notice-warning { color: #f0b040; }
-@media (max-width: 600px) {
-	.wdcb-bar { justify-content: center; }
-	.wdcb-phase { min-width: 110px; }
+.wdcb-overlay-bar p { margin: 6px 0; }
+.wdcb-overlay-close {
+	position: absolute;
+	right: 14px;
+	top: 4px;
+	font-size: 24px;
+	line-height: 1;
+	text-decoration: none !important;
+	color: #bbb;
 }

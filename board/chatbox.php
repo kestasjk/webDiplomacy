@@ -90,7 +90,11 @@ class Chatbox
 			$countryID = $index + 1;
 			$countries[] = array('countryID' => $countryID, 'name' => l_t($countryName));
 			if( isset($Game->Members->ByCountryID[$countryID]) )
-				$members[] = array('countryID' => $countryID, 'name' => $Game->Members->ByCountryID[$countryID]->memberNameCountry());
+				$members[] = array(
+					'countryID' => $countryID,
+					'name' => $Game->Members->ByCountryID[$countryID]->memberNameCountry(),
+					'tabName' => $Game->Members->ByCountryID[$countryID]->memberCountryName(),
+				);
 		}
 
 		$isMember = ( isset($Member) && is_a($Member, 'userMember') );

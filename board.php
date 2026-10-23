@@ -261,6 +261,7 @@ if( $User->type['User'] )
 	libHTML::$footerScript[] = 'turnToText = '.$Game->Variant->turnAsDateJS().'
 		var wdBoardConfig = '.json_encode($boardConfig).';
 		if( wdBoardConfig.chat ) wdBoardConfig.chat.turnText = turnToText;
+		if( wdBoardConfig.canvas ) wdBoardConfig.canvas.turnText = turnToText;
 		wD.Board.init(wdBoardConfig);';
 }
 
