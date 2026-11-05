@@ -45,6 +45,7 @@ class ClassicChaosVariant extends WDVariant {
 	public $adapter    ='Carey Jensen / Oliver Auth';
 	public $version    ='1.7';
 	public $homepage   ='http://www.variantbank.org/results/rules/c/chaos.htm';
+	public $buildAnywhere = true; // ClassicChaosVariant_userOrderBuilds: any owned supply centre
 
 	public $countries=array(
 		'Ankara'       , 'Belgium', 'Berlin'  , 'Brest'    , 'Budapest', 'Bulgaria'  , 'Constantinople', 'Denmark', 'Edinburgh',

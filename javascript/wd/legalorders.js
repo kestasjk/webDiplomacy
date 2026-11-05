@@ -80,16 +80,23 @@ wD.LegalOrders = (function () {
 
 	function buildDestinations(variant, provinceStatus, members, ownCountryIDs, isSandbox) {
 		var dests = [];
+		// Some variants (Modern2, ClassicChaos, BuildAnywhere) let a country build on any supply centre it owns
+		var anywhere = !!(variant.rules && variant.rules.buildAnywhere);
 		members.forEach(function (member) {
 			if (ownCountryIDs.indexOf(member.countryID) === -1 || member.supplyCenterNo <= member.unitNo) return;
 			variant.territoryIDs().forEach(function (terrID) {
 				var territory = variant.territory(terrID);
-				if (territory.coast === 'Child' || !territory.supply) return;
-				// A home supply centre of the country, owned by it, with no unit on it
-				if (territory.homeCountryID !== member.countryID) return;
+				if (territory.coast === 'Child' || !territory.supply || territory.type === 'Sea') return;
 				var status = provinceStatus[terrID];
 				if (!status || status.unitID) return;
-				if (status.ownerCountryID !== member.countryID && !isSandbox) return;
+				if (anywhere) {
+					// Any supply centre the country owns, with no unit on it
+					if (status.ownerCountryID !== member.countryID) return;
+				} else {
+					// A home supply centre of the country, owned by it, with no unit on it
+					if (territory.homeCountryID !== member.countryID) return;
+					if (status.ownerCountryID !== member.countryID && !isSandbox) return;
+				}
 				dests.push(terrID);
 				variant.coastsOf(terrID).forEach(function (coastID) { dests.push(coastID); });
 			});

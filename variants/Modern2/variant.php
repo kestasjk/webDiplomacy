@@ -47,6 +47,7 @@ class Modern2Variant extends WDVariant {
 	public $version    = 'II';
 	public $codeVersion= '1.7.4';
 	public $homepage   = 'http://www.variantbank.org/results/rules/m/modern2.htm';
+	public $buildAnywhere = true; // Modern2Variant_userOrderBuilds: any owned supply centre
 
 	public $countries=array('Britain', 'Egypt', 'France', 'Germany', 'Italy', 'Poland', 'Russia', 'Spain', 'Turkey', 'Ukraine');
 

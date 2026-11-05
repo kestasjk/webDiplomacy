@@ -69,7 +69,8 @@ wD.CanvasBoard = (function () {
 		this.flyout = null;
 
 		this.viewTurn = null;
-		this.previewFlip = false;
+		// What the Preview icon was last set to: true for the player's orders, false for the last moves, null for neither
+		this.previewChoice = null;
 
 		this.entry = null;
 		this.legal = null;
@@ -315,14 +316,15 @@ wD.CanvasBoard = (function () {
 	/* Scenes */
 
 	/**
-	 * Whether the latest map shows the player's own orders rather than the last moves: once they have entered or
-	 * saved any this phase (new orders come from the server as Holds, so what has been saved is the only sign)
+	 * Whether the latest map shows the player's own orders rather than the last moves: whichever the Preview icon was
+	 * last set to, or else once they have entered or saved any this phase (new orders come from the server as Holds,
+	 * so what has been saved is the only sign). Entering an order clears the icon's choice, so the order shows.
 	 */
 	CanvasBoard.prototype.showingOrders = function () {
 		if (!this.entry || !this.entry.orders.length) return false;
+		if (this.previewChoice !== null) return this.previewChoice;
 		var status = this.orderStatus || [];
-		var touched = this.entry.hasUnsaved() || ['Saved', 'Completed', 'Ready'].some(function (s) { return status.indexOf(s) !== -1; });
-		return touched !== this.previewFlip;
+		return this.entry.hasUnsaved() || ['Saved', 'Completed', 'Ready'].some(function (s) { return status.indexOf(s) !== -1; });
 	};
 
 	/** What a map is to draw for the turn being viewed, as map.php would draw that turn */
@@ -507,7 +509,11 @@ wD.CanvasBoard = (function () {
 
 	CanvasBoard.prototype.afterEntry = function (result) {
 		if (result.result === 'invalid' && result.terrID) this.flashInvalid(result.terrID);
-		if (result.result === 'changed') this.setServerNotice('');
+		if (result.result === 'changed') {
+			this.setServerNotice('');
+			// Whatever the Preview icon was set to, an order just entered is to be seen
+			this.previewChoice = null;
+		}
 		this.render();
 	};
 
@@ -617,7 +623,7 @@ wD.CanvasBoard = (function () {
 	};
 
 	CanvasBoard.prototype.togglePreview = function () {
-		this.previewFlip = !this.previewFlip;
+		this.previewChoice = !this.showingOrders();
 		if (!this.isLatestView()) this.viewTurn = this.latestTurn();
 		this.render();
 	};
@@ -782,7 +788,7 @@ wD.CanvasBoard = (function () {
 				if (wasLatest) self.viewTurn = self.latestTurn();
 				self.viewTurn = Math.min(self.viewTurn, self.latestTurn());
 				self.hideFlyout();
-				self.previewFlip = false;
+				self.previewChoice = null;
 				self.setServerNotice('');
 				self.setupOrderEntry();
 				if (self.toast) {

@@ -873,8 +873,9 @@ class libGameFiles
 	 * When variant.json last gained fields (Unix time). A file written before then is rewritten by variantURL(), so a
 	 * deploy which changes the format doesn't need every variant's cache wiping. Move it forward when the format changes.
 	 * 2026-10-23: large-map coordinates, the map images and the country colours, for the canvas board.
+	 * 2026-11-05: rules.buildAnywhere.
 	 */
-	const VARIANT_FORMAT_CHANGED = 1792713600;
+	const VARIANT_FORMAT_CHANGED = 1793868000;
 
 	/**
 	 * @return array array('url' => .., 'version' => ..) of the variant's variant.json, which is written if it is missing
@@ -967,7 +968,10 @@ class libGameFiles
 				'countries' => $countries,
 				'supplyCenterCount' => intval($Variant->supplyCenterCount),
 				'supplyCenterTarget' => intval($Variant->supplyCenterTarget),
-				'rules' => new stdClass(),
+				// The variant's departures from the standard order rules, so that a client offers what the server accepts
+				'rules' => array(
+					'buildAnywhere' => !empty($Variant->buildAnywhere),
+				),
 				'map' => self::variantMap($Variant),
 				'territories' => array_values($territories),
 			));

@@ -23,8 +23,9 @@
  * from messages.json, the player's own from game/playercontext (kept in localStorage, so only new ones are asked
  * for), sent with game/sendmessage and marked read with game/messagesseen.
  *
- * The last few turns' messages are shown to start with; a line at the top of the messages offers the earlier ones
- * when there are any, so scrolling to the top is how to read back.
+ * The last few turns' messages are shown to start with; earlier ones come in as the reader scrolls to the top, or
+ * until the box is full, and a line at the top of the messages offers them too. The open tab's messages are marked
+ * seen as they are shown, as board.php marked them when it drew the page.
  *
  *   var chat = new wD.Chat(document.getElementById('wdChat'), { source: source, live: live, config: {...} });
  *   chat.prepare();   // before anything asks the source for a context
@@ -41,7 +42,8 @@ window.wD = wD;
 wD.Chat = (function () {
 	'use strict';
 
-	// How many turns back the messages are shown to start with, and how many more each "earlier messages" asks for
+	// How many turns back the messages are shown to start with, and the fewest more each "earlier messages" asks for
+	// (each asks for twice as many as the last, so a quiet tab's whole history takes few requests)
 	var FIRST_TURNS = 5;
 	var MORE_TURNS = 10;
 	var ALLOWED_TAGS = { BR: true, STRONG: true, B: true, EM: true, I: true, U: true, SPAN: true, A: true };
@@ -127,7 +129,7 @@ wD.Chat = (function () {
 		this.newMessagesFrom = [];
 		this.mutedCountryIDs = [];
 		this.loading = null;
-		this.refreshQueued = false;
+		this.refreshQueued = null; // The options of a refresh asked for while one was running
 		this.loadingEarlier = false;
 
 		// How many turns back are shown; grows when earlier messages are asked for
@@ -226,6 +228,11 @@ wD.Chat = (function () {
 			this.live.on('gap', function () { self.refresh(); });
 			this.live.on('processed', function () { self.refresh(); });
 		}
+
+		// Messages which arrived while the page was in a background tab are seen once it is looked at
+		document.addEventListener('visibilitychange', function () {
+			if (document.visibilityState === 'visible') self.markOpenTabSeen();
+		});
 	};
 
 	/**
@@ -236,7 +243,7 @@ wD.Chat = (function () {
 		var self = this;
 		opts = opts || {};
 		if (this.loading) {
-			this.refreshQueued = true;
+			this.refreshQueued = opts;
 			return this.loading;
 		}
 		var before = {};
@@ -254,6 +261,7 @@ wD.Chat = (function () {
 			self.loadingEarlier = false;
 			self.renderMessages(opts);
 			self.renderTabs();
+			self.markOpenTabSeen();
 			self.announce(arrived, Object.keys(before).length > 0);
 		}).catch(function (error) {
 			if (window.console) console.error('Chat: ' + (error && error.message ? error.message : error));
@@ -262,8 +270,9 @@ wD.Chat = (function () {
 		}).finally(function () {
 			self.loading = null;
 			if (self.refreshQueued) {
-				self.refreshQueued = false;
-				self.refresh();
+				var queued = self.refreshQueued;
+				self.refreshQueued = null;
+				self.refresh(queued);
 			}
 		});
 		return this.loading;
@@ -272,10 +281,20 @@ wD.Chat = (function () {
 	/** Show, and if need be fetch, the messages of the turns before those shown */
 	Chat.prototype.loadEarlier = function () {
 		if (this.loadingEarlier || this.fromTurn() <= 0) return;
-		this.windowTurns += MORE_TURNS;
+		this.windowTurns += Math.max(MORE_TURNS, this.windowTurns);
 		this.loadingEarlier = true;
 		this.renderMessages({ keepOffset: true });
 		this.refresh({ keepOffset: true });
+	};
+
+	/**
+	 * Bring in earlier messages when the reader has scrolled to the top, and while the box isn't full, so that a tab
+	 * whose recent turns were quiet shows its older messages rather than looking empty.
+	 */
+	Chat.prototype.fillEarlier = function () {
+		var scroll = this.scrollEl;
+		if (this.loadingEarlier || !this.hasEarlier() || !scroll.clientHeight) return;
+		if (scroll.scrollTop <= 8 || scroll.scrollHeight <= scroll.clientHeight) this.loadEarlier();
 	};
 
 	/** Tell the viewer about messages which arrived for a tab they don't have open */
@@ -334,11 +353,16 @@ wD.Chat = (function () {
 		headerBox.appendChild(headerTable);
 		wrapper.appendChild(headerBox);
 
-		// The messages
+		// The messages. The "earlier messages" line goes above their table rather than in it: the table's layout is
+		// fixed, so its first row sets the width of the time column, and that row has to be a message
 		this.scrollEl = el('div', 'chatbox');
 		this.scrollEl.id = 'chatboxscroll';
+		this.moreEl = el('div', 'wdchat-more');
+		this.moreEl.style.display = 'none';
+		this.scrollEl.appendChild(this.moreEl);
 		this.listTable = el('table', 'chatbox');
 		this.scrollEl.appendChild(this.listTable);
+		this.scrollEl.addEventListener('scroll', function () { self.fillEarlier(); });
 		wrapper.appendChild(this.scrollEl);
 
 		// The send box
@@ -519,28 +543,24 @@ wD.Chat = (function () {
 		var atEnd = (beforeHeight - beforeTop - scroll.clientHeight) < 40;
 		table.innerHTML = '';
 
-		if (this.hasEarlier() || this.loadingEarlier) {
-			var moreRow = el('tr', 'barAlt1 wdchat-more');
-			var moreCell = el('td', 'notice');
-			moreCell.colSpan = 2;
-			if (this.loadingEarlier) {
-				moreCell.appendChild(document.createTextNode('Loading earlier messages...'));
-			} else {
-				var link = el('a', 'light', 'Show earlier messages');
-				link.href = '#';
-				link.title = 'Messages from before ' + (this.config.turnText ? this.config.turnText(this.fromTurn()) : 'the turns shown');
-				link.addEventListener('click', function (e) {
-					e.preventDefault();
-					self.loadEarlier();
-				});
-				moreCell.appendChild(link);
-			}
-			moreRow.appendChild(moreCell);
-			table.appendChild(moreRow);
+		var earlier = this.hasEarlier() || this.loadingEarlier;
+		this.moreEl.innerHTML = '';
+		this.moreEl.style.display = earlier ? '' : 'none';
+		if (this.loadingEarlier) {
+			this.moreEl.appendChild(document.createTextNode('Loading earlier messages...'));
+		} else if (earlier) {
+			var link = el('a', 'light', 'Show earlier messages');
+			link.href = '#';
+			link.title = 'Messages from before ' + (this.config.turnText ? this.config.turnText(this.fromTurn()) : 'the turns shown');
+			link.addEventListener('click', function (e) {
+				e.preventDefault();
+				self.loadEarlier();
+			});
+			this.moreEl.appendChild(link);
 		}
 
 		var messages = this.messagesForTab(this.tab, false);
-		if (!messages.length) {
+		if (!messages.length && !earlier) {
 			var emptyRow = el('tr', 'barAlt1');
 			emptyRow.appendChild(el('td', 'notice', 'No messages yet posted.'));
 			table.appendChild(emptyRow);
@@ -588,6 +608,8 @@ wD.Chat = (function () {
 
 		if (opts.keepOffset) scroll.scrollTop = scroll.scrollHeight - beforeHeight + beforeTop;
 		else if (atEnd) this.scrollToEnd();
+		else scroll.scrollTop = beforeTop;
+		this.fillEarlier();
 	};
 
 	Chat.prototype.scrollToEnd = function () {
@@ -615,10 +637,20 @@ wD.Chat = (function () {
 		this.renderCompose();
 		this.renderMessages();
 		this.scrollToEnd();
-		if (this.isMember && this.newMessagesFrom.indexOf(countryID) !== -1) this.markSeen(countryID);
+		this.markOpenTabSeen();
 		if (this.canPostTo(countryID)) {
 			try { this.textarea.focus({ preventScroll: true }); } catch (e) { /* older browsers */ }
 		}
+	};
+
+	/**
+	 * The open tab's messages are on screen, so they are no longer new: tell the server, as board.php did whenever it
+	 * drew a tab with new messages. Not while the page is in a background tab; they are seen when it is looked at.
+	 */
+	Chat.prototype.markOpenTabSeen = function () {
+		if (!this.isMember || this.newMessagesFrom.indexOf(this.tab) === -1) return;
+		if (document.visibilityState === 'hidden') return;
+		this.markSeen(this.tab);
 	};
 
 	Chat.prototype.markSeen = function (countryID) {

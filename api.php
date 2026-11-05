@@ -1186,11 +1186,12 @@ class SendMessage extends ApiEntry {
 				throw new RequestException("Message is invalid in $Game->pressType");
 			}
 
-			if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
+			// 0 is everyone, the member's own country is their notes, anything else has to be a country in the game
+			if ($toCountryID < 0 || ($toCountryID != 0 && !isset($Game->Members->ByCountryID[$toCountryID]))) {
 				throw new RequestException('Invalid toCountryID');
 			}
 
-			if ($toCountryID != 0) {
+			if ($toCountryID != 0 && $toCountryID != $countryID) {
 				$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
 				if($toUser->isCountryMuted($Game->id, $countryID)) {
 					return json_encode(["messages" => []]);

@@ -41,6 +41,8 @@ wD.VariantMap = (function () {
 		this.supplyCenterCount = data.supplyCenterCount;
 		this.supplyCenterTarget = data.supplyCenterTarget;
 		this.map = data.map || null;
+		// The variant's departures from the standard order rules: { buildAnywhere: bool }
+		this.rules = data.rules || {};
 
 		this.territories = {};
 		this.byName = {};

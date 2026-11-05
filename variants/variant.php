@@ -48,6 +48,14 @@ abstract class WDVariant {
 	public $variantClasses;
 
 	/**
+	 * Whether a country may build on any supply centre it owns rather than only its home centres, as the
+	 * BuildAnywhere, Modern2 and ClassicChaos variants' userOrderBuilds allow. Written to variant.json as
+	 * rules.buildAnywhere, so that clients offer the build sites the server accepts.
+	 * @var bool
+	 */
+	public $buildAnywhere = false;
+
+	/**
 	 * Variant ID. Stored in game records and references in config.php. 1-255
 	 * @var int
 	 */

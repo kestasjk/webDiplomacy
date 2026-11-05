@@ -2352,7 +2352,7 @@ input[id^="FinalizeButton"]{
 /* --- Chat panel (javascript/wd/chat.js): the classic chatbox's own markup and styles, plus these --- */
 .wdchat-loading { padding: 12px; text-align: center; font-size: 13px; }
 #chatboxtabs a { cursor: pointer; }
-tr.wdchat-more td.notice { font-weight: normal; font-size: 12px; padding: 3px; }
+.wdchat-more { text-align: center; font-size: 12px; padding: 3px; }
 .wdchat-notice { font-weight: normal; font-size: 11px; color: #a33; }
 
 /* --- Canvas board (javascript/wd/canvasboard.js, mapcanvas.js): the map at its own size, as the image was --- */

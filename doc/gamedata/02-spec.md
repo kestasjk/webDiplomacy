@@ -93,9 +93,11 @@ Generated from `wD_Territories`, `wD_Borders`, `wD_CoastalBorders` and the varia
   territories that aren't child coasts, as in the database.
 - `homeCountryID` is `wD_Territories.countryID` (the starting owner), `null` for neutral.
 - Loaded by `mapID` from the variant object, which fixes the `variantID`-as-`mapID` bug.
-- Variant-specific order rules (BuildAnywhere, Modern2, ClassicChaos, Zeus5 splice extra JS into
-  the classic board) are out of scope for now: the React board and all bots only support variants
-  1, 15 and 23. The file has a reserved `"rules": {}` object for them.
+- `rules` holds the variant's departures from the standard order rules, so that a client offers what
+  the server's `userOrder*` classes accept. `rules.buildAnywhere` (bool, from the variant class's
+  `$buildAnywhere`) is true where a country may build on any supply centre it owns rather than only
+  its home centres: BuildAnywhere, Modern2, ClassicChaos. Other variant rules (Zeus5's extra build
+  site) are not described yet; the React board and all bots only support variants 1, 15 and 23.
 
 ### 2.2 `game.json`
 

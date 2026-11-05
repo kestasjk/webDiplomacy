@@ -174,12 +174,15 @@ wd/live.js
 	- wD.Live: the server-sent events connection; emits files / message / processed / gap.
 wd/chat.js
 	- wD.Chat: the press panel, drawn with the markup and styles the server-rendered chatbox had
-		(tabs, member bar, messages, send box, Mark unread), showing the last few turns with a line at
-		the top of the messages that brings in earlier ones.
+		(tabs, member bar, messages, send box, Mark unread), showing the last few turns and bringing in
+		earlier ones as the reader scrolls to the top (or until the box is full); marks the open tab's
+		messages seen as they are shown.
 wd/variantmap.js
-	- wD.VariantMap: variant.json with the lookups a board needs (provinces, coasts, borders, images).
+	- wD.VariantMap: variant.json with the lookups a board needs (provinces, coasts, borders, images,
+		rules).
 wd/legalorders.js
-	- wD.LegalOrders: which orders each unit may be given this phase, for any variant.
+	- wD.LegalOrders: which orders each unit may be given this phase, for any variant (builds on any
+		owned centre where variant.json's rules.buildAnywhere says so).
 wd/mapcanvas.js
 	- wD.MapCanvas: draws the map on a canvas exactly as map.php / map/drawMap.php draw it (the same
 		images at their own size, the same colours, arrows, flags and markers), tints whole territories

@@ -10,6 +10,7 @@ class BuildAnywhereVariant extends ClassicVariant {
 	public $name='BuildAnywhere';
 	public $fullName='Classic, but build anywhere';
 	public $description='The same as the standard map, except you can build on all supply centers you own.';
+	public $buildAnywhere=true;
 	//public $author='Avalon Hill';
 
 	//public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
