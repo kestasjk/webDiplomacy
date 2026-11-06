@@ -45,6 +45,7 @@ wD.OrderEntry = (function () {
 		this.ownCountryIDs = options.ownCountryIDs || [];
 		this.members = options.members || [];
 		this.isSandbox = !!options.isSandbox;
+		this.provinceStatus = options.provinceStatus || {};
 		this.legal = options.legal;
 		this.current = null;
 		this.loadOrders(options.orders || []);
@@ -406,10 +407,14 @@ wD.OrderEntry = (function () {
 		var self = this;
 		var own = this.members.filter(function (m) { return self.ownCountryIDs.indexOf(m.countryID) !== -1; });
 		if (!this.isSandbox) return own[0] || null;
+		// The sandbox's owner orders for everyone: a unit is disbanded by its country, and a centre is built on by
+		// its owner (which is its home country, unless the variant lets a country build on any centre it holds)
 		var territory = this.variant.territory(provinceID);
+		var status = this.provinceStatus[provinceID];
 		var candidates = own.filter(function (m) {
 			if (m.supplyCenterNo === m.unitNo) return false;
-			if (clickedUnit && clickedUnit.countryID === m.countryID) return true;
+			if (clickedUnit) return clickedUnit.countryID === m.countryID;
+			if (status && status.ownerCountryID) return status.ownerCountryID === m.countryID;
 			return territory && territory.homeCountryID === m.countryID;
 		});
 		return candidates[0] || null;

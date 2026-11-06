@@ -303,6 +303,7 @@ wD.CanvasBoard = (function () {
 			variant: this.variant,
 			phase: this.game.phase,
 			units: board.units,
+			provinceStatus: board.provinceStatus,
 			ownCountryIDs: ownCountryIDs,
 			members: this.game.members,
 			isSandbox: this.game.isSandbox,
