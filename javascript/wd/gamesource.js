@@ -376,6 +376,9 @@ wD.GameSource = (function () {
 			}
 
 			var privatePromise = Promise.resolve(null);
+			// The context asked for the messages here, which says who has unread messages as of now; the held
+			// context says who had when it was fetched, which is before any message that has arrived since
+			var fresh = null;
 			if (countryID > 0 && context.member && context.member.countryID === countryID) {
 				if (self.firstMessages !== null) {
 					// Loading the page: the messages came with the first context, asked for as initialMessageParams() decided
@@ -384,6 +387,7 @@ wD.GameSource = (function () {
 				} else if (covered) {
 					// Only what was sent since the cache's cursor
 					privatePromise = self.requestContext({ messages: '1', messagesSince: String(cache.cursor) }).then(function (ctx) {
+						fresh = ctx;
 						return ctx.messages;
 					});
 				} else {
@@ -391,6 +395,7 @@ wD.GameSource = (function () {
 					var params = { messages: '1' };
 					if (turns !== null) params.messageTurns = String(turns);
 					privatePromise = self.requestContext(params).then(function (ctx) {
+						fresh = ctx;
 						cache.private = [];
 						cache.fromTurn = wantFromTurn;
 						return ctx.messages;
@@ -406,9 +411,10 @@ wD.GameSource = (function () {
 				if (cache.fromTurn === null) cache.fromTurn = wantFromTurn;
 				self.writeMessageCache(countryID, cache);
 
+				var member = (fresh && fresh.member) || context.member;
 				return {
 					messages: mergeByID(cache.public, cache.private),
-					newMessagesFrom: context.member ? context.member.newMessagesFrom : [],
+					newMessagesFrom: member ? member.newMessagesFrom : [],
 					fromTurn: cache.fromTurn
 				};
 			});

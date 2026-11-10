@@ -27,6 +27,10 @@
  * until the box is full, and a line at the top of the messages offers them too. The open tab's messages are marked
  * seen as they are shown, as board.php marked them when it drew the page.
  *
+ * A toast says when a message arrives for a tab which isn't open, but only one sent while the page is open, and only
+ * when the tabs aren't on screen: the unread messages a page load finds have their tabs' envelopes, earlier turns'
+ * messages are not news, and an envelope appearing on a tab the viewer can see says all a toast would.
+ *
  *   var chat = new wD.Chat(document.getElementById('wdChat'), { source: source, live: live, config: {...} });
  *   chat.prepare();   // before anything asks the source for a context
  *   chat.start();
@@ -34,7 +38,8 @@
  * config, from board/chatbox.php: { countryID, isMember, canPostGlobal, pressType, phase, turn,
  *   countries: [{countryID, name}], members: [{countryID, name: HTML of the player's name, tabName: HTML of the
  *   country's name as the tabs show it}], colourblind, variantName, turnText: function(turn) -> "Spring, 1901",
- *   markUnreadForm: id of a form posting MarkAsUnread, analyticsEventName }
+ *   markUnreadForm: id of a form posting MarkAsUnread, markedUnread: the country whose messages that form has just
+ *   marked unread (or null), analyticsEventName }
  */
 var wD = window.wD || {};
 window.wD = wD;
@@ -129,6 +134,8 @@ wD.Chat = (function () {
 		this.newMessagesFrom = [];
 		this.mutedCountryIDs = [];
 		this.loading = null;
+		this.loaded = false; // Whether the messages have been loaded yet; what a later load adds may be news
+		this.sent = []; // Messages sent from this page which a load hasn't brought back yet
 		this.refreshQueued = null; // The options of a refresh asked for while one was running
 		this.loadingEarlier = false;
 
@@ -145,6 +152,15 @@ wD.Chat = (function () {
 		// The tab last open in this browser tab, as the old chatbox remembered it in the session
 		var savedTab = session('wD.chat.tab.' + this.source.gameID);
 		this.tab = this.allowedTab(savedTab === null ? 0 : parseInt(savedTab, 10));
+
+		// The tab "Mark unread" was just used on. It is open, but its messages stay unread, and its envelope shows,
+		// until a tab is next opened, as the old chatbox left them until the page was next loaded
+		this.heldUnread = null;
+		var markedUnread = parseInt(this.config.markedUnread, 10);
+		if (this.isMember && markedUnread > 0 && this.allowedTab(markedUnread) === markedUnread) {
+			this.heldUnread = markedUnread;
+			this.tab = markedUnread;
+		}
 	}
 
 	/** The earliest turn whose messages are shown */
@@ -248,21 +264,28 @@ wD.Chat = (function () {
 		}
 		var before = {};
 		this.messages.forEach(function (m) { before[m.id] = true; });
+		// What the page held before this load: whether it had loaded at all, and how far back its messages went
+		var hadLoaded = this.loaded;
+		var hadFromTurn = this.loadedFromTurn || 0;
 
 		this.loading = this.source.getContext().then(function (context) {
 			self.currentTurn = context.game.turn;
 			if (context.member) self.mutedCountryIDs = context.member.mutedCountryIDs || [];
 			return self.source.loadMessages({ countryID: self.isMember ? self.countryID : 0, turns: self.windowTurns });
 		}).then(function (result) {
-			self.messages = result.messages;
+			self.messages = self.withSent(result.messages);
 			self.newMessagesFrom = result.newMessagesFrom || [];
 			if (self.isMember) self.loadedFromTurn = result.fromTurn;
-			var arrived = result.messages.filter(function (m) { return !before[m.id]; });
+			// The messages sent since the page last loaded them. Not the ones the first load brings, which the tabs'
+			// envelopes are for, and not the ones from turns the page didn't hold before, which are old messages
+			// fetched because earlier turns were asked for.
+			var arrived = !hadLoaded ? [] : result.messages.filter(function (m) { return !before[m.id] && m.turn >= hadFromTurn; });
+			self.loaded = true;
 			self.loadingEarlier = false;
 			self.renderMessages(opts);
 			self.renderTabs();
 			self.markOpenTabSeen();
-			self.announce(arrived, Object.keys(before).length > 0);
+			self.announce(arrived);
 		}).catch(function (error) {
 			if (window.console) console.error('Chat: ' + (error && error.message ? error.message : error));
 			self.loadingEarlier = false;
@@ -297,27 +320,65 @@ wD.Chat = (function () {
 		if (scroll.scrollTop <= 8 || scroll.scrollHeight <= scroll.clientHeight) this.loadEarlier();
 	};
 
-	/** Tell the viewer about messages which arrived for a tab they don't have open */
-	Chat.prototype.announce = function (arrived, afterFirstLoad) {
-		if (!afterFirstLoad || !this.toast) return;
+	/**
+	 * A load which was already out when a message was sent from this page may not have brought that message; put
+	 * back any it left out, until a load has brought them.
+	 * @param {Object[]} messages The messages a load brought, oldest first
+	 */
+	Chat.prototype.withSent = function (messages) {
+		if (!this.sent.length) return messages;
+		var loaded = {};
+		messages.forEach(function (m) { loaded[m.id] = true; });
+		this.sent = this.sent.filter(function (m) { return !loaded[m.id]; });
+		if (!this.sent.length) return messages;
+		return messages.concat(this.sent).sort(function (a, b) { return a.id - b.id; });
+	};
+
+	/**
+	 * Whether the tabs, where an envelope marks each tab with unread messages, are on screen for the viewer to see:
+	 * not scrolled out of view, and not under the large map.
+	 */
+	Chat.prototype.tabsInView = function () {
+		if (!this.tabsEl || document.visibilityState === 'hidden' || !document.elementFromPoint) return false;
+		var rect = this.tabsEl.getBoundingClientRect();
+		var top = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+		return !!top && this.tabsEl.contains(top);
+	};
+
+	/**
+	 * Tell the viewer about messages which arrived, while the page was open, for a tab they don't have open: one
+	 * toast for all of them, and none if the tabs are on screen, where the envelopes have just appeared.
+	 * @param {Object[]} arrived The messages sent since the page last loaded them
+	 */
+	Chat.prototype.announce = function (arrived) {
+		if (!arrived.length || !this.toast) return;
 		var me = this.countryID;
+		var muted = this.mutedCountryIDs;
 		var self = this;
-		var byTab = {};
+		var tabs = [];
+		var count = 0;
 		arrived.forEach(function (m) {
 			if (m.fromCountryID === me) return; // Sent from here, or from another of this player's tabs
-			var tab = (m.toCountryID === 0) ? 0 : m.fromCountryID;
+			if (muted.indexOf(m.fromCountryID) !== -1) return; // Not shown, so not news
+			// The GameMaster's messages to one country are shown with that country's notes
+			var tab = (m.toCountryID === 0) ? 0 : (m.fromCountryID === 0 ? me : m.fromCountryID);
 			if (tab === self.tab) return;
-			byTab[tab] = (byTab[tab] || 0) + 1;
+			count++;
+			if (tabs.indexOf(tab) === -1) tabs.push(tab);
 		});
-		Object.keys(byTab).forEach(function (tab) {
-			tab = parseInt(tab, 10);
-			var from = tab === 0 ? 'everyone' : (self.countryName(tab) || 'the GameMaster');
-			self.toast.show({
-				text: 'New message' + (byTab[tab] > 1 ? 's' : '') + (tab === 0 ? ' to ' : ' from ') + from,
-				key: 'chat-' + tab,
-				timeout: 10000,
-				actions: [{ label: 'Open', onClick: function () { self.openTab(tab); self.scrollIntoView(); } }]
-			});
+		if (!tabs.length || this.tabsInView()) return;
+
+		var text;
+		if (tabs.length > 1) {
+			text = 'New messages: ' + tabs.map(function (tab) { return tab === me ? 'GameMaster' : self.countryName(tab); }).join(', ');
+		} else {
+			text = 'New message' + (count > 1 ? 's' : '') +
+				(tabs[0] === 0 ? ' to everyone' : ' from ' + (tabs[0] === me ? 'the GameMaster' : self.countryName(tabs[0])));
+		}
+		this.toast.show({
+			text: text,
+			key: 'chat',
+			actions: [{ label: 'Open', onClick: function () { self.openTab(tabs[0]); self.scrollIntoView(); } }]
 		});
 	};
 
@@ -439,7 +500,7 @@ wD.Chat = (function () {
 			else if (member && member.tabName) link.innerHTML = member.tabName;
 			else link.appendChild(document.createTextNode(self.countryName(countryID)));
 			if (!current) link.title = 'Open ' + (countryID === 0 ? 'the global' : self.countryName(countryID) + "'s") + ' chatbox tab';
-			if (!current && self.newMessagesFrom.indexOf(countryID) !== -1) {
+			if ((!current || countryID === self.heldUnread) && self.newMessagesFrom.indexOf(countryID) !== -1) {
 				link.appendChild(document.createTextNode(' '));
 				var icon = el('img');
 				icon.src = 'images/icons/mail.png';
@@ -631,6 +692,7 @@ wD.Chat = (function () {
 	Chat.prototype.openTab = function (countryID) {
 		countryID = this.allowedTab(countryID);
 		this.tab = countryID;
+		this.heldUnread = null; // A tab opened is a tab read, the one marked unread included
 		session('wD.chat.tab.' + this.source.gameID, String(countryID));
 		this.renderTabs();
 		this.renderHeader();
@@ -646,10 +708,11 @@ wD.Chat = (function () {
 	/**
 	 * The open tab's messages are on screen, so they are no longer new: tell the server, as board.php did whenever it
 	 * drew a tab with new messages. Not while the page is in a background tab; they are seen when it is looked at.
+	 * And not the tab which was just marked unread, which is open because that is where "Mark unread" was clicked.
 	 */
 	Chat.prototype.markOpenTabSeen = function () {
 		if (!this.isMember || this.newMessagesFrom.indexOf(this.tab) === -1) return;
-		if (document.visibilityState === 'hidden') return;
+		if (document.visibilityState === 'hidden' || this.tab === this.heldUnread) return;
 		this.markSeen(this.tab);
 	};
 
@@ -688,6 +751,8 @@ wD.Chat = (function () {
 			self.messages.forEach(function (m) { known[m.id] = true; });
 			messages.forEach(function (m) { if (!known[m.id]) self.messages.push(m); });
 			self.messages.sort(function (a, b) { return a.id - b.id; });
+			// A load which is out now was asked for before this was sent, and may come back without it
+			self.sent = self.sent.concat(messages);
 			self.renderMessages();
 			self.scrollToEnd();
 			if (window.gtag && self.config.analyticsEventName && self.tab !== self.countryID) {

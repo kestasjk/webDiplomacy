@@ -1201,6 +1201,10 @@ class SendMessage extends ApiEntry {
 			$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
 		}
 
+		// A message to another country or to everyone was committed when its recipients were notified, but a note,
+		// from a country to itself, notifies nobody, and nothing after this commits it
+		$DB->sql_put("COMMIT");
+
 		// now fetch this message back out of the table.
 		// This is the safest way to make sure all the escaping is correct.
 		// Should we fetch messages from previous timeSent as well to make sure everything is in sync?

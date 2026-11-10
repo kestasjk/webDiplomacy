@@ -2362,8 +2362,9 @@ input[id^="FinalizeButton"]{
 .wdmap-canvas { display: block; max-width: 100%; height: auto; cursor: pointer; }
 .wdmap-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; line-height: normal; }
 .wdcb-preview-on img { outline: 2px solid #009902; border-radius: 2px; }
-.wdcb-orders input.form-submit { margin-top: 10px; width: auto !important; }
+.wdcb-orders input.spaced-button { margin-top: 10px; width: auto !important; }
 .wdcb-notice { font-size: 12px; }
+.wdcb-summary { font-size: 12px; font-weight: bold; }
 .wdcb-flyout {
 	position: absolute;
 	transform: translate(-50%, -100%) translateY(-14px);

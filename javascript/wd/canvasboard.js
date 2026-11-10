@@ -30,7 +30,11 @@
  *
  * What the latest map shows is what map.php showed: during Diplomacy the previous turn's moves, during Retreats and
  * Builds the moves of this turn so far. Once the player has entered an order the map shows their orders instead, as
- * map.php's Preview did; the Preview icon switches between the two.
+ * map.php's Preview did; the Preview icon switches between the two. A finished game has no board left in game.json:
+ * its latest map is its last turn as the history has it, with how the game ended written across it.
+ *
+ * Under the buttons' notice a Builds phase says how many builds or disbands there are and how many have been
+ * placed, which the drop-down form showed as a row each.
  */
 var wD = window.wD || {};
 window.wD = wD;
@@ -46,6 +50,21 @@ wD.CanvasBoard = (function () {
 		if (className) node.className = className;
 		if (text !== undefined && text !== null) node.textContent = text;
 		return node;
+	}
+
+	/** A button which can't be pressed looks as the order form's did (javascript/orders/form.js buttonOff()): grey */
+	function setButton(button, enabled) {
+		button.disabled = !enabled;
+		button.classList.toggle('form-submit', enabled);
+		button.style.color = enabled ? '' : '#777777';
+		button.style.backgroundColor = enabled ? '' : '#F5F5F5';
+		button.style.fontWeight = enabled ? '' : 'bold';
+	}
+
+	function unitOps(units) {
+		return (units || []).map(function (unit) {
+			return { op: 'unit', terrID: unit.terrID, type: unit.type, countryID: unit.countryID };
+		});
 	}
 
 	function CanvasBoard(container, options) {
@@ -171,6 +190,9 @@ wD.CanvasBoard = (function () {
 		set.orders = el('div', 'wdcb-orders');
 		set.orders.style.textAlign = 'center';
 		parent.appendChild(set.orders);
+		set.summary = el('div', 'wdcb-summary');
+		set.summary.style.display = 'none';
+		set.orders.appendChild(set.summary);
 		set.notice = el('span', 'wdcb-notice');
 		if (main) set.notice.id = 'ordersNoticeArea' + memberID;
 		set.orders.appendChild(set.notice);
@@ -178,14 +200,14 @@ wD.CanvasBoard = (function () {
 		set.save = el('input', 'form-submit spaced-button');
 		set.save.type = 'button';
 		set.save.value = 'Save';
-		set.save.disabled = true;
+		setButton(set.save, false);
 		if (main) set.save.id = 'UpdateButton' + memberID;
 		set.save.addEventListener('click', function () { self.save(false); });
 		set.orders.appendChild(set.save);
 		set.ready = el('input', 'form-submit spaced-button');
 		set.ready.type = 'button';
 		set.ready.value = 'Ready';
-		set.ready.disabled = true;
+		setButton(set.ready, false);
 		if (main) set.ready.id = 'FinalizeButton' + memberID;
 		set.ready.addEventListener('click', function () { self.save(true); });
 		set.orders.appendChild(set.ready);
@@ -335,7 +357,11 @@ wD.CanvasBoard = (function () {
 		var phases = this.phasesOfTurn(turn);
 		var allPhases = (this.history && this.history.phases) ? this.history.phases : [];
 
-		if (turn >= this.latestTurn()) {
+		// A finished game's board has been cleared away; its last turn is drawn from the history, as earlier turns are
+		var isLatest = (turn >= this.latestTurn());
+		var caption = isLatest ? this.gameOverCaption() : null;
+
+		if (isLatest && this.game.phase !== 'Finished') {
 			var board = this.liveBoard();
 			scene.ownership = board.ownership;
 			if (!Object.keys(scene.ownership).length) scene.ownership = this.homeOwnership();
@@ -360,9 +386,6 @@ wD.CanvasBoard = (function () {
 			}
 			scene.ops = units.concat(ops, dislodged);
 			if (this.entry && this.isLatestView()) scene.highlights = this.entry.highlights();
-
-			var caption = this.gameOverCaption();
-			if (caption) scene.ops.push({ op: 'caption', text: caption });
 			return scene;
 		}
 
@@ -371,17 +394,19 @@ wD.CanvasBoard = (function () {
 			var first = allPhases[0];
 			if (first) {
 				(first.centers || []).forEach(function (center) { if (center.countryID) scene.ownership[center.terrID] = center.countryID; });
-				scene.ops = (first.units || []).map(function (unit) {
-					return { op: 'unit', terrID: unit.terrID, type: unit.type, countryID: unit.countryID };
-				});
+				scene.ops = unitOps(first.units);
 			}
 			if (!Object.keys(scene.ownership).length) scene.ownership = this.homeOwnership();
+			if (caption) scene.ops.push({ op: 'caption', text: caption });
 			return scene;
 		}
 
 		var last = phases[phases.length - 1];
 		(last.centers || []).forEach(function (center) { if (center.countryID) scene.ownership[center.terrID] = center.countryID; });
-		scene.ops = wD.MapCanvas.composeMoves(self.variant, self.movesOfTurn(turn), { units: true });
+		var moves = this.movesOfTurn(turn);
+		// A turn nothing was adjudicated in (a game which ended in its first) has no moves to place its units by
+		scene.ops = moves.length ? wD.MapCanvas.composeMoves(self.variant, moves, { units: true }) : unitOps(last.units);
+		if (caption) scene.ops.push({ op: 'caption', text: caption });
 		return scene;
 	};
 
@@ -453,17 +478,51 @@ wD.CanvasBoard = (function () {
 			}
 			set.orders.style.display = '';
 			if (!hasOrders) {
+				set.summary.style.display = 'none';
 				set.notice.innerHTML = 'No orders to enter this phase';
 				set.save.style.display = 'none';
 				set.ready.style.display = 'none';
 				return;
 			}
+			var summary = self.buildSummary();
+			set.summary.innerHTML = '';
+			summary.forEach(function (line) { set.summary.appendChild(el('div', null, line)); });
+			set.summary.style.display = summary.length ? '' : 'none';
 			set.save.style.display = '';
 			set.ready.style.display = '';
 			set.notice.innerHTML = self.noticeHTML();
-			set.save.disabled = saving || ready || !entry.hasUnsaved();
+			// Save is for changes which haven't been saved; once they are it greys out, as the order form's did
+			setButton(set.save, !(saving || ready || !entry.hasUnsaved()));
 			set.ready.value = ready ? 'Not ready' : 'Ready';
-			set.ready.disabled = saving || (!ready && !entry.allEntered());
+			setButton(set.ready, !(saving || (!ready && !entry.allEntered())));
+		});
+	};
+
+	/**
+	 * In a Builds phase, how many units each of the viewer's countries may build or has to destroy, and how many of
+	 * them have been placed: the server gives a country one order for each.
+	 * @returns {string[]} A line per country, naming the country where the viewer has several (a sandbox)
+	 */
+	CanvasBoard.prototype.buildSummary = function () {
+		var self = this;
+		var entry = this.entry;
+		if (!entry || this.game.phase !== 'Builds') return [];
+		var byCountry = {};
+		entry.orders.forEach(function (order) {
+			var tally = byCountry[order.countryID] || (byCountry[order.countryID] = { total: 0, placed: 0 });
+			var update = entry.meta[order.id] ? entry.meta[order.id].update : {};
+			tally.total++;
+			if (update.toTerrID && update.type !== 'Wait') tally.placed++;
+		});
+		var countryIDs = Object.keys(byCountry).map(Number).sort(function (a, b) { return a - b; });
+		return countryIDs.map(function (countryID) {
+			var tally = byCountry[countryID];
+			var member = (self.game.members || []).filter(function (m) { return m.countryID === countryID; })[0];
+			var destroying = !!member && member.supplyCenterNo < member.unitNo;
+			var text;
+			if (destroying) text = tally.total + (tally.total === 1 ? ' unit' : ' units') + ' to destroy, ' + tally.placed + ' chosen';
+			else text = tally.total + (tally.total === 1 ? ' build' : ' builds') + ' available, ' + tally.placed + ' placed';
+			return (countryIDs.length > 1 ? self.variant.countryName(countryID) + ': ' : '') + text;
 		});
 	};
 

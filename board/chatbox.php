@@ -31,6 +31,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 class Chatbox
 {
 	/**
+	 * The country whose messages markUnread() has just marked unread, for the panel: it opens on that country's tab,
+	 * and would mark what it shows as seen again if it weren't told to leave them.
+	 *
+	 * @var int|null
+	 */
+	protected $markedUnread = null;
+
+	/**
 	 * Mark the messages from a country unread again, which the panel's "Mark unread" link posts back for.
 	 *
 	 * @param int $countryID
@@ -41,6 +49,7 @@ class Chatbox
 
 		$countryID = (int)$countryID;
 		if( !isset($Member) || $countryID < 0 || $countryID > count($Game->Variant->countries) ) return;
+		$this->markedUnread = $countryID;
 		if( in_array($countryID, $Member->newMessagesFrom) ) return;
 
 		$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$countryID."', CONCAT_WS(',',newMessagesFrom,'".$countryID."') )
@@ -63,8 +72,12 @@ class Chatbox
 				<div class="wdchat-loading notice">'.l_t('Loading messages...').'</div>
 			</div>';
 
+		// The form comes back to the board the viewer is on: one reached by a view link isn't their map UI option's,
+		// and without the link's view the post would be redirected to the board which is, unread mark and all
+		$view = ( isset($_REQUEST['view']) && in_array($_REQUEST['view'], array('dropDown', 'canvas'), true) ) ? '&amp;view='.$_REQUEST['view'] : '';
+
 		if( isset($Member) )
-			$html .= '<form method="post" id="wdChatMarkUnread" action="board.php?gameID='.$Game->id.'#chatboxanchor" style="display:none">
+			$html .= '<form method="post" id="wdChatMarkUnread" action="board.php?gameID='.$Game->id.$view.'#chatboxanchor" style="display:none">
 				<input type="hidden" name="MarkAsUnread" value="on" />
 				<input type="hidden" name="msgCountryID" value="" />
 				<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
@@ -112,6 +125,7 @@ class Chatbox
 			'colourblind' => ( $User->getOptions()->value['colourblind'] != 'No' ),
 			'variantName' => $Game->Variant->name,
 			'markUnreadForm' => $isMember ? 'wdChatMarkUnread' : null,
+			'markedUnread' => $isMember ? $this->markedUnread : null,
 			'analyticsEventName' => libHTML::analyticsGameEventName('send_message', $Game),
 		);
 	}

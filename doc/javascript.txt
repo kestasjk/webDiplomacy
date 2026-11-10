@@ -176,7 +176,10 @@ wd/chat.js
 	- wD.Chat: the press panel, drawn with the markup and styles the server-rendered chatbox had
 		(tabs, member bar, messages, send box, Mark unread), showing the last few turns and bringing in
 		earlier ones as the reader scrolls to the top (or until the box is full); marks the open tab's
-		messages seen as they are shown.
+		messages seen as they are shown, except on the tab "Mark unread" was just used on, which keeps
+		its envelope until a tab is next opened. A message arriving while the page is open, for a tab
+		which isn't, gets a toast if the tabs (where its envelope appears) aren't on screen; unread and
+		earlier messages found by a load don't.
 wd/variantmap.js
 	- wD.VariantMap: variant.json with the lookups a board needs (provinces, coasts, borders, images,
 		rules).
@@ -196,6 +199,9 @@ wd/canvasboard.js
 	- wD.CanvasBoard: the "Legacy point and click" board, laid out as the map image was: the small
 		map, the same history icons stepping a turn at a time, the Save / Ready buttons under them,
 		the large map over the page with its own bar, a Preview icon switching the latest map between
-		the last moves and the player's own orders, and live updates.
+		the last moves and the player's own orders, and live updates. Save is grey unless there are
+		changes to save, a Builds phase says how many builds or disbands there are and how many are
+		placed, and a finished game's latest map is its last turn from history.json (game.json has no
+		board by then).
 wd/board.js
 	- wD.Board: wires the above up for board.php; exposes wD.page for the console.
