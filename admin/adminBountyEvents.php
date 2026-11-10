@@ -156,7 +156,7 @@ class adminBountyEvents
 		global $DB;
 
 		print '<h3 class="modToolsHeadings">'.l_t('Templates').'</h3>';
-		print '<table class="modTools"><tr><th class="modTools">'.l_t('ID').'</th><th class="modTools">'.l_t('Name').'</th>
+		print '<div style="overflow-x:auto"><table class="modTools"><tr><th class="modTools">'.l_t('ID').'</th><th class="modTools">'.l_t('Name').'</th>
 			<th class="modTools">'.l_t('Settings').'</th><th class="modTools">'.l_t('Bonus').'</th><th class="modTools">'.l_t('Consolation').'</th>
 			<th class="modTools">'.l_t('Events').'</th>'.( $canEdit ? '<th class="modTools"></th>' : '' ).'</tr>';
 
@@ -177,7 +177,7 @@ class adminBountyEvents
 						l_t('Delete this template and all of its events?')).'</td>';
 			print '</tr>';
 		}
-		print '</table>';
+		print '</table></div>';
 	}
 
 	public static function templateForm()
@@ -258,7 +258,7 @@ class adminBountyEvents
 		print '<li class="modToolsformlistfield"><label>'.l_t('Start times, in UTC').'</label>:<br />
 			<textarea class="modTools" name="startTimes" rows="4" cols="30" placeholder="2026-11-14 18:00&#10;2026-11-15 02:00">'.
 			( isset($_POST['startTimes']) && $_POST['bountyAction'] == 'scheduleEvents' ? htmlspecialchars($_POST['startTimes']) : '' ).'</textarea>
-			<em>'.l_t('YYYY-MM-DD HH:MM, one per line; each becomes its own event. Now: %s UTC', gmdate('Y-m-d H:i')).'</em></li>';
+			<br /><em>'.l_t('YYYY-MM-DD HH:MM, one per line; each becomes its own event. Now: %s UTC', gmdate('Y-m-d H:i')).'</em></li>';
 		print '<li class="modToolsformlistfield"><label>'.l_t('Repeats').'</label>: '.
 			self::select('repeats', array('Weekly'=>'Weekly, on that weekday and time', 'Once'=>'Once'), 'Weekly').'</li>';
 		print '<li class="modToolsformlistfield"><label><input type="checkbox" name="enabled" checked /> '.l_t('Enabled').'</label></li>';
@@ -271,7 +271,7 @@ class adminBountyEvents
 		global $DB;
 
 		print '<h3 class="modToolsHeadings">'.l_t('Events').'</h3>';
-		print '<table class="modTools"><tr><th class="modTools">'.l_t('ID').'</th><th class="modTools">'.l_t('Template').'</th>
+		print '<div style="overflow-x:auto"><table class="modTools"><tr><th class="modTools">'.l_t('ID').'</th><th class="modTools">'.l_t('Template').'</th>
 			<th class="modTools">'.l_t('When').'</th><th class="modTools">'.l_t('Next start').'</th><th class="modTools">'.l_t('Status').'</th>'.
 			( $canEdit ? '<th class="modTools"></th>' : '' ).'</tr>';
 
@@ -290,7 +290,7 @@ class adminBountyEvents
 					self::actionButton('deleteEvent', 'eventID', $e['id'], 'Delete', l_t('Delete this event?')).'</td>';
 			print '</tr>';
 		}
-		print '</table>';
+		print '</table></div>';
 	}
 
 	public static function upcoming()
@@ -305,7 +305,7 @@ class adminBountyEvents
 			return;
 		}
 
-		print '<table class="modTools"><tr><th class="modTools">'.l_t('Start').'</th><th class="modTools">'.l_t('Name').'</th>
+		print '<div style="overflow-x:auto"><table class="modTools"><tr><th class="modTools">'.l_t('Start').'</th><th class="modTools">'.l_t('Name').'</th>
 			<th class="modTools">'.l_t('Event').'</th><th class="modTools">'.l_t('Pool').'</th></tr>';
 		foreach($occurrences as $o)
 		{
@@ -320,7 +320,7 @@ class adminBountyEvents
 			print '<tr><td class="modTools">'.gmdate('D Y-m-d H:i', $o['startTime']).' UTC</td><td class="modTools">'.$o['name'].'</td>
 				<td class="modTools">'.$o['eventID'].'</td><td class="modTools">'.$poolText.'</td></tr>';
 		}
-		print '</table>';
+		print '</table></div>';
 	}
 
 	public static function past()
@@ -328,7 +328,7 @@ class adminBountyEvents
 		global $DB;
 
 		print '<h3 class="modToolsHeadings">'.l_t('Past occurrences').'</h3>';
-		print '<table class="modTools"><tr><th class="modTools">'.l_t('Start').'</th><th class="modTools">'.l_t('Name').'</th>
+		print '<div style="overflow-x:auto"><table class="modTools"><tr><th class="modTools">'.l_t('Start').'</th><th class="modTools">'.l_t('Name').'</th>
 			<th class="modTools">'.l_t('Pool / event').'</th><th class="modTools">'.l_t('Entered').'</th><th class="modTools">'.l_t('Games').'</th>
 			<th class="modTools">'.l_t('Placed').'</th><th class="modTools">'.l_t('Left over').'</th><th class="modTools">'.l_t('Consolation paid').'</th></tr>';
 
@@ -353,7 +353,7 @@ class adminBountyEvents
 				<td class="modTools">'.$p['playersPlaced'].'</td><td class="modTools">'.$p['playersLeftOver'].'</td>
 				<td class="modTools">'.(int)$p['consolationPaid'].libHTML::points().'</td></tr>';
 		}
-		print '</table>';
+		print '</table></div>';
 		if ( $count == 0 )
 			print '<p class="modTools">'.l_t('None yet.').'</p>';
 		elseif ( !isset($_REQUEST['allPools']) && $count == 50 )
