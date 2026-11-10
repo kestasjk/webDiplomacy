@@ -48,6 +48,8 @@ class libBounty
 	const MAX_ATTEMPTS = 3;
 	// How long a run's claim on a pool keeps other runs from trying to shuffle it
 	const CLAIM_SECONDS = 60;
+	// A pool this long past its start (the gamemaster wasn't running) is closed without games, as its players have gone
+	const LATE_SECONDS = 600;
 
 	public static $potTypes = array('Winner-takes-all'=>'DSS (Equal split for draws)', 'Sum-of-squares'=>'SoS (Weighted split on draw)');
 	public static $pressTypes = array('Regular'=>'All', 'PublicPressOnly'=>'Global only', 'NoPress'=>'None (No messaging)', 'RulebookPress'=>'Per rulebook');
@@ -72,13 +74,20 @@ class libBounty
 		$form = array_filter($form, 'is_scalar');
 		$t = array();
 
-		$t['name'] = isset($form['name']) ? $DB->escape(trim($form['name'])) : '';
+		// The name goes into game names, notices and push notification titles, some escaped for HTML and some not, and is
+		// cut short for game names; keeping to characters which are the same either way means it reads right in all of them
+		$t['name'] = isset($form['name']) ? trim($form['name']) : '';
 		if ( $t['name'] == '' ) throw new Exception(l_t("No name entered."));
 		if ( strlen($t['name']) > 50 ) throw new Exception(l_t("The name can't be over 50 characters."));
+		if ( !preg_match('/^[A-Za-z0-9 .,!#():_\-]+$/', $t['name']) )
+			throw new Exception(l_t("The name can only contain letters, numbers, spaces and . , ! # ( ) : _ -"));
 
 		$t['variantID'] = isset($form['variantID']) ? (int)$form['variantID'] : 0;
 		if ( !isset(Config::$variants[$t['variantID']]) )
 			throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.", $t['variantID']));
+		// gamecreate.php forces 1 vs 1 games to be unranked, which a bounty game can't be
+		if ( count(libVariant::loadFromVariantID($t['variantID'])->countries) < 3 )
+			throw new Exception(l_t("1 vs 1 variants can't be used for bounty games."));
 
 		foreach( array('potType'=>self::$potTypes, 'pressType'=>self::$pressTypes, 'drawType'=>self::$drawTypes,
 			'missingPlayerPolicy'=>self::$missingPlayerPolicies) as $name=>$allowed )
@@ -305,16 +314,24 @@ class libBounty
 			list($opened) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPools WHERE eventID = ".$event['id']." AND startTime = ".$startTime);
 			if ( $opened ) continue;
 
-			$template = self::getTemplate($event['templateID']);
-			$settings = array();
-			foreach(self::$settingNames as $name)
-				$settings[$name] = $template[$name];
+			// One event which can't be opened mustn't stop the others, or the shuffles below
+			try
+			{
+				$template = self::getTemplate($event['templateID']);
+				$settings = array();
+				foreach(self::$settingNames as $name)
+					$settings[$name] = $template[$name];
 
-			$DB->sql_put("INSERT IGNORE INTO wD_BountyPools ( eventID, templateID, name, startTime, settings, timeOpened )
-				VALUES ( ".$event['id'].", ".$event['templateID'].", '".$DB->escape($template['name'], true)."', ".$startTime.",
-					'".$DB->escape(json_encode($settings), true)."', ".$now." )");
-			if ( $DB->last_affected() > 0 )
-				print l_t('Opened the bounty pool for %s at %s', $template['name'], gmdate('Y-m-d H:i', $startTime)).'<br />';
+				$DB->sql_put("INSERT IGNORE INTO wD_BountyPools ( eventID, templateID, name, startTime, settings, timeOpened )
+					VALUES ( ".$event['id'].", ".$event['templateID'].", '".$DB->escape($template['name'], true)."', ".$startTime.",
+						'".$DB->escape(json_encode($settings), true)."', ".$now." )");
+				if ( $DB->last_affected() > 0 )
+					print l_t('Opened the bounty pool for %s at %s', $template['name'], gmdate('Y-m-d H:i', $startTime)).'<br />';
+			}
+			catch(Throwable $e)
+			{
+				print l_t('Failed to open the bounty pool for event %s: "%s"', $event['id'], $e->getMessage()).'<br />';
+			}
 		}
 		$DB->sql_put("COMMIT");
 
@@ -325,6 +342,52 @@ class libBounty
 
 		foreach($poolIDs as $poolID)
 			self::shufflePool($poolID);
+	}
+
+	/**
+	 * Close a pool which isn't going to be shuffled into games: its players are told why, and get the consolation points
+	 * as players left over do, since they showed up. Run within the shuffle's transaction, which this commits.
+	 *
+	 * @param array $pool The wD_BountyPools row, locked FOR UPDATE
+	 * @param string $status 'Failed' or 'Missed'
+	 * @param string $reason What to tell the players
+	 */
+	private static function abandonPool(array $pool, $status, $reason)
+	{
+		global $DB;
+
+		$poolID = (int)$pool['id'];
+		$settings = json_decode($pool['settings'], true);
+		$consolation = (int)$settings['consolationPoints'];
+
+		$userIDs = array();
+		$tabl = $DB->sql_tabl("SELECT userID FROM wD_BountyPoolMembers WHERE poolID = ".$poolID." AND outcome = 'Waiting'");
+		while( list($userID) = $DB->tabl_row($tabl) )
+			$userIDs[] = (int)$userID;
+
+		foreach($userIDs as $userID)
+		{
+			$DB->sql_put("UPDATE wD_BountyPoolMembers SET outcome = 'LeftOver', consolationPoints = ".$consolation."
+				WHERE poolID = ".$poolID." AND userID = ".$userID);
+			if ( $consolation > 0 )
+				User::pointsTransfer($userID, 'Bounty', $consolation);
+
+			notice::send($userID, 1, 'User', 'No', 'No',
+				$reason.( $consolation > 0 ? ' '.l_t('You have been given %s for entering.', $consolation.libHTML::points()) : '' ),
+				'GameMaster');
+		}
+
+		$DB->sql_put("UPDATE wD_BountyPools SET status = '".$status."', timeSharded = ".time().", playersLeftOver = ".count($userIDs)."
+			WHERE id = ".$poolID);
+		$DB->sql_put("COMMIT");
+
+		// Logged rather than raised, as the error handler would end the gamemaster run before it processes games
+		$message = l_t('Bounty pool %s closed without games (%s); %s player(s) told', $poolID, $status, count($userIDs));
+		error_log($message);
+		print $message.'<br />';
+
+		if ( count($userIDs) > 0 )
+			libPush::queue($userIDs, $pool['name'], l_t('No games were made from the pool'), '/index.php', 'bounty-'.$poolID);
 	}
 
 	/**
@@ -360,14 +423,22 @@ class libBounty
 				return;
 			}
 			// This attempt is included in the count
-			if ( $pool['attempts'] > self::MAX_ATTEMPTS )
+			if ( $pool['attempts'] > self::MAX_ATTEMPTS + 2 )
 			{
+				// Telling its players has failed too; just close it, so that it stops being retried
 				$DB->sql_put("UPDATE wD_BountyPools SET status = 'Failed', timeSharded = ".time()." WHERE id = ".$poolID);
 				$DB->sql_put("COMMIT");
-				// Logged rather than raised, as the error handler would end the gamemaster run before it processes games
-				$failedMessage = l_t("Bounty pool %s failed to be shuffled into games %s times, and has been given up on.", $poolID, self::MAX_ATTEMPTS);
-				error_log($failedMessage);
-				print $failedMessage.'<br />';
+				error_log("Bounty pool ".$poolID." closed as Failed without its players being told");
+				return;
+			}
+			if ( $pool['attempts'] > self::MAX_ATTEMPTS )
+			{
+				self::abandonPool($pool, 'Failed', l_t('A problem stopped the games for %s from being made, sorry.', $pool['name']));
+				return;
+			}
+			if ( $pool['startTime'] < time() - self::LATE_SECONDS )
+			{
+				self::abandonPool($pool, 'Missed', l_t('The games for %s could not be started on time, so none were made, sorry.', $pool['name']));
 				return;
 			}
 
@@ -384,7 +455,12 @@ class libBounty
 			while( list($userID, $ineligible) = $DB->tabl_row($tabl) )
 			{
 				if ( $ineligible )
+				{
 					$DB->sql_put("UPDATE wD_BountyPoolMembers SET outcome = 'Ineligible' WHERE poolID = ".$poolID." AND userID = ".$userID);
+					notice::send($userID, 1, 'User', 'No', 'No',
+						l_t('You were not placed in a game from the pool for %s, as you no longer meet its requirements to join.', $pool['name']),
+						'GameMaster');
+				}
 				else
 					$eligible[] = (int)$userID;
 			}
@@ -531,19 +607,19 @@ class libBounty
 
 		if ( $enter )
 		{
-			if ( $inPool ) return;
-			$reason = self::cantEnterReason($pool);
+			$reason = $inPool ? false : self::cantEnterReason($pool);
 			if ( $reason ) throw new Exception($reason);
 
-			$DB->sql_put("INSERT INTO wD_BountyPoolMembers ( poolID, userID, timeEntered ) VALUES ( ".$poolID.", ".$User->id.", ".time()." )");
+			if ( !$inPool )
+				$DB->sql_put("INSERT INTO wD_BountyPoolMembers ( poolID, userID, timeEntered ) VALUES ( ".$poolID.", ".$User->id.", ".time()." )");
 		}
 		else
 		{
-			if ( !$inPool ) return;
-			if ( $pool['status'] != 'Open' || $pool['startTime'] <= time() ) throw new Exception(l_t('This pool has closed.'));
+			if ( $inPool && ( $pool['status'] != 'Open' || $pool['startTime'] <= time() ) ) throw new Exception(l_t('This pool has closed.'));
 
 			$DB->sql_put("DELETE FROM wD_BountyPoolMembers WHERE poolID = ".$poolID." AND userID = ".$User->id." AND outcome = 'Waiting'");
 		}
+		// Always reached unless an exception is thrown, which the caller rolls back for, so the locks are never left held
 		$DB->sql_put("COMMIT");
 	}
 

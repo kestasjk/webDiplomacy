@@ -171,7 +171,7 @@ try
 {
 	libBounty::processDue();
 }
-catch(Exception $e)
+catch(Throwable $e)
 {
 	$DB->sql_put("ROLLBACK");
 	print l_t('Bounty events failed: "%s"', $e->getMessage()).'<br />';

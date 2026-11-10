@@ -46,7 +46,7 @@ CREATE TABLE `wD_BountyPools` (
   `templateID` mediumint(8) unsigned NOT NULL,
   `name` varchar(50) NOT NULL,
   `startTime` int(10) unsigned NOT NULL,
-  `status` enum('Open','Done','Failed') NOT NULL DEFAULT 'Open',
+  `status` enum('Open','Done','Failed','Missed') NOT NULL DEFAULT 'Open',
   `settings` text NOT NULL,
   `attempts` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `timeClaimed` int(10) unsigned DEFAULT NULL,

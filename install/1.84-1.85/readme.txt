@@ -22,6 +22,11 @@ Changelog
     a shuffle waits for it and then finds the pool closed. A run claims a pool (timeClaimed) before shuffling it, so
     overlapping runs don't each try. A shuffle that fails is rolled back and retried, and given up on (status Failed)
     after 3 attempts; a database error ends the gamemaster run, so attempts are counted when the pool is claimed.
+    A pool which is over 10 minutes past its start when the gamemaster gets to it, because the gamemaster wasn't
+    running, is closed without games (status Missed) rather than starting live games for players who have gone. The
+    players of a Failed or Missed pool are told, and get the consolation points.
+  - Template names are limited to letters, numbers, spaces and . , ! # ( ) : _ - as they go into game names and
+    push notification titles. 1 vs 1 variants can't be used, as those games are always unranked.
   - The home page shows the upcoming occurrences, with their settings and bonus, under "Upcoming live events". The
     joinable games list (libHome::joinableGames()) starts with them too, but it is still disabled on the home page.
   - Admins manage templates and events, and see past occurrences and what they produced, in the admin CP's new

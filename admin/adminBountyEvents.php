@@ -48,7 +48,7 @@ class adminBountyEvents
 		global $DB, $User;
 
 		$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
-			VALUES ( '".$DB->escape($name)."', ".$User->id.", ".time().", '".$DB->msg_escape($details)."', '".$DB->escape(serialize($paramValues))."' )");
+			VALUES ( '".$DB->escape($name)."', ".$User->id.", ".time().", '".$DB->escape($details, true)."', '".$DB->escape(serialize($paramValues))."' )");
 	}
 
 	/**
@@ -197,7 +197,11 @@ class adminBountyEvents
 			$templateID = (int)$_POST['templateID'];
 		}
 		elseif ( $templateID )
-			$t = libBounty::getTemplate($templateID);
+		{
+			// The template may have been deleted since the edit link was made
+			try { $t = libBounty::getTemplate($templateID); }
+			catch(Exception $e) { $t = $defaults; $templateID = 0; }
+		}
 		else
 			$t = $defaults;
 
@@ -349,7 +353,7 @@ class adminBountyEvents
 			print '<tr><td class="modTools">'.gmdate('D Y-m-d H:i', $p['startTime']).' UTC</td><td class="modTools">'.$p['name'].'</td>
 				<td class="modTools">'.$p['id'].' / '.$p['eventID'].'</td>
 				<td class="modTools">'.$p['entered'].( $p['ineligible'] > 0 ? ' '.l_t('(%s no longer eligible)', $p['ineligible']) : '' ).'</td>
-				<td class="modTools">'.( $p['status'] == 'Failed' ? '<strong>'.l_t('Failed').'</strong>' : $p['gamesCreated'].( count($games) ? ': '.implode(', ', $games) : '' ) ).'</td>
+				<td class="modTools">'.( $p['status'] != 'Done' ? '<strong>'.l_t($p['status'] == 'Missed' ? 'Missed; started too late' : 'Failed').'</strong>' : $p['gamesCreated'].( count($games) ? ': '.implode(', ', $games) : '' ) ).'</td>
 				<td class="modTools">'.$p['playersPlaced'].'</td><td class="modTools">'.$p['playersLeftOver'].'</td>
 				<td class="modTools">'.(int)$p['consolationPaid'].libHTML::points().'</td></tr>';
 		}
