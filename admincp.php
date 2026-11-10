@@ -120,7 +120,8 @@ function adminCPTabs()
 		'Relationships'=>l_t('Management of Groups used for relationship / dispute management'),
 		'Chatlogs'=>l_t('Check the ingame chat.'),
 		'Account Analyzer'=>l_t('Analyze/compare specific accounts'),
-		'Account Searcher'=>l_t('Search new accounts for suspect ones.')
+		'Account Searcher'=>l_t('Search new accounts for suspect ones.'),
+		'Bounty events'=>l_t('Scheduled live games with bonus points')
 	);
 
 	$tab = 'Control Panel';
@@ -186,6 +187,9 @@ switch($tab)
 		break;
 	case 'Account Searcher':
 		require_once(l_r('admin/adminAdvancedAccessLog.php'));
+		break;
+	case 'Bounty events':
+		require_once(l_r('admin/adminBountyEvents.php'));
 		break;
 	default:
 		print '<p>'.l_t('No admin panel tab selected').'</p>';

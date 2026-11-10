@@ -164,6 +164,19 @@ We have permissions and everything is locked, now look for games that need proce
 */
 $setupMetricsStart = libMetrics::start();
 
+// Open the bounty pools about to start and shuffle those which have, before games are selected below, so that the games
+// a pool makes start in this run. Each pool is opened and shuffled once however many runs overlap; see lib/bounty.php.
+require_once(l_r('lib/bounty.php'));
+try
+{
+	libBounty::processDue();
+}
+catch(Exception $e)
+{
+	$DB->sql_put("ROLLBACK");
+	print l_t('Bounty events failed: "%s"', $e->getMessage()).'<br />';
+}
+
 // Now apply any votes that need to be applied, and get any votes to process now:
 print l_t('Finding and applying votes');
 libGameMaster::findAndApplyGameVotes();

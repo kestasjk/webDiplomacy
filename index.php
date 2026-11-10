@@ -82,6 +82,23 @@ if ((isset($_REQUEST['watch']) || isset($_REQUEST['unwatch'])) && isset($_REQUES
 	}
 }
 
+// Entering or leaving a bounty event's pool
+$bountyPoolMessage = '';
+if ( $User->type['User'] && isset($_REQUEST['bountyPoolID']) && ( isset($_REQUEST['bountyEnter']) || isset($_REQUEST['bountyLeave']) ) )
+{
+	require_once(l_r('lib/bounty.php'));
+	try
+	{
+		libAuth::formToken_Valid();
+		libBounty::enterPool((int)$_REQUEST['bountyPoolID'], isset($_REQUEST['bountyEnter']));
+	}
+	catch(Exception $e)
+	{
+		$DB->sql_put("ROLLBACK");
+		$bountyPoolMessage = '<p class="notice">'.$e->getMessage().'</p>';
+	}
+}
+
 require_once('lib/home.php');
 
 if( !$User->type['User'] )
@@ -209,6 +226,13 @@ else
 	print '<td class="homeSplit"></td>';
 
 	print '<td class="homeGamesStats">';
+	// The joinable games list below, which starts with these, is disabled, so the bounty events are shown on their own
+	$bountyEvents = libHome::bountyEvents();
+	if ( $bountyEvents != '' || $bountyPoolMessage != '' )
+	{
+		print '<div class="homeHeader">'.l_t('Upcoming live events').'</div>';
+		print $bountyPoolMessage.$bountyEvents;
+	}
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
@@ -217,6 +241,7 @@ else
 	print libHome::gameDefeatedNotifyBlock();
 	/*
 	Disabled joinable games as it's cluttering things up for mobile users
+	(It starts with the bounty events, so if it's re-enabled remove the separate bounty events block above)
 	$liveGames = libHome::joinableGames();
 	if ($liveGames != '') 
 	{
