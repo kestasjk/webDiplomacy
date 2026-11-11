@@ -860,21 +860,24 @@ class libBounty
 			{
 				if ( count($future) >= $futureLimit ) continue;
 
-				$remind = '<form method="post" action="index.php" style="display:inline">'.libAuth::formTokenHTML().
+				$remind = '<form method="post" action="index.php" style="float:right">'.libAuth::formTokenHTML().
 					'<input type="hidden" name="bountyEventID" value="'.$o['eventID'].'" />'.
 					( isset($reminders[$o['eventID']])
-						? l_t("You'll be told when the pool opens.").' <input type="submit" class="home-submit" name="bountyUnremind" value="'.l_t('Stop reminder').'" />'
-						: '<input type="submit" class="home-submit" name="bountyRemind" value="'.l_t('Remind me').'" title="'.l_t('Sends you a notice, and a push notification if you have them on, when the pool opens').'" />' ).
+						? '<input type="submit" class="home-submit" style="width:auto !important; background:transparent !important" name="bountyUnremind" value="'.l_t('Reminder on').'" title="'.l_t("You'll be told when the pool opens; click to stop the reminder").'" />'
+						: '<input type="submit" class="home-submit" style="width:auto !important; background:transparent !important" name="bountyRemind" value="'.l_t('Remind me').'" title="'.l_t('Sends you a notice, and a push notification if you have them on, when the pool opens').'" />' ).
 					'</form>';
 
+				// Kept to four lines; the rest is behind "Details"
 				$future[] = '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">'.
 					'<div class="titleBarRightSide">'.libTime::remainingText($o['startTime']).'</div>'.
 					'<div class="titleBarLeftSide"><span class="gameName">'.$o['name'].'</span></div><div style="clear:both"></div>'.
-					l_t('Starts %s', libTime::detailedText($o['startTime'])).'; '.
-					l_t('join in the %s before.', libTime::timeLengthText(self::poolOpenSeconds($s))).'<br />'.
-					$bonus.'<br />'.
-					'<details><summary>'.l_t('Game settings').'</summary><span style="font-size:90%">'.self::settingsText($s).'</span></details>'.
+					l_t('Starts %s', libTime::detailedText($o['startTime'])).'<br />'.
+					l_t('Bonus: <strong>%s</strong>, free to enter', $s['bonus'].libHTML::points()).
 					$remind.
+					'<details><summary>'.l_t('Details').'</summary><span style="font-size:90%">'.
+						l_t('Join in the %s before the start.', libTime::timeLengthText(self::poolOpenSeconds($s))).' '.
+						( $s['consolationPoints'] > 0 ? l_t('%s for players left out.', $s['consolationPoints'].libHTML::points()).' ' : '' ).
+						self::settingsText($s).'</span></details>'.
 					'</div>';
 				continue;
 			}
