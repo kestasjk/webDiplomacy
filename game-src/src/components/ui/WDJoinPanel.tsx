@@ -138,7 +138,8 @@ const WDJoinPanel: React.FC = function (): React.ReactElement | null {
           Take over:{" "}
           <select
             id="wd-join-country"
-            className="border border-black rounded px-1"
+            // Room on the right for the drop-down arrow, which the form styles draw in the padding
+            className="border border-black rounded pl-1 pr-8"
             value={countryID ?? ""}
             onChange={(e) => setChosenCountryID(Number(e.target.value))}
           >
