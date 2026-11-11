@@ -122,7 +122,8 @@ class adminBountyEvents
 				$startTimes = libBounty::parseStartTimes(isset($_POST['startTime']) ? $_POST['startTime'] : '');
 				if ( count($startTimes) != 1 ) throw new Exception(l_t('Enter one start time for the event.'));
 				$repeats = isset($_POST['repeats']) && $_POST['repeats'] == 'Once' ? 'Once' : 'Weekly';
-				libBounty::editEvent($eventID, $startTimes[0], $repeats);
+				// A weekday and time, rather than a date, leaves alone the week a weekly event begins in
+				libBounty::editEvent($eventID, reset($startTimes), $repeats, (bool)preg_match('/^\s*[a-z]/i', $_POST['startTime']));
 				$message = l_t('Event %s now runs %s.', $eventID, self::scheduleText(libBounty::getEvent($eventID)));
 				self::log('Edit bounty event', array('eventID'=>$eventID), $message);
 				break;
@@ -147,6 +148,7 @@ class adminBountyEvents
 		}
 
 		$DB->sql_put("COMMIT");
+		libBounty::clearOccurrenceCache();
 		return $message;
 	}
 

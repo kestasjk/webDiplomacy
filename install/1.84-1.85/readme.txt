@@ -14,8 +14,8 @@ Changelog
     asked to be reminded of an event (wD_BountyReminders) get a notice and a push notification when its pool opens. Players enter it from the home page, with the same checks as
     joining a game (logged on, not banned or temp banned, the reliability rating). A player can be in one open pool
     at a time, since two pools would start two live games at once.
-  - At the start the gamemaster shuffles the pool, makes as many full games as it fills, with countries assigned at
-    random, and starts them in the same run. Everyone else is left over: they're paid the consolation points (as a
+  - At the start the gamemaster shuffles the pool, makes as many full games as it fills, and starts them in the same run;
+    countries are assigned by the pre-game step, as for any game. Everyone else is left over: they're paid the consolation points (as a
     'Bounty' points transaction, outside any game) and told so, including when the pool couldn't fill one game.
   - Opening and shuffling happen once per occurrence however many gamemaster runs overlap. Opening is an INSERT
     IGNORE on the pool's unique (eventID, startTime) key; the shuffle runs in one transaction holding the pool row

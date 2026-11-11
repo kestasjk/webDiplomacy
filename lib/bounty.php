@@ -253,17 +253,47 @@ class libBounty
 	 *
 	 * @param int $startTime
 	 * @param string $repeats 'Once' or 'Weekly'
+	 * @param bool $keepStartWeek Whether only a weekday and time were given, so that a weekly event which is yet to begin
+	 * 	keeps the week it begins in
 	 */
-	public static function editEvent($eventID, $startTime, $repeats)
+	public static function editEvent($eventID, $startTime, $repeats, $keepStartWeek = false)
 	{
 		global $DB;
 
-		self::getEvent($eventID);
+		$event = self::getEvent($eventID);
 		if ( $repeats != 'Once' && $repeats != 'Weekly' ) throw new Exception(l_t("Invalid repeat given."));
 		if ( $repeats == 'Once' && $startTime <= time() )
 			throw new Exception(l_t("%s UTC has already passed.", gmdate('Y-m-d H:i', $startTime)));
 
-		$DB->sql_put("UPDATE wD_BountyEvents SET startTime = ".(int)$startTime.", repeats = '".$repeats."', skipUntil = 0 WHERE id = ".(int)$eventID);
+		// Its pool would carry on at the old time, and the new time could open a second one
+		list($open) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPools WHERE eventID = ".$event['id']." AND status = 'Open'");
+		if ( $open ) throw new Exception(l_t("This event's pool is open; change its time once the pool has started."));
+
+		$startTime = (int)$startTime;
+		$skipUntil = 0;
+		if ( $repeats == 'Weekly' && $event['repeats'] == 'Weekly' )
+		{
+			// How far the weekday and time have moved, as the shorter way round the week
+			$shift = ( ( $startTime - $event['startTime'] ) % self::WEEK_SECONDS + self::WEEK_SECONDS ) % self::WEEK_SECONDS;
+			if ( $shift > self::WEEK_SECONDS / 2 ) $shift -= self::WEEK_SECONDS;
+
+			if ( $keepStartWeek && $event['startTime'] > time() ) $startTime = $event['startTime'] + $shift;
+
+			// A week being skipped stays skipped, at its new time
+			if ( $event['skipUntil'] >= time() ) $skipUntil = $event['skipUntil'] + $shift;
+		}
+
+		$DB->sql_put("UPDATE wD_BountyEvents SET startTime = ".$startTime.", repeats = '".$repeats."', skipUntil = ".$skipUntil." WHERE id = ".$event['id']);
+	}
+
+	/**
+	 * Forget the list of upcoming occurrences cached for the home page, after something which changes it
+	 */
+	public static function clearOccurrenceCache()
+	{
+		global $Redis;
+
+		$Redis->delete('bountyOccurrences');
 	}
 
 	/**
@@ -470,6 +500,8 @@ class libBounty
 					if ( count($remindUserIDs) > 0 )
 						libPush::queue($remindUserIDs, $template['name'],
 							l_t('The pool is open; games start in %s minutes', max(1, (int)round(($startTime - $now)/60))), '/index.php', 'bounty-open-'.$poolID);
+					if ( $event['repeats'] == 'Once' )
+						$DB->sql_put("DELETE FROM wD_BountyReminders WHERE eventID = ".$event['id']);
 				}
 			}
 			catch(Throwable $e)
@@ -486,6 +518,10 @@ class libBounty
 
 		foreach($poolIDs as $poolID)
 			self::shufflePool($poolID);
+
+		// Whether or not anything opened or closed just now, so that the home page's list is never far behind
+		if ( count($toOpen) > 0 || count($poolIDs) > 0 )
+			self::clearOccurrenceCache();
 	}
 
 	/**
@@ -569,8 +605,11 @@ class libBounty
 			// This attempt is included in the count
 			if ( $pool['attempts'] > self::MAX_ATTEMPTS + 2 )
 			{
-				// Telling its players has failed too; just close it, so that it stops being retried
-				$DB->sql_put("UPDATE wD_BountyPools SET status = 'Failed', timeSharded = ".time()." WHERE id = ".$poolID);
+				// Telling its players has failed too; just close it, so that it stops being retried. They are still recorded
+				// as left over, so that the home page can tell them they weren't placed.
+				$DB->sql_put("UPDATE wD_BountyPoolMembers SET outcome = 'LeftOver' WHERE poolID = ".$poolID." AND outcome = 'Waiting'");
+				$DB->sql_put("UPDATE wD_BountyPools SET status = 'Failed', timeSharded = ".time().", playersLeftOver = ".(int)$DB->last_affected()."
+					WHERE id = ".$poolID);
 				$DB->sql_put("COMMIT");
 				error_log("Bounty pool ".$poolID." closed as Failed without its players being told");
 				return;
@@ -637,11 +676,11 @@ class libBounty
 					$settings['excusedMissedTurns'],
 					'Members');
 
-				$countryIDs = range(1, $countryCount);
-				shuffle($countryIDs);
-				foreach( array_slice($eligible, $g*$countryCount, $countryCount) as $i=>$userID )
+				// No country is given, so the pre-game step assigns them when the game starts, as it does for any game:
+				// balanced by the countries each player has had before, and counted towards their later games
+				foreach( array_slice($eligible, $g*$countryCount, $countryCount) as $userID )
 				{
-					processMember::create($userID, 0, $countryIDs[$i]);
+					processMember::create($userID, 0);
 					$DB->sql_put("UPDATE wD_BountyPoolMembers SET outcome = 'Placed', gameID = ".$Game->id."
 						WHERE poolID = ".$poolID." AND userID = ".$userID);
 					$placedUserIDs[$userID] = $Game->id;
@@ -794,11 +833,20 @@ class libBounty
 	/**
 	 * The upcoming occurrences: each open pool, and the next occurrence of each enabled event which doesn't have one
 	 *
+	 * @param bool $cached Whether a list up to 30 seconds old will do, as on the home page; it is cleared when pools open
+	 * 	or close and when an admin changes anything
 	 * @return array[] Each with startTime, name, settings, and the pool row if it is open
 	 */
-	public static function upcomingOccurrences()
+	public static function upcomingOccurrences($cached = false)
 	{
-		global $DB;
+		global $DB, $Redis;
+
+		if ( $cached )
+		{
+			$occurrences = $Redis->get('bountyOccurrences');
+			if ( $occurrences ) $occurrences = json_decode($occurrences, true);
+			if ( is_array($occurrences) ) return $occurrences;
+		}
 
 		$now = time();
 		$occurrences = array();
@@ -828,6 +876,8 @@ class libBounty
 		}
 
 		usort($occurrences, function($a, $b) { return $a['startTime'] - $b['startTime']; });
+
+		$Redis->set('bountyOccurrences', json_encode($occurrences), 30);
 		return $occurrences;
 	}
 
@@ -841,6 +891,9 @@ class libBounty
 	{
 		global $User, $DB;
 
+		$occurrences = self::upcomingOccurrences(true);
+		if ( count($occurrences) == 0 ) return '';
+
 		$reminders = array();
 		$tabl = $DB->sql_tabl("SELECT eventID FROM wD_BountyReminders WHERE userID = ".$User->id);
 		while( list($eventID) = $DB->tabl_row($tabl) )
@@ -848,17 +901,16 @@ class libBounty
 
 		$buf = '';
 		$future = array();
-		foreach( self::upcomingOccurrences() as $o )
+		foreach( $occurrences as $o )
 		{
 			$s = $o['settings'];
 
 			$bonus = l_t('Bonus: <strong>%s</strong>, free to enter', $s['bonus'].libHTML::points());
-			if ( $s['consolationPoints'] > 0 )
-				$bonus .= '; '.l_t('%s for players left out', $s['consolationPoints'].libHTML::points());
 
 			if ( !$o['pool'] )
 			{
-				if ( count($future) >= $futureLimit ) continue;
+				// An event the player has a reminder for is always listed, so that they can turn it off
+				if ( count($future) >= $futureLimit && !isset($reminders[$o['eventID']]) ) continue;
 
 				$remind = '<form method="post" action="index.php" style="float:right">'.libAuth::formTokenHTML().
 					'<input type="hidden" name="bountyEventID" value="'.$o['eventID'].'" />'.
@@ -872,7 +924,7 @@ class libBounty
 					'<div class="titleBarRightSide">'.libTime::remainingText($o['startTime']).'</div>'.
 					'<div class="titleBarLeftSide"><span class="gameName">'.$o['name'].'</span></div><div style="clear:both"></div>'.
 					l_t('Starts %s', libTime::detailedText($o['startTime'])).'<br />'.
-					l_t('Bonus: <strong>%s</strong>, free to enter', $s['bonus'].libHTML::points()).
+					$bonus.
 					$remind.
 					'<details><summary>'.l_t('Details').'</summary><span style="font-size:90%">'.
 						l_t('Join in the %s before the start.', libTime::timeLengthText(self::poolOpenSeconds($s))).' '.
@@ -883,8 +935,10 @@ class libBounty
 			}
 
 			$pool = $o['pool'];
-			list($entered) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND outcome = 'Waiting'");
-			list($inPool) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND userID = ".$User->id." AND outcome = 'Waiting'");
+			list($entered, $inPool) = $DB->sql_row("SELECT COUNT(*), IFNULL(SUM(userID = ".$User->id."), 0)
+				FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND outcome = 'Waiting'");
+			if ( $s['consolationPoints'] > 0 )
+				$bonus .= '; '.l_t('%s for players left out', $s['consolationPoints'].libHTML::points());
 
 			$buf .= '<div class="hr"></div>';
 			$buf .= '<div class="gamePanelHome bountyEvent">';
