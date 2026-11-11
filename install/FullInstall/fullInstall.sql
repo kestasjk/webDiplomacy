@@ -2624,6 +2624,7 @@ CREATE TABLE `wD_BountyTemplates` (
   `excusedMissedTurns` tinyint(3) unsigned NOT NULL DEFAULT 1,
   `bonus` mediumint(8) unsigned NOT NULL,
   `consolationPoints` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `poolOpenMinutes` smallint(5) unsigned NOT NULL DEFAULT 15,
   `timeCreated` int(10) unsigned NOT NULL,
   `timeModified` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
@@ -2635,9 +2636,18 @@ CREATE TABLE `wD_BountyEvents` (
   `startTime` int(10) unsigned NOT NULL,
   `repeats` enum('Once','Weekly') NOT NULL DEFAULT 'Weekly',
   `enabled` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `skipUntil` int(10) unsigned NOT NULL DEFAULT 0,
   `timeCreated` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `templateID` (`templateID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- The players who asked to be told when an event's pools open
+CREATE TABLE `wD_BountyReminders` (
+  `eventID` mediumint(8) unsigned NOT NULL,
+  `userID` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`eventID`, `userID`),
+  KEY `userID` (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `wD_BountyPools` (

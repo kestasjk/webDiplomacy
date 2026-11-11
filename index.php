@@ -99,6 +99,35 @@ if ( $User->type['User'] && isset($_REQUEST['bountyPoolID']) && ( isset($_REQUES
 	}
 }
 
+// Being reminded when a bounty event's pool opens
+if ( $User->type['User'] && isset($_REQUEST['bountyEventID']) && ( isset($_REQUEST['bountyRemind']) || isset($_REQUEST['bountyUnremind']) ) )
+{
+	require_once(l_r('lib/bounty.php'));
+	try
+	{
+		libAuth::formToken_Valid();
+		libBounty::setReminder((int)$_REQUEST['bountyEventID'], isset($_REQUEST['bountyRemind']));
+	}
+	catch(Exception $e)
+	{
+		$DB->sql_put("ROLLBACK");
+		$bountyPoolMessage = '<p class="notice">'.$e->getMessage().'</p>';
+	}
+}
+
+// The home page sends a player who is in a pool here once it has started: on to their game, if they got one
+if ( $User->type['User'] && isset($_REQUEST['bountyStarted']) )
+{
+	require_once(l_r('lib/bounty.php'));
+	list($bountyGameID, $bountyResult) = libBounty::startedPoolResult((int)$_REQUEST['bountyStarted']);
+	if ( $bountyGameID )
+	{
+		header('Location: board.php?gameID='.$bountyGameID);
+		die();
+	}
+	if ( $bountyResult ) $bountyPoolMessage = '<p class="notice">'.$bountyResult.'</p>';
+}
+
 require_once('lib/home.php');
 
 if( !$User->type['User'] )

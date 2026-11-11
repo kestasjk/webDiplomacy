@@ -9,8 +9,9 @@ Changelog
     Bounty games are free to enter: members bet nothing, and the bonus is the whole pot. Unranked scoring isn't
     offered, as it would pay nobody.
   - An event (wD_BountyEvents) schedules a template at a UTC time, once or weekly, and can be disabled.
-  - Each occurrence has a pool (wD_BountyPools, wD_BountyPoolMembers). The gamemaster opens it 5 minutes before the
-    start, copying the template's settings into it. Players enter it from the home page, with the same checks as
+  - Each occurrence has a pool (wD_BountyPools, wD_BountyPoolMembers). The gamemaster opens it before the start, as
+    long before as the template says (15 minutes by default), copying the template's settings into it. Players who
+    asked to be reminded of an event (wD_BountyReminders) get a notice and a push notification when its pool opens. Players enter it from the home page, with the same checks as
     joining a game (logged on, not banned or temp banned, the reliability rating). A player can be in one open pool
     at a time, since two pools would start two live games at once.
   - At the start the gamemaster shuffles the pool, makes as many full games as it fills, with countries assigned at
@@ -27,10 +28,14 @@ Changelog
     players of a Failed or Missed pool are told, and get the consolation points.
   - Template names are limited to letters, numbers, spaces and . , ! # ( ) : _ - as they go into game names and
     push notification titles. 1 vs 1 variants can't be used, as those games are always unranked.
-  - The home page shows the upcoming occurrences, with their settings and bonus, under "Upcoming live events". The
+  - The home page shows the upcoming occurrences under "Upcoming live events": a full panel for an open pool, and a
+    few lines each for the next three still to come, so that they don't crowd out the player's own games. While a
+    player is in a pool the page sends them on to their game when it starts. The
     joinable games list (libHome::joinableGames()) starts with them too, but it is still disabled on the home page.
   - Admins manage templates and events, and see past occurrences and what they produced, in the admin CP's new
-    Bounty events tab. Moderators can see it but not change it, as a bounty creates points.
+    Bounty events tab. Events are entered as a weekday and time or a date and time, their time can be changed, and a
+    weekly event can skip its next occurrence. Moderators can see the tab but not change it, as a bounty creates
+    points.
 
   The update adds a default template, a weekly 5-minute full-press Classic game with a 500 point bonus, and a weekly
-  event for it at a placeholder time (Saturdays 18:00 UTC), disabled. Set its time and enable it in the admin CP.
+  event for it at a placeholder time (Saturdays 18:00 UTC), disabled. Change its time and enable it in the admin CP.

@@ -112,9 +112,34 @@ class adminBountyEvents
 
 			case 'deleteEvent':
 				$eventID = (int)$_POST['eventID'];
-				$DB->sql_put("DELETE FROM wD_BountyEvents WHERE id = ".$eventID);
+				libBounty::deleteEvent($eventID);
 				$message = l_t('Deleted event %s. A pool it has open still runs.', $eventID);
 				self::log('Delete bounty event', array('eventID'=>$eventID), $message);
+				break;
+
+			case 'editEvent':
+				$eventID = (int)$_POST['eventID'];
+				$startTimes = libBounty::parseStartTimes(isset($_POST['startTime']) ? $_POST['startTime'] : '');
+				if ( count($startTimes) != 1 ) throw new Exception(l_t('Enter one start time for the event.'));
+				$repeats = isset($_POST['repeats']) && $_POST['repeats'] == 'Once' ? 'Once' : 'Weekly';
+				libBounty::editEvent($eventID, $startTimes[0], $repeats);
+				$message = l_t('Event %s now runs %s.', $eventID, self::scheduleText(libBounty::getEvent($eventID)));
+				self::log('Edit bounty event', array('eventID'=>$eventID), $message);
+				break;
+
+			case 'skipEvent':
+				$eventID = (int)$_POST['eventID'];
+				$skipped = libBounty::skipNextOccurrence($eventID);
+				$message = l_t('Event %s will skip %s UTC.', $eventID, gmdate('D Y-m-d H:i', $skipped));
+				self::log('Skip bounty event occurrence', array('eventID'=>$eventID), $message);
+				break;
+
+			case 'unskipEvent':
+				$eventID = (int)$_POST['eventID'];
+				libBounty::getEvent($eventID);
+				$DB->sql_put("UPDATE wD_BountyEvents SET skipUntil = 0 WHERE id = ".$eventID);
+				$message = l_t('Event %s is no longer skipping any weeks.', $eventID);
+				self::log('Unskip bounty event', array('eventID'=>$eventID), $message);
 				break;
 
 			default:
@@ -187,7 +212,7 @@ class adminBountyEvents
 		$defaults = array('name'=>'', 'variantID'=>1, 'potType'=>'Winner-takes-all', 'phaseMinutes'=>5, 'phaseMinutesRB'=>-1,
 			'nextPhaseMinutes'=>'', 'phaseSwitchPeriod'=>-1, 'anon'=>'No', 'pressType'=>'Regular',
 			'drawType'=>'draw-votes-public', 'missingPlayerPolicy'=>'Normal', 'minimumReliabilityRating'=>0,
-			'excusedMissedTurns'=>1, 'bonus'=>500, 'consolationPoints'=>0);
+			'excusedMissedTurns'=>1, 'bonus'=>500, 'consolationPoints'=>0, 'poolOpenMinutes'=>15);
 
 		$templateID = isset($_REQUEST['editTemplate']) ? (int)$_REQUEST['editTemplate'] : self::$savedTemplateID;
 		if ( !self::$savedTemplateID && isset($_POST['bountyAction']) && $_POST['bountyAction'] == 'saveTemplate' && isset($_POST['template']) && is_array($_POST['template']) )
@@ -237,9 +262,10 @@ class adminBountyEvents
 		print $field('Excused missed turns', $text('excusedMissedTurns', $t['excusedMissedTurns']));
 		print $field('Bonus (points)', $text('bonus', $t['bonus']), 'Added to the pot of every game; entry is free, so this is the whole pot');
 		print $field('Consolation points', $text('consolationPoints', $t['consolationPoints']), 'For each player left out of a game; 0 for none');
+		print $field('Pool opens (minutes before the start)', $text('poolOpenMinutes', $t['poolOpenMinutes']), 'How long players have to enter; 5 to 120');
 		print '<li class="modToolsformlistfield"><input type="submit" class="form-submit" value="'.l_t('Save template').'" />'.
 			( $templateID ? ' <a class="modTools" href="'.self::TAB_URL.'#templateForm">'.l_t('New template instead').'</a>' : '' ).'</li>';
-		print '<li class="modToolsformlistfield"><em>'.l_t('An occurrence uses the template as it is when its pool opens, 5 minutes before the start.').'</em></li>';
+		print '<li class="modToolsformlistfield"><em>'.l_t('An occurrence uses the template as it is when its pool opens.').'</em></li>';
 		print '</form></div>';
 	}
 
@@ -260,11 +286,11 @@ class adminBountyEvents
 		print '<li class="modToolsformlistfield"><label>'.l_t('Template').'</label>: '.self::select('templateID', $templates,
 			isset($_POST['templateID']) ? (int)$_POST['templateID'] : 0).'</li>';
 		print '<li class="modToolsformlistfield"><label>'.l_t('Start times, in UTC').'</label>:<br />
-			<textarea class="modTools" name="startTimes" rows="4" cols="30" placeholder="2026-11-14 18:00&#10;2026-11-15 02:00">'.
+			<textarea class="modTools" name="startTimes" rows="4" cols="30" placeholder="Saturday 18:00&#10;Sunday 02:00">'.
 			( isset($_POST['startTimes']) && $_POST['bountyAction'] == 'scheduleEvents' ? htmlspecialchars($_POST['startTimes']) : '' ).'</textarea>
-			<br /><em>'.l_t('YYYY-MM-DD HH:MM, one per line; each becomes its own event. Now: %s UTC', gmdate('Y-m-d H:i')).'</em></li>';
+			<br /><em>'.l_t('One per line, as a weekday and time (Saturday 18:00) or a date and time (2026-11-14 18:00); each becomes its own event. Now: %s UTC', gmdate('l Y-m-d H:i')).'</em></li>';
 		print '<li class="modToolsformlistfield"><label>'.l_t('Repeats').'</label>: '.
-			self::select('repeats', array('Weekly'=>'Weekly, on that weekday and time', 'Once'=>'Once'), 'Weekly').'</li>';
+			self::select('repeats', array('Weekly'=>'Weekly, on that weekday and time', 'Once'=>'Once, the next time it comes round'), 'Weekly').'</li>';
 		print '<li class="modToolsformlistfield"><label><input type="checkbox" name="enabled" checked /> '.l_t('Enabled').'</label></li>';
 		print '<li class="modToolsformlistfield"><input type="submit" class="form-submit" value="'.l_t('Schedule').'" /></li>';
 		print '</form></div>';
@@ -286,12 +312,25 @@ class adminBountyEvents
 			$next = libBounty::nextStartTime($e, time());
 			print '<tr><td class="modTools">'.$e['id'].'</td><td class="modTools">'.$e['name'].'</td>
 				<td class="modTools">'.self::scheduleText($e).'</td>
-				<td class="modTools">'.( $next === null ? l_t('None; it has run') : gmdate('D Y-m-d H:i', $next).' UTC' ).'</td>
+				<td class="modTools">'.( $next === null ? l_t('None; it has run') : gmdate('D Y-m-d H:i', $next).' UTC' ).
+					( $e['skipUntil'] >= time() ? '<br /><em>'.l_t('Skipping %s', gmdate('D Y-m-d', $e['skipUntil'])).'</em>' : '' ).'</td>
 				<td class="modTools">'.( $e['enabled'] ? l_t('Enabled') : '<em>'.l_t('Disabled').'</em>' ).'</td>';
 			if ( $canEdit )
+			{
+				// The time as it would be typed into the schedule form
+				$when = $e['repeats'] == 'Weekly' ? gmdate('l H:i', $e['startTime']) : gmdate('Y-m-d H:i', $e['startTime']);
 				print '<td class="modTools">'.
+					'<form method="post" action="'.self::TAB_URL.'" style="white-space:nowrap">'.libAuth::formTokenHTML().
+					'<input type="hidden" name="bountyAction" value="editEvent" />'.
+					'<input type="hidden" name="eventID" value="'.$e['id'].'" />'.
+					'<input type="text" class="modTools" name="startTime" size="16" value="'.$when.'" /> '.
+					self::select('repeats', array('Weekly'=>'Weekly', 'Once'=>'Once'), $e['repeats']).
+					' <input type="submit" class="form-submit" value="'.l_t('Change time').'" /></form>'.
 					self::actionButton('toggleEvent', 'eventID', $e['id'], $e['enabled'] ? 'Disable' : 'Enable').
+					( $e['repeats'] == 'Weekly' && $next !== null ? self::actionButton('skipEvent', 'eventID', $e['id'], 'Skip next') : '' ).
+					( $e['skipUntil'] >= time() ? self::actionButton('unskipEvent', 'eventID', $e['id'], 'Unskip') : '' ).
 					self::actionButton('deleteEvent', 'eventID', $e['id'], 'Delete', l_t('Delete this event?')).'</td>';
+			}
 			print '</tr>';
 		}
 		print '</table></div>';
@@ -319,7 +358,7 @@ class adminBountyEvents
 				$poolText = l_t('Open (pool %s): %s player(s) in it', $o['pool']['id'], $entered);
 			}
 			else
-				$poolText = l_t('Opens %s UTC', gmdate('D Y-m-d H:i', $o['startTime'] - libBounty::POOL_OPEN_SECONDS));
+				$poolText = l_t('Opens %s UTC', gmdate('D Y-m-d H:i', $o['startTime'] - libBounty::poolOpenSeconds($o['settings'])));
 
 			print '<tr><td class="modTools">'.gmdate('D Y-m-d H:i', $o['startTime']).' UTC</td><td class="modTools">'.$o['name'].'</td>
 				<td class="modTools">'.$o['eventID'].'</td><td class="modTools">'.$poolText.'</td></tr>';
@@ -368,7 +407,7 @@ class adminBountyEvents
 $canEdit = (bool)$User->type['Admin'];
 
 print '<h2 class="modToolsHeadings">'.l_t('Bounty events').'</h2>';
-print '<p class="modTools">'.l_t('Live games at fixed times with bonus points. Each time an event comes round its pool opens 5 minutes before the start; '.
+print '<p class="modTools">'.l_t('Live games at fixed times with bonus points. Each time an event comes round its pool opens before the start, as long before as its template says; '.
 	'at the start the pool is shuffled into as many full games as it fills, and the rest are paid the consolation points. All times are UTC.').
 	( $canEdit ? '' : ' <em>'.l_t('Only admins can change bounty events.').'</em>' ).'</p>';
 

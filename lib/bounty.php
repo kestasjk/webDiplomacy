@@ -27,7 +27,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *   from it (bounty games are free to enter), and optional consolation points for players left out.
  * - An event (wD_BountyEvents) schedules a template at a UTC time, once or weekly.
  * - Each time an event comes round is an occurrence, with its own pool (wD_BountyPools). The gamemaster opens the
- *   pool POOL_OPEN_SECONDS before the start, copying the template's settings into it, and players enter or leave
+ *   pool before the start (the template says how long before), copying the template's settings into it, and players enter or leave
  *   it (wD_BountyPoolMembers) until the start.
  * - At the start the gamemaster shuffles the pool and makes as many full games as it fills. Anyone left over is
  *   paid the consolation points.
@@ -42,6 +42,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 class libBounty
 {
+	// How long before the start a pool opens, for pools opened before templates had poolOpenMinutes
 	const POOL_OPEN_SECONDS = 300;
 	const WEEK_SECONDS = 604800;
 	// Shuffling a pool that fails this many times is given up on
@@ -59,7 +60,17 @@ class libBounty
 	// The template columns which are copied into a pool's settings when it opens
 	public static $settingNames = array('variantID', 'potType', 'phaseMinutes', 'phaseMinutesRB', 'nextPhaseMinutes',
 		'phaseSwitchPeriod', 'anon', 'pressType', 'drawType', 'missingPlayerPolicy', 'minimumReliabilityRating',
-		'excusedMissedTurns', 'bonus', 'consolationPoints');
+		'excusedMissedTurns', 'bonus', 'consolationPoints', 'poolOpenMinutes');
+
+	private static $weekdays = array('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun');
+
+	/**
+	 * How long before its start a pool with these settings opens
+	 */
+	public static function poolOpenSeconds(array $settings)
+	{
+		return isset($settings['poolOpenMinutes']) ? (int)$settings['poolOpenMinutes']*60 : self::POOL_OPEN_SECONDS;
+	}
 
 	/**
 	 * Check and normalize template settings from a form, the way gamecreate.php checks a new game's.
@@ -139,6 +150,10 @@ class libBounty
 		if ( $t['consolationPoints'] < 0 || $t['consolationPoints'] > 10000 )
 			throw new Exception(l_t("The consolation points must be between 0 (none) and 10000."));
 
+		$t['poolOpenMinutes'] = isset($form['poolOpenMinutes']) ? (int)$form['poolOpenMinutes'] : 15;
+		if ( $t['poolOpenMinutes'] < 5 || $t['poolOpenMinutes'] > 120 )
+			throw new Exception(l_t("The pool must open between 5 and 120 minutes before the start."));
+
 		return $t;
 	}
 
@@ -208,12 +223,108 @@ class libBounty
 		if ( $openPools > 0 )
 			throw new Exception(l_t("This template has a pool open; it can be deleted once the pool has been shuffled into games."));
 
+		$DB->sql_put("DELETE r FROM wD_BountyReminders r INNER JOIN wD_BountyEvents e ON e.id = r.eventID WHERE e.templateID = ".$templateID);
 		$DB->sql_put("DELETE FROM wD_BountyEvents WHERE templateID = ".$templateID);
 		$DB->sql_put("DELETE FROM wD_BountyTemplates WHERE id = ".$templateID);
 	}
 
+	public static function getEvent($eventID)
+	{
+		global $DB;
+
+		$row = $DB->sql_hash("SELECT * FROM wD_BountyEvents WHERE id = ".(int)$eventID);
+		if ( !$row ) throw new Exception(l_t("Event %s not found.", (int)$eventID));
+		return $row;
+	}
+
 	/**
-	 * Parse a list of UTC start times, one per line or comma separated, as YYYY-MM-DD HH:MM
+	 * Delete an event, and the reminders players asked for it. A pool it has open still runs.
+	 */
+	public static function deleteEvent($eventID)
+	{
+		global $DB;
+
+		$DB->sql_put("DELETE FROM wD_BountyReminders WHERE eventID = ".(int)$eventID);
+		$DB->sql_put("DELETE FROM wD_BountyEvents WHERE id = ".(int)$eventID);
+	}
+
+	/**
+	 * Change when an event runs
+	 *
+	 * @param int $startTime
+	 * @param string $repeats 'Once' or 'Weekly'
+	 */
+	public static function editEvent($eventID, $startTime, $repeats)
+	{
+		global $DB;
+
+		self::getEvent($eventID);
+		if ( $repeats != 'Once' && $repeats != 'Weekly' ) throw new Exception(l_t("Invalid repeat given."));
+		if ( $repeats == 'Once' && $startTime <= time() )
+			throw new Exception(l_t("%s UTC has already passed.", gmdate('Y-m-d H:i', $startTime)));
+
+		$DB->sql_put("UPDATE wD_BountyEvents SET startTime = ".(int)$startTime.", repeats = '".$repeats."', skipUntil = 0 WHERE id = ".(int)$eventID);
+	}
+
+	/**
+	 * Skip a weekly event's next occurrence, e.g. for a holiday; asked again it skips the one after too
+	 *
+	 * @return int The start of the occurrence skipped
+	 */
+	public static function skipNextOccurrence($eventID)
+	{
+		global $DB;
+
+		$event = self::getEvent($eventID);
+		if ( $event['repeats'] != 'Weekly' ) throw new Exception(l_t("Only a weekly event can skip a week; disable or delete this one instead."));
+
+		$next = self::nextStartTime($event, time());
+		list($opened) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPools WHERE eventID = ".$event['id']." AND startTime = ".$next);
+		if ( $opened ) throw new Exception(l_t("The pool for %s UTC is already open, so it can't be skipped.", gmdate('Y-m-d H:i', $next)));
+
+		$DB->sql_put("UPDATE wD_BountyEvents SET skipUntil = ".$next." WHERE id = ".$event['id']);
+		return $next;
+	}
+
+	/**
+	 * Set whether the current user is told when an event's pools open
+	 */
+	public static function setReminder($eventID, $on)
+	{
+		global $DB, $User;
+
+		$eventID = (int)$eventID;
+		if ( $on )
+		{
+			self::getEvent($eventID);
+			$DB->sql_put("INSERT IGNORE INTO wD_BountyReminders ( eventID, userID ) VALUES ( ".$eventID.", ".$User->id." )");
+		}
+		else
+			$DB->sql_put("DELETE FROM wD_BountyReminders WHERE eventID = ".$eventID." AND userID = ".$User->id);
+		$DB->sql_put("COMMIT");
+	}
+
+	/**
+	 * Where a player who was in a pool goes once it has started
+	 *
+	 * @return array The ID of the game they were placed in or 0, and a message for them if they weren't placed
+	 */
+	public static function startedPoolResult($poolID)
+	{
+		global $DB, $User;
+
+		$row = $DB->sql_hash("SELECT m.outcome, m.gameID, p.name FROM wD_BountyPoolMembers m
+			INNER JOIN wD_BountyPools p ON p.id = m.poolID
+			WHERE m.poolID = ".(int)$poolID." AND m.userID = ".$User->id);
+
+		if ( !$row || $row['outcome'] == 'Waiting' ) return array(0, '');
+		if ( $row['outcome'] == 'Placed' ) return array((int)$row['gameID'], '');
+		return array(0, l_t("You weren't placed in a game from the pool for %s this time; your notices say why.", $row['name']));
+	}
+
+	/**
+	 * Parse a list of UTC start times, one per line or comma separated: either a date and time, YYYY-MM-DD HH:MM, or a
+	 * weekday and time, e.g. Saturday 18:00, which is the next time that comes round
 	 *
 	 * @return int[] Unix timestamps
 	 */
@@ -225,10 +336,20 @@ class libBounty
 			$line = trim($line);
 			if ( $line == '' ) continue;
 
+			if ( preg_match('/^(mon|tue|wed|thu|fri|sat|sun)[a-z]*\s+(\d{1,2}):(\d{2})$/i', $line, $m) && $m[2] < 24 && $m[3] < 60 )
+			{
+				$now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+				$days = ( array_search(strtolower($m[1]), self::$weekdays) + 1 - (int)$now->format('N') + 7 ) % 7;
+				$date = $now->setTime((int)$m[2], (int)$m[3], 0)->modify('+'.$days.' days');
+				if ( $date->getTimestamp() <= time() ) $date = $date->modify('+7 days');
+				$times[] = $date->getTimestamp();
+				continue;
+			}
+
 			$date = DateTimeImmutable::createFromFormat('!Y-m-d H:i', $line, new DateTimeZone('UTC'));
 			$errors = DateTimeImmutable::getLastErrors();
 			if ( !$date || ( $errors && ( $errors['warning_count'] || $errors['error_count'] ) ) )
-				throw new Exception(l_t("Couldn't read the start time '%s'; use YYYY-MM-DD HH:MM, in UTC.", htmlentities($line, ENT_QUOTES, 'UTF-8')));
+				throw new Exception(l_t("Couldn't read the start time '%s'; use a weekday and time (Saturday 18:00) or a date and time (YYYY-MM-DD HH:MM), in UTC.", htmlentities($line, ENT_QUOTES, 'UTF-8')));
 
 			$times[] = $date->getTimestamp();
 		}
@@ -278,10 +399,17 @@ class libBounty
 	{
 		$startTime = (int)$event['startTime'];
 
-		if ( $startTime >= $now ) return $startTime;
-		if ( $event['repeats'] != 'Weekly' ) return null;
+		if ( $event['repeats'] != 'Weekly' ) return $startTime >= $now ? $startTime : null;
 
-		return $startTime + (int)ceil(($now - $startTime) / self::WEEK_SECONDS) * self::WEEK_SECONDS;
+		if ( $startTime < $now )
+			$startTime += (int)ceil(($now - $startTime) / self::WEEK_SECONDS) * self::WEEK_SECONDS;
+
+		// Occurrences up to skipUntil have been skipped by an admin
+		$skipUntil = isset($event['skipUntil']) ? (int)$event['skipUntil'] : 0;
+		if ( $skipUntil >= $startTime )
+			$startTime += ( (int)floor(($skipUntil - $startTime) / self::WEEK_SECONDS) + 1 ) * self::WEEK_SECONDS;
+
+		return $startTime;
 	}
 
 	/**
@@ -295,15 +423,15 @@ class libBounty
 		$now = time();
 
 		// Open pools. The unique key on (eventID, startTime) makes this happen once per occurrence; an occurrence which
-		// is past its start without a pool (the gamemaster wasn't running in its last five minutes) is skipped.
-		$tabl = $DB->sql_tabl("SELECT e.*, t.name FROM wD_BountyEvents e
+		// is past its start without a pool (the gamemaster wasn't running while it should have been open) is skipped.
+		$tabl = $DB->sql_tabl("SELECT e.*, t.name, t.poolOpenMinutes FROM wD_BountyEvents e
 			INNER JOIN wD_BountyTemplates t ON t.id = e.templateID
 			WHERE e.enabled = 1");
 		$toOpen = array();
 		while( $event = $DB->tabl_hash($tabl) )
 		{
 			$startTime = self::nextStartTime($event, $now);
-			if ( $startTime !== null && $startTime - self::POOL_OPEN_SECONDS <= $now )
+			if ( $startTime !== null && $startTime - self::poolOpenSeconds($event) <= $now )
 				$toOpen[] = array($event, $startTime);
 		}
 		foreach($toOpen as $open)
@@ -326,7 +454,23 @@ class libBounty
 					VALUES ( ".$event['id'].", ".$event['templateID'].", '".$DB->escape($template['name'], true)."', ".$startTime.",
 						'".$DB->escape(json_encode($settings), true)."', ".$now." )");
 				if ( $DB->last_affected() > 0 )
+				{
+					$poolID = (int)$DB->last_inserted();
 					print l_t('Opened the bounty pool for %s at %s', $template['name'], gmdate('Y-m-d H:i', $startTime)).'<br />';
+
+					// Tell the players who asked to be reminded
+					$remindUserIDs = array();
+					$remindTabl = $DB->sql_tabl("SELECT userID FROM wD_BountyReminders WHERE eventID = ".$event['id']);
+					while( list($remindUserID) = $DB->tabl_row($remindTabl) )
+						$remindUserIDs[] = (int)$remindUserID;
+					foreach($remindUserIDs as $remindUserID)
+						notice::send($remindUserID, 1, 'User', 'No', 'No',
+							l_t('The pool for %s is open: enter it from the home page. Its games start %s.', $template['name'], libTime::text($startTime)),
+							'GameMaster');
+					if ( count($remindUserIDs) > 0 )
+						libPush::queue($remindUserIDs, $template['name'],
+							l_t('The pool is open; games start in %s minutes', max(1, (int)round(($startTime - $now)/60))), '/index.php', 'bounty-open-'.$poolID);
+				}
 			}
 			catch(Throwable $e)
 			{
@@ -688,16 +832,56 @@ class libBounty
 	}
 
 	/**
-	 * The home page panels for the upcoming occurrences, with the buttons to enter or leave an open pool
+	 * The home page block for the upcoming occurrences. An open pool gets a full panel, with the button to enter or
+	 * leave it; the occurrences still to come get a couple of lines each, so that they don't crowd out the player's games.
+	 *
+	 * @param int $futureLimit The most occurrences still to come which are listed
 	 */
-	public static function homePanels($limit = 5)
+	public static function homePanels($futureLimit = 3)
 	{
 		global $User, $DB;
 
+		$reminders = array();
+		$tabl = $DB->sql_tabl("SELECT eventID FROM wD_BountyReminders WHERE userID = ".$User->id);
+		while( list($eventID) = $DB->tabl_row($tabl) )
+			$reminders[(int)$eventID] = true;
+
 		$buf = '';
-		foreach( array_slice(self::upcomingOccurrences(), 0, $limit) as $o )
+		$future = array();
+		foreach( self::upcomingOccurrences() as $o )
 		{
 			$s = $o['settings'];
+
+			$bonus = l_t('Bonus: <strong>%s</strong>, free to enter', $s['bonus'].libHTML::points());
+			if ( $s['consolationPoints'] > 0 )
+				$bonus .= '; '.l_t('%s for players left out', $s['consolationPoints'].libHTML::points());
+
+			if ( !$o['pool'] )
+			{
+				if ( count($future) >= $futureLimit ) continue;
+
+				$remind = '<form method="post" action="index.php" style="display:inline">'.libAuth::formTokenHTML().
+					'<input type="hidden" name="bountyEventID" value="'.$o['eventID'].'" />'.
+					( isset($reminders[$o['eventID']])
+						? l_t("You'll be told when the pool opens.").' <input type="submit" class="home-submit" name="bountyUnremind" value="'.l_t('Stop reminder').'" />'
+						: '<input type="submit" class="home-submit" name="bountyRemind" value="'.l_t('Remind me').'" title="'.l_t('Sends you a notice, and a push notification if you have them on, when the pool opens').'" />' ).
+					'</form>';
+
+				$future[] = '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">'.
+					'<div class="titleBarRightSide">'.libTime::remainingText($o['startTime']).'</div>'.
+					'<div class="titleBarLeftSide"><span class="gameName">'.$o['name'].'</span></div><div style="clear:both"></div>'.
+					l_t('Starts %s', libTime::detailedText($o['startTime'])).'; '.
+					l_t('join in the %s before.', libTime::timeLengthText(self::poolOpenSeconds($s))).'<br />'.
+					$bonus.'<br />'.
+					'<details><summary>'.l_t('Game settings').'</summary><span style="font-size:90%">'.self::settingsText($s).'</span></details>'.
+					$remind.
+					'</div>';
+				continue;
+			}
+
+			$pool = $o['pool'];
+			list($entered) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND outcome = 'Waiting'");
+			list($inPool) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND userID = ".$User->id." AND outcome = 'Waiting'");
 
 			$buf .= '<div class="hr"></div>';
 			$buf .= '<div class="gamePanelHome bountyEvent">';
@@ -706,43 +890,40 @@ class libBounty
 			$buf .= '<div style="clear:both"></div>';
 			$buf .= '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">';
 			$buf .= l_t('Starts %s', libTime::detailedText($o['startTime'])).'<br />';
-			$buf .= l_t('Bonus: <strong>%s</strong>, free to enter', $s['bonus'].libHTML::points());
-			if ( $s['consolationPoints'] > 0 )
-				$buf .= '; '.l_t('%s for players left out', $s['consolationPoints'].libHTML::points());
+			$buf .= $bonus;
 			$buf .= '<br /><span style="font-size:90%">'.self::settingsText($s).'</span><br />';
+			$buf .= l_t('The pool is open: <strong>%s</strong> player(s) in it.', $entered).' ';
 
-			if ( $o['pool'] )
+			if ( $inPool )
 			{
-				$pool = $o['pool'];
-				list($entered) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND outcome = 'Waiting'");
-				list($inPool) = $DB->sql_row("SELECT COUNT(*) FROM wD_BountyPoolMembers WHERE poolID = ".$pool['id']." AND userID = ".$User->id." AND outcome = 'Waiting'");
-				$buf .= l_t('The pool is open: <strong>%s</strong> player(s) in it.', $entered).' ';
+				$buf .= l_t("You're in the pool; this page will take you to your game when it starts.");
+				$buf .= '<form method="post" action="index.php">'.libAuth::formTokenHTML().
+					'<input type="hidden" name="bountyPoolID" value="'.$pool['id'].'" />'.
+					'<input type="submit" class="form-submit" name="bountyLeave" value="'.l_t('Leave pool').'" /></form>';
 
-				if ( $inPool )
-				{
-					$buf .= l_t("You're in the pool.");
-					$buf .= '<form method="post" action="index.php">'.libAuth::formTokenHTML().
-						'<input type="hidden" name="bountyPoolID" value="'.$pool['id'].'" />'.
-						'<input type="submit" class="form-submit" name="bountyLeave" value="'.l_t('Leave pool').'" /></form>';
-				}
-				elseif ( $reason = self::cantEnterReason($pool) )
-				{
-					$buf .= '<span style="font-size:80%">('.$reason.')</span>';
-				}
-				else
-				{
-					$buf .= '<form method="post" action="index.php">'.libAuth::formTokenHTML().
-						'<input type="hidden" name="bountyPoolID" value="'.$pool['id'].'" />'.
-						'<input type="submit" class="form-submit" name="bountyEnter" value="'.l_t('Enter pool').'" /></form>';
-				}
+				// Just after the start, ask index.php where this player's game is; until the pool has been shuffled that
+				// brings them back here, to ask again
+				$wait = $pool['startTime'] - time();
+				libHTML::$footerScript[] = 'setTimeout(function() { window.location.href = "index.php?bountyStarted='.$pool['id'].'"; }, '.
+					( $wait > 0 ? $wait*1000 + 3000 : ( $wait > -60 ? 3000 : 15000 ) ).');';
+			}
+			elseif ( $reason = self::cantEnterReason($pool) )
+			{
+				$buf .= '<span style="font-size:80%">('.$reason.')</span>';
 			}
 			else
 			{
-				$buf .= l_t('Players can join from %s.', libTime::detailedText($o['startTime'] - self::POOL_OPEN_SECONDS));
+				$buf .= '<form method="post" action="index.php">'.libAuth::formTokenHTML().
+					'<input type="hidden" name="bountyPoolID" value="'.$pool['id'].'" />'.
+					'<input type="submit" class="form-submit" name="bountyEnter" value="'.l_t('Enter pool').'" /></form>';
 			}
 
 			$buf .= '</div><div class="bar lastBar"> </div></div>';
 		}
+
+		if ( count($future) > 0 )
+			$buf .= '<div class="hr"></div><div class="gamePanelHome bountyEvent">'.implode('', $future).'<div class="bar lastBar"> </div></div>';
+
 		return $buf;
 	}
 }

@@ -21,21 +21,32 @@ CREATE TABLE `wD_BountyTemplates` (
   `excusedMissedTurns` tinyint(3) unsigned NOT NULL DEFAULT 1,
   `bonus` mediumint(8) unsigned NOT NULL,
   `consolationPoints` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `poolOpenMinutes` smallint(5) unsigned NOT NULL DEFAULT 15,
   `timeCreated` int(10) unsigned NOT NULL,
   `timeModified` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- A template scheduled at a time (UTC): once, or weekly from startTime onwards.
+-- A template scheduled at a time (UTC): once, or weekly from startTime onwards. A weekly event's occurrences up to
+-- skipUntil are skipped.
 CREATE TABLE `wD_BountyEvents` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `templateID` mediumint(8) unsigned NOT NULL,
   `startTime` int(10) unsigned NOT NULL,
   `repeats` enum('Once','Weekly') NOT NULL DEFAULT 'Weekly',
   `enabled` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `skipUntil` int(10) unsigned NOT NULL DEFAULT 0,
   `timeCreated` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `templateID` (`templateID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- The players who asked to be told when an event's pools open
+CREATE TABLE `wD_BountyReminders` (
+  `eventID` mediumint(8) unsigned NOT NULL,
+  `userID` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`eventID`, `userID`),
+  KEY `userID` (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- One row per occurrence of an event, created when its pool opens. settings holds the template as it was then.
@@ -76,7 +87,7 @@ CREATE TABLE `wD_BountyPoolMembers` (
 ALTER TABLE `wD_PointsTransactions` CHANGE `type` `type` ENUM( 'Supplement', 'Bet', 'Won', 'Returned', 'Trigger', 'Correction', 'Bounty' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
 -- A default: a weekly 5-minute full-press Classic game with a 500 point bonus. The event is disabled, and its time
--- (Saturdays 18:00 UTC) is a placeholder; set the real time and enable it in the admin CP's Bounty events tab.
+-- (Saturdays 18:00 UTC) is a placeholder; change its time and enable it in the admin CP's Bounty events tab.
 INSERT INTO `wD_BountyTemplates` ( `name`, `variantID`, `potType`, `phaseMinutes`, `phaseMinutesRB`, `nextPhaseMinutes`,
     `phaseSwitchPeriod`, `anon`, `pressType`, `drawType`, `missingPlayerPolicy`, `minimumReliabilityRating`,
     `excusedMissedTurns`, `bonus`, `consolationPoints`, `timeCreated`, `timeModified` )
