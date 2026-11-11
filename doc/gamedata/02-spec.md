@@ -309,6 +309,15 @@ caller is the creator or a moderator, or supplies `sbToken`.
 - `hiddenMembers`: for a moderator who is not in the game, or a director, in a game whose
   identities are hidden: `[{ countryID, userID, username, points, type, orderStatus, votes }]`.
   `null` for everyone else. This keeps privileged views out of the public files.
+- `join`: board.php's join bar, for a logged-in user who isn't in the game, in a game they could join:
+  `{ canJoin, cantJoinReason, bet, needsInviteCode, minimumReliabilityRating, civilDisorderCountryIDs }`.
+  Pre-game `bet` is the bet to join and `civilDisorderCountryIDs` is empty; once started, the countries
+  in civil disorder which `game/join` can take over with `countryID`, for free. `canJoin` is false, with
+  board.php's reason, for a temp ban, too low a reliability rating, or too few points. `null` in a
+  finished or sandbox game, a full pre-game game, a started game with no country in civil disorder, or
+  one the user left in civil disorder.
+- `leave`: for a member, before the game starts: `{ canLeave, cantLeaveReason }`, as
+  `Members::cantLeaveReason()`. `null` otherwise. `game/leave` does the leaving.
 
 ### 3.2 List response (no `gameID`)
 

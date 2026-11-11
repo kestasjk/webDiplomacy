@@ -15,7 +15,10 @@ import GameMessages, {
   GameMessage,
   MessageStatus,
 } from "../../state/interfaces/GameMessages";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import GameOverviewResponse, {
+  JoinOptions,
+  LeaveOptions,
+} from "../../state/interfaces/GameOverviewResponse";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import PlayerActiveGames from "../../state/interfaces/PlayerActiveGames";
 import {
@@ -98,6 +101,8 @@ export interface PlayerContext {
     }[];
   };
   messages: null | { messages: NewMessage[]; cursor: number };
+  join: JoinOptions | null;
+  leave: LeaveOptions | null;
 }
 
 interface NewMessage {
@@ -501,6 +506,8 @@ export async function loadOverview(
     variantID: game.variant.id,
     year: parseInt(year, 10) || 1901,
     isTempBanned: !!ctx.viewer.isTempBanned,
+    join: ctx.join || null,
+    leave: ctx.leave || null,
   } as unknown as GameOverviewResponse;
 }
 

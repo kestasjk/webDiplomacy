@@ -772,6 +772,8 @@ class GetPlayerContext extends ApiEntry {
 
 /**
  * API entry game/join
+ * Joins a pre-game game, or takes over the country countryID from civil disorder. gamepass is a private game's
+ * invite code.
  */
 class JoinGame extends ApiEntry {
 	public function __construct() {
@@ -779,8 +781,14 @@ class JoinGame extends ApiEntry {
 			'game/join',
 			'POST',
 			'',
-			array('gameID'),
+			array('gameID', 'countryID', 'gamepass'),
 			true);
+	}
+	/**
+	 * The caller isn't in the game yet; Members::join() decides whether they may be.
+	 */
+	public function requiresMembership() {
+		return false;
 	}
 	/**
 	 * @throws Exception
@@ -788,6 +796,9 @@ class JoinGame extends ApiEntry {
 	 * @throws ClientForbiddenException
 	 */
 	public function run($userID, $permissionIsExplicit) {
+		global $DB, $User;
+
+		// Members::join() works on the global $User, which for an API key is the guest user
 		$User = new User($userID);
 
 		if ( !$User->type['User'] ) throw new ClientForbiddenException("Only users can join games");
@@ -809,17 +820,21 @@ class JoinGame extends ApiEntry {
 		$Game = $Variant->processGame($gameID);
 		
 		// They will be stopped here if they're not allowed.
-		$Game->Members->join(
-			( isset($args['gamepass']) && $args['gamepass'] ?? null ),
-			( isset($args['countryID']) && $args['countryID'] ?? null )
+		$Game->Members->joinWithoutRedirect(
+			( $args['gamepass'] ?? '' ),
+			( $args['countryID'] ?? -1 )
 		 );
-		
+
+		$DB->sql_put("COMMIT");
+		libGameFiles::runDeferred();
+
 		return $this->JSONResponse('Successfully joined.', 'GGD-JOIN', true);
 	}
 }
 
 /**
  * API entry game/leave
+ * Leaves a game before it has started.
  */
 class LeaveGame extends ApiEntry {
 	public function __construct() {
@@ -836,6 +851,9 @@ class LeaveGame extends ApiEntry {
 	 * @throws ClientForbiddenException
 	 */
 	public function run($userID, $permissionIsExplicit) {
+		global $DB, $User;
+
+		// Members::cantLeaveReason() and Member::leave() work on the global $User, which for an API key is the guest user
 		$User = new User($userID);
 
 		if ( !$User->type['User'] ) throw new ClientForbiddenException("Only users can join games");
@@ -844,19 +862,22 @@ class LeaveGame extends ApiEntry {
 		$gameID = (int)$args['gameID'];
 
 		require_once(l_r('gamemaster/game.php'));
-		
+
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->processGame($gameID);
-		
+
 		$reason=$Game->Members->cantLeaveReason();
 
 		if($reason)
 			throw new RequestException(l_t("Can't leave game; %s.",$reason));
-		else
-			$Game->Members->ByUserID[$User->id]->leave();
 
-		return $this->JSONResponse('Successfully left game.', 'GGD-LEAVE', true);
+		$leftMessage = $Game->Members->ByUserID[$User->id]->leaveWithoutNotice();
+
+		$DB->sql_put("COMMIT");
+		libGameFiles::runDeferred();
+
+		return $this->JSONResponse(strip_tags($leftMessage), 'GGD-LEAVE', true);
 	}
 }
 

@@ -9,6 +9,7 @@ import {
   getGamePhaseSeasonYear,
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
+import WDJoinPanel from "./WDJoinPanel";
 
 // Various of the buttons draw with a Z_INDEX of 2
 // So we set this overlay to a Z_INDEX of 4 to draw on top of them,
@@ -101,9 +102,12 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
     }
   } else if (overview.phase === "Pre-game") {
     innerElem = (
-      <div>
-        <b>Pre-game:</b> Game is waiting to start
-      </div>
+      <Stack direction="column" alignItems="center">
+        <div className="m-2">
+          <b>Pre-game:</b> Game is waiting to start
+        </div>
+        <WDJoinPanel />
+      </Stack>
     );
   } else if (overview.phase === "Error") {
     innerElem = <div>Could not load game. You may need to join this game.</div>;

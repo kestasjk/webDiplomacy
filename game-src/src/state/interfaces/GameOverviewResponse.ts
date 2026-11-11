@@ -9,6 +9,22 @@ export type Member = {
   userID: number;
 };
 
+// Whether someone not in the game may join it, or take over a country in civil disorder (game/playercontext's join)
+export type JoinOptions = {
+  canJoin: boolean;
+  cantJoinReason: string | null;
+  bet: number;
+  needsInviteCode: boolean;
+  minimumReliabilityRating: number;
+  civilDisorderCountryIDs: number[];
+};
+
+// Whether a member may leave the game before it starts (game/playercontext's leave)
+export type LeaveOptions = {
+  canLeave: boolean;
+  cantLeaveReason: string | null;
+};
+
 interface GameOverviewResponse {
   alternatives: string;
   anon: string;
@@ -64,6 +80,9 @@ interface GameOverviewResponse {
   variantID: number;
   year: number;
   isTempBanned: boolean;
+  // Null when there is nothing to offer: see the PHP PlayerContext::join() and leave()
+  join: JoinOptions | null;
+  leave: LeaveOptions | null;
 }
 
 export default GameOverviewResponse;
