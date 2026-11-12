@@ -5,6 +5,8 @@ enum ApiRoute {
   MESSAGES_SEEN = "game/messagesseen",
   GAME_SETVOTE = "game/setvote",
   SET_BACK_FROM_LEFT = "game/markbackfromleft",
+  JOIN_GAME = "game/join",
+  LEAVE_GAME = "game/leave",
   // get sandbox
   SANDBOX_COPY = "sandbox/copy",
   SANDBOX_MOVETURNBACK = "sandbox/moveTurnBack",

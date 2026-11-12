@@ -41,6 +41,16 @@ export const postGameApiRequest = (
     timeout,
   });
 
+// For the routes api.php reads from $_POST (type 'POST') rather than a JSON body, such as game/join
+export const postGameApiFormRequest = (
+  route: ApiRoute,
+  params: QueryParams,
+  timeout?: number,
+): Promise<AxiosResponse> =>
+  api.post(`../api.php?route=${route}`, new URLSearchParams(params), {
+    timeout,
+  });
+
 const orderSubmission = axios.create({
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",

@@ -39,6 +39,19 @@ class processMember extends Member
 	 */
 	function leave()
 	{
+		$leftMessage = $this->leaveWithoutNotice();
+
+		header('refresh: 4; url=index.php');
+		libHTML::notice('Left game', $leftMessage);
+	}
+
+	/**
+	 * leave() without the notice. The caller must commit and run libGameFiles::runDeferred().
+	 *
+	 * @return string The message the player is sent saying they left
+	 */
+	function leaveWithoutNotice()
+	{
 		global $DB, $User;
 
 		$Game = $this->Game;
@@ -73,13 +86,12 @@ class processMember extends Member
 			$Game = $this->Game;
 		}
 
-		// The notice below ends the page, which commits; the game's public JSON files then lose the member (or, if
-		// the game was erased, are removed)
+		// Once the page commits, the game's public JSON files lose the member (or, if the game was erased, are removed)
 		libGameFiles::refreshAfterCommit($this->gameID, array('game', 'status'));
 
-		header('refresh: 4; url=index.php');
 		$this->send('No','No', $leftMessage);
-		libHTML::notice('Left game', $leftMessage);
+
+		return $leftMessage;
 	}
 
 	/**
