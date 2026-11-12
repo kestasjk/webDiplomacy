@@ -202,7 +202,8 @@ wd/canvasboard.js
 	- wD.CanvasBoard: the "Legacy point and click" board, laid out as the map image was: the small
 		map, the same history icons stepping a turn at a time, the Save / Ready buttons under them,
 		the large map over the page with its own bar, a Preview icon switching the latest map between
-		the last moves and the player's own orders, and live updates. Save is grey unless there are
+		the last moves and the player's own orders, and live updates (which leave alone the orders
+		being entered, unsaved or only part-way entered, unless the phase changed). Save is grey unless there are
 		changes to save, a Builds phase says how many builds or disbands there are and how many are
 		placed, and a finished game's latest map is its last turn from history.json (game.json has no
 		board by then).

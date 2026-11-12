@@ -828,13 +828,16 @@ wD.CanvasBoard = (function () {
 	/**
 	 * Fetch what changed and redraw. If the game moved on the latest map now shows the new turn, as a refresh of the
 	 * old page would have, and a toast says so; the orders being entered belonged to the old phase and are gone.
+	 * Within a phase the orders being entered are kept: those not yet saved, and one part-way through being entered
+	 * (a unit chosen, its target still to click), whether that was so when the update arrived or by the time it loaded.
 	 */
 	CanvasBoard.prototype.reload = function () {
 		var self = this;
 		if (this.reloading) return this.reloading;
 		var before = this.game.turn + '|' + this.game.phase;
 		var wasLatest = this.isLatestView();
-		var hadUnsaved = this.entry && this.entry.hasUnsaved();
+		var entering = function () { return !!self.entry && (self.entry.hasUnsaved() || !!self.entry.current); };
+		var wasEntering = entering();
 
 		this.reloading = this.source.getContext().then(function (context) {
 			self.context = context;
@@ -859,7 +862,7 @@ wD.CanvasBoard = (function () {
 						actions: [{ label: 'Refresh page', onClick: function () { window.location.reload(); } }]
 					});
 				}
-			} else if (!hadUnsaved) {
+			} else if (!wasEntering && !entering()) {
 				// Something else changed (a vote, a status, orders saved from another tab): take the server's orders
 				self.setupOrderEntry();
 			} else if (self.entry && self.context.orders) {
