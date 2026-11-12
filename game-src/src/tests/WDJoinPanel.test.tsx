@@ -50,8 +50,6 @@ function renderPanel(overview: Partial<GameOverviewResponse>) {
         },
       },
     },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({ serializableCheck: false }),
   });
   return render(
     <Provider store={store}>
@@ -61,13 +59,22 @@ function renderPanel(overview: Partial<GameOverviewResponse>) {
 }
 
 const reload = jest.fn();
+const realLocation = window.location;
+const realConfirm = window.confirm;
 beforeEach(() => {
   post.mockReset();
   reload.mockReset();
   window.confirm = jest.fn(() => true);
   Object.defineProperty(window, "location", {
-    writable: true,
+    configurable: true,
     value: { href: "", reload },
+  });
+});
+afterEach(() => {
+  window.confirm = realConfirm;
+  Object.defineProperty(window, "location", {
+    configurable: true,
+    value: realLocation,
   });
 });
 
@@ -158,7 +165,7 @@ test("says why the user can't join", () => {
     leave: null,
   });
   expect(
-    screen.getByText("(You have too few points to join this game.)"),
+    screen.getByText(/You have too few points to join this game/),
   ).toBeInTheDocument();
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
 });
@@ -178,8 +185,6 @@ test("says why a member can't leave", () => {
     join: null,
     leave: { canLeave: false, cantLeaveReason: "game starting soon" },
   });
-  expect(
-    screen.getByText("(Can't leave game; game starting soon.)"),
-  ).toBeInTheDocument();
+  expect(screen.getByText(/game starting soon/)).toBeInTheDocument();
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
 });

@@ -314,16 +314,25 @@ class Members
 
 	function cantLeaveReason()
 	{
-		global $Misc;
-
 		if ( !$this->isJoined() )
 			return l_t("not a member");
 		elseif($this->Game->phase != 'Pre-game')
 			return l_t("game started");
-		elseif(count($this->ByID)==count($this->Game->Variant->countries) &&
-		       time() + 30*60 > $this->Game->processTime)
+		else
+			return self::preGameLeaveReason(count($this->ByID), count($this->Game->Variant->countries), $this->Game->processTime);
+	}
+
+	/**
+	 * Why a member can't leave a pre-game game, or false if they can. Static for game/playercontext, which has
+	 * only the game's rows.
+	 */
+	static function preGameLeaveReason($memberCount, $countryCount, $processTime)
+	{
+		global $Misc;
+
+		if( $memberCount == $countryCount && time() + 30*60 > $processTime )
 			return l_t("game starting soon");
-		elseif(time()>$this->Game->processTime)
+		elseif( time() > $processTime )
 			return l_t("game starting");
 		elseif ( $Misc->Panic )
 			return l_t("joining/leaving games disabled while a problem is resolved");

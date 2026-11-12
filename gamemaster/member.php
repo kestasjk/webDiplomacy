@@ -46,8 +46,7 @@ class processMember extends Member
 	}
 
 	/**
-	 * leave() without the page it ends with, for the game/leave API route. The caller commits, and then has to
-	 * refresh the game's public JSON files with libGameFiles::runDeferred().
+	 * leave() without the notice. The caller must commit and run libGameFiles::runDeferred().
 	 *
 	 * @return string The message the player is sent saying they left
 	 */

@@ -475,11 +475,7 @@ class processMembers extends Members
 	}
 
 	/**
-	 * join() without the page it ends with, for the game/join API route. The caller commits, and then has to
-	 * refresh the game's public JSON files with libGameFiles::runDeferred().
-	 *
-	 * @param string[optional] $password The optional password supplied to enter the game
-	 * @param string[optional] $countryID The countryID to be taken (filtered)
+	 * join() without the redirect. The caller must commit and run libGameFiles::runDeferred().
 	 */
 	function joinWithoutRedirect($password="", $countryID=-1)
 	{

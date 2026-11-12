@@ -200,7 +200,6 @@ class PlayerContext
 			$context['viewer']['isTempBanned'] = true;
 		}
 
-		// What board.php's join bar offers: joining or taking over a country, or leaving before the game starts
 		$context['join'] = null;
 		$context['leave'] = null;
 		if( !$isSandbox && $gameRow['phase'] != 'Finished' )
@@ -219,9 +218,8 @@ class PlayerContext
 	}
 
 	/**
-	 * Whether someone not in the game may join it, as Game::isJoinable() and board.php's join bar decide, for the
-	 * game/join route. Null if the game has no place for them: a pre-game game which is full, a started game with
-	 * no country in civil disorder, or one they were in and left. Otherwise canJoin, or cantJoinReason saying why not.
+	 * Whether someone not in the game may join it, by Game::isJoinable()'s rules. Null if the game has no place for
+	 * them: a full pre-game game, a started game with no country in civil disorder, or one they left.
 	 */
 	private static function join(array $gameRow, array $memberRows, $userID)
 	{
@@ -271,29 +269,18 @@ class PlayerContext
 	}
 
 	/**
-	 * Whether a member may leave the game, as Members::cantLeaveReason() decides, for the game/leave route. Null once
-	 * the game has started, when leaving isn't possible at all.
+	 * Whether a member may leave the game. Null once it has started, when they can't at all.
 	 */
 	private static function leave(array $gameRow, array $memberRows)
 	{
-		global $Misc;
-
 		if( $gameRow['phase'] != 'Pre-game' ) return null;
 
-		$processTime = intval($gameRow['processTime']);
 		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
-
-		$cantLeaveReason = null;
-		if( count($memberRows) == count($Variant->countries) && time() + 30*60 > $processTime )
-			$cantLeaveReason = l_t("game starting soon");
-		elseif( time() > $processTime )
-			$cantLeaveReason = l_t("game starting");
-		elseif( isset($Misc) && $Misc->Panic )
-			$cantLeaveReason = l_t("joining/leaving games disabled while a problem is resolved");
+		$cantLeaveReason = \Members::preGameLeaveReason(count($memberRows), count($Variant->countries), intval($gameRow['processTime']));
 
 		return array(
-			'canLeave' => is_null($cantLeaveReason),
-			'cantLeaveReason' => $cantLeaveReason,
+			'canLeave' => !$cantLeaveReason,
+			'cantLeaveReason' => $cantLeaveReason ? $cantLeaveReason : null,
 		);
 	}
 
