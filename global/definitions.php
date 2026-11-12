@@ -49,5 +49,5 @@ define("JSDIR", 'javascript');
 define("CSSDIR", 'css');
 
 //Increment these versions whenever you update any js or css files for cachebusting
-define("JSVERSION",2.00);
+define("JSVERSION",2.01);
 define("CSSVERSION",1.42);

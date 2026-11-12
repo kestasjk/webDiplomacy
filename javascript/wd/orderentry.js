@@ -329,7 +329,7 @@ wD.OrderEntry = (function () {
 			}
 			var via = (legal.vias[unit.id] || []).filter(function (v) { return v.dest === provinceID; })[0];
 			if (!via) return { result: 'invalid', terrID: provinceID };
-			return this.commit({ toTerrID: provinceID, viaConvoy: 'Yes', convoyPath: via.paths[0] });
+			return this.commit({ toTerrID: provinceID, viaConvoy: 'Yes', convoyPath: via.path });
 		}
 
 		if (current.type === 'Support') {

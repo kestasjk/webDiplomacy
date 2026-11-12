@@ -34,7 +34,7 @@
  *   retreatDests[unitID]   territory IDs a dislodged unit may retreat to
  *   buildDests             territory IDs a unit may be built on (a coast's ID for a fleet on that coast)
  *   destroyUnits           { unitID: true } units which may be destroyed
- *   vias[unitID]           [{ dest: terrID, paths: [[provinceID...]] }] moves by convoy; a path starts with the
+ *   vias[unitID]           [{ dest: provinceID, path: [provinceID...] }] moves by convoy; a path starts with the
  *                          army's province and ends with the last fleet, which is what ajax.php's convoyPath wants
  *   convoys[unitID]        { armyProvinceID: { destProvinceID: { path: [provinceID...] } } } convoys a fleet may give
  *   supports[unitID]       { supportedProvinceID: [{ dest: provinceID, convoyPath: [..]|null }] } a dest equal to
@@ -116,94 +116,231 @@ wD.LegalOrders = (function () {
 	}
 
 	/**
-	 * Walks the fleets at sea from a province: every chain of occupied sea provinces leading to a coast.
-	 * @param {function} onCoast called with (coastProvinceID, pathSoFar) for each coast reached; pathSoFar starts
-	 *   with startProvinceID and ends with the last sea province
-	 * @param {boolean} firstStepMustBeSea whether the first province entered must be a sea (for a convoyed army)
+	 * The fleets at sea as a graph, which is all a convoy can run through: for each sea with a unit in it, the
+	 * occupied seas next to it and the coasts it touches.
+	 * @returns {{next: Object, coasts: Object}} both keyed by the sea's province ID
 	 */
-	function walkConvoyChains(variant, provinceStatus, startProvinceID, firstStepMustBeSea, onCoast) {
-		var reached = {};
-		reached[startProvinceID] = true;
+	function seaGraph(variant, provinceStatus) {
+		var occupied = {};
+		variant.territoryIDs().forEach(function (terrID) {
+			if (variant.isSea(terrID) && provinceStatus[terrID] && provinceStatus[terrID].unitID) occupied[terrID] = true;
+		});
+		var graph = { next: {}, coasts: {} };
+		Object.keys(occupied).forEach(function (key) {
+			var borders = variant.bordersFrom(Number(key), 'Fleet');
+			graph.next[key] = borders.filter(function (id) { return occupied[id]; });
+			graph.coasts[key] = borders.filter(function (id) { return !variant.isSea(id); });
+		});
+		return graph;
+	}
 
-		var search = function (provinceID, path) {
-			variant.bordersFrom(provinceID, 'Fleet').forEach(function (nextID) {
-				if (reached[nextID]) return;
-				var isSea = variant.isSea(nextID);
-				if (firstStepMustBeSea && path.length <= 1 && !isSea) return;
-				if (isSea) {
-					// A sea can be crossed if a fleet is there
-					if (provinceStatus[nextID] && provinceStatus[nextID].unitID) {
-						reached[nextID] = true;
-						path.push(nextID);
-						search(nextID, path);
-						path.pop();
-						delete reached[nextID];
-					}
-				} else {
-					onCoast(nextID, path);
-				}
+	/**
+	 * Where the fleets at sea could carry an army from a province: each coast a chain of them leads to, and the
+	 * shortest chain there. A search outwards a sea at a time, which looks at each fleet once. (Listing every
+	 * chain, as this used to, takes minutes once twenty-odd fleets are at sea together, as in a World game.)
+	 * @param {number|null} withoutSeaID a sea the chains must keep out of
+	 * @returns {Object} { destProvinceID: [startProvinceID, seaID...] } each path ending with the last fleet
+	 */
+	function convoyRoutes(variant, graph, startProvinceID, withoutSeaID) {
+		var chains = {};
+		var routes = {};
+		var queue = [];
+		var reach = function (seaID, chain) {
+			if (!graph.next[seaID] || seaID === withoutSeaID || chains[seaID]) return;
+			chains[seaID] = chain.concat([seaID]);
+			queue.push(seaID);
+		};
+		variant.bordersFrom(startProvinceID, 'Fleet').forEach(function (seaID) { reach(seaID, [startProvinceID]); });
+		for (var i = 0; i < queue.length; i++) {
+			var chain = chains[queue[i]];
+			graph.coasts[queue[i]].forEach(function (coastID) {
+				if (coastID !== startProvinceID && !routes[coastID]) routes[coastID] = chain;
+			});
+			graph.next[queue[i]].forEach(function (seaID) { reach(seaID, chain); });
+		}
+		return routes;
+	}
+
+	/**
+	 * The convoys which could run through one fleet for one army: the coasts the army could be carried to, with a
+	 * path for each. A path through the fleet is two chains out from it which share no other sea, one to the army
+	 * and one to the destination. The first is given; the second is searched for in a way which may take seas from
+	 * the first and send it another way round (an augmenting path, as in a maximum flow), so a pair is found
+	 * wherever there is one, without trying every pairing.
+	 * @param {number[]} toArmy the chain from the fleet to the army: the fleet's sea first, a sea touching the
+	 *   army's province last
+	 * @returns {Object} { destProvinceID: { path: [armyProvinceID, seaID...] } }
+	 */
+	function convoysThrough(graph, fleetSeaID, armyProvinceID, toArmy) {
+		var byDest = {};
+		var lastSeaID = toArmy[toArmy.length - 1];
+		var touchesArmy = function (seaID) { return graph.coasts[seaID].indexOf(armyProvinceID) !== -1; };
+		var offer = function (seaID, path) {
+			graph.coasts[seaID].forEach(function (coastID) {
+				if (coastID !== armyProvinceID && !byDest[coastID]) byDest[coastID] = { path: path };
 			});
 		};
-		search(startProvinceID, [startProvinceID]);
+
+		// The coasts the fleet itself touches need no second chain
+		offer(fleetSeaID, [armyProvinceID].concat(toArmy.slice(1).reverse(), [fleetSeaID]));
+
+		var nextOnFirst = {};
+		var prevOnFirst = {};
+		for (var i = 1; i < toArmy.length; i++) {
+			nextOnFirst[toArmy[i - 1]] = toArmy[i];
+			prevOnFirst[toArmy[i]] = toArmy[i - 1];
+		}
+
+		// The search is over the ways into and out of each sea ('i' and 'o'), so that a sea is only passed through
+		// once, and 'x', arriving at the army by another sea than the first chain's. from[] is how each was reached.
+		var from = {};
+		var queue = [];
+		var reach = function (state, seaID, previous) {
+			var key = state + seaID;
+			if (from[key]) return;
+			from[key] = { state: state, seaID: seaID, previous: previous };
+			queue.push(from[key]);
+		};
+		graph.next[fleetSeaID].forEach(function (seaID) {
+			if (seaID !== nextOnFirst[fleetSeaID]) reach('i', seaID, null);
+		});
+		if (lastSeaID !== fleetSeaID && touchesArmy(fleetSeaID)) reach('x', 0, null);
+
+		for (var q = 0; q < queue.length; q++) {
+			var at = queue[q];
+			var seaID = at.seaID;
+			if (at.state === 'i') {
+				if (prevOnFirst[seaID] === undefined) {
+					reach('o', seaID, at);
+				} else if (prevOnFirst[seaID] !== fleetSeaID) {
+					// A sea of the first chain can only be entered by taking it from that chain, which then has to
+					// leave the sea before it another way
+					reach('o', prevOnFirst[seaID], at);
+				}
+			} else if (at.state === 'o') {
+				for (var n = 0; n < graph.next[seaID].length; n++) {
+					var nextID = graph.next[seaID][n];
+					if (nextID !== fleetSeaID && nextID !== nextOnFirst[seaID]) reach('i', nextID, at);
+				}
+				if (prevOnFirst[seaID] !== undefined) reach('i', seaID, at);
+				if (seaID !== lastSeaID && touchesArmy(seaID)) reach('x', 0, at);
+			} else if (lastSeaID !== fleetSeaID) {
+				// The army is reached another way, so the first chain's last sea is free to go on from
+				reach('o', lastSeaID, at);
+			}
+		}
+
+		// Each sea the search could leave gives a destination chain ending there, once the first chain has made way
+		queue.forEach(function (end) {
+			if (end.state !== 'o') return;
+			if (graph.coasts[end.seaID].every(function (coastID) { return coastID === armyProvinceID || byDest[coastID]; })) return;
+
+			var steps = [];
+			for (var reached = end; reached; reached = reached.previous) steps.unshift(reached);
+
+			var next = {};
+			Object.keys(nextOnFirst).forEach(function (key) { if (Number(key) !== fleetSeaID) next[key] = nextOnFirst[key]; });
+			var firstSeas = (toArmy.length > 1) ? [toArmy[1]] : [];
+			var armySeaID = lastSeaID;
+			steps.forEach(function (step, index) {
+				var previous = index ? steps[index - 1] : null;
+				if (step.state === 'i') {
+					if (!previous) firstSeas.push(step.seaID);
+					else if (previous.seaID !== step.seaID) next[previous.seaID] = step.seaID;
+				} else if (step.state === 'o') {
+					// A sea taken from the first chain: the sea before it no longer leads there
+					if (previous && previous.state === 'i' && previous.seaID !== step.seaID) delete next[step.seaID];
+				} else {
+					armySeaID = previous ? previous.seaID : fleetSeaID;
+				}
+			});
+
+			var toArmySeas = (armySeaID === fleetSeaID) ? [] : null;
+			var toDestSeas = null;
+			firstSeas.forEach(function (firstID) {
+				var chain = [firstID];
+				while (next[chain[chain.length - 1]] !== undefined && chain.length < toArmy.length + steps.length) chain.push(next[chain[chain.length - 1]]);
+				var chainEnd = chain[chain.length - 1];
+				if (chainEnd === armySeaID && toArmySeas === null) toArmySeas = chain;
+				else if (chainEnd === end.seaID && toDestSeas === null) toDestSeas = chain;
+			});
+			if (toArmySeas === null || toDestSeas === null) return;
+
+			offer(end.seaID, [armyProvinceID].concat(toArmySeas.slice().reverse(), [fleetSeaID], toDestSeas));
+		});
+
+		return byDest;
 	}
 
 	function convoyOrders(variant, units, provinceStatus, isOwn) {
+		var graph = seaGraph(variant, provinceStatus);
 		var vias = {};
 		var convoys = {};
+		var routes = {};
 
-		// Where each army could be carried, and by which chains
+		// Where each army could be carried, and by which chain
 		values(units).forEach(function (unit) {
 			if (unit.type !== 'Army') return;
-			var start = variant.provinceID(unit.terrID);
-			var byDest = {};
-			walkConvoyChains(variant, provinceStatus, start, true, function (destID, path) {
-				if (destID === start) return;
-				if (!byDest[destID]) byDest[destID] = { dest: destID, paths: [] };
-				byDest[destID].paths.push(path.slice());
-			});
-			vias[unit.id] = values(byDest);
+			var byDest = convoyRoutes(variant, graph, variant.provinceID(unit.terrID), null);
+			routes[unit.id] = byDest;
+			vias[unit.id] = Object.keys(byDest).map(function (dest) { return { dest: Number(dest), path: byDest[dest] }; });
 		});
 
-		// Which armies each of our fleets at sea could carry, and where: chains out from the fleet to a coastal
-		// army, joined to chains out from the fleet to another coast which share no sea with the first
+		var isArmyAt = function (provinceID) {
+			var status = provinceStatus[provinceID];
+			return !!(status && status.unitID && units[status.unitID] && units[status.unitID].type === 'Army');
+		};
+
+		// Which armies each of our fleets at sea could carry, and where
 		values(units).forEach(function (unit) {
 			if (!isOwn(unit) || unit.type !== 'Fleet' || !variant.isSea(unit.terrID)) return;
-			var fleetProvince = variant.provinceID(unit.terrID);
-			var toArmies = [];
-			var toCoasts = [];
-			walkConvoyChains(variant, provinceStatus, fleetProvince, false, function (coastID, path) {
-				var record = { dest: coastID, path: path.slice() };
-				toCoasts.push(record);
-				var status = provinceStatus[coastID];
-				if (status && status.unitID && units[status.unitID] && units[status.unitID].type === 'Army') toArmies.push(record);
-			});
+			var fleetSeaID = variant.provinceID(unit.terrID);
+			convoys[unit.id] = {};
+			if (!graph.next[fleetSeaID]) return;
 
-			var byArmy = {};
-			toArmies.forEach(function (toArmy) {
-				// From the army back to this fleet, the fleet itself left off as the second half starts with it
-				var firstHalf = toArmy.path.slice();
-				firstHalf.push(toArmy.dest);
-				firstHalf.reverse();
-				firstHalf.pop();
-				var used = {};
-				firstHalf.forEach(function (id) { used[id] = true; });
-
-				var byDest = {};
-				toCoasts.forEach(function (toCoast) {
-					if (toCoast.dest === toArmy.dest || byDest[toCoast.dest]) return;
-					if (toCoast.path.every(function (id) { return !used[id]; })) {
-						byDest[toCoast.dest] = { path: firstHalf.concat(toCoast.path) };
+			// The seas the fleet is linked to, nearest first, and the way back to it from each
+			var order = [fleetSeaID];
+			var back = {};
+			back[fleetSeaID] = null;
+			for (var i = 0; i < order.length; i++) {
+				graph.next[order[i]].forEach(function (seaID) {
+					if (back[seaID] === undefined) {
+						back[seaID] = order[i];
+						order.push(seaID);
 					}
 				});
-				if (Object.keys(byDest).length) byArmy[toArmy.dest] = byDest;
+			}
+
+			// The armies on the coasts of those seas, each with the nearest of the seas
+			var nearestSea = {};
+			order.forEach(function (seaID) {
+				graph.coasts[seaID].forEach(function (coastID) {
+					if (nearestSea[coastID] === undefined && isArmyAt(coastID)) nearestSea[coastID] = seaID;
+				});
 			});
-			convoys[unit.id] = byArmy;
+
+			Object.keys(nearestSea).forEach(function (key) {
+				var toArmy = [];
+				for (var seaID = nearestSea[key]; seaID !== null; seaID = back[seaID]) toArmy.unshift(seaID);
+				var byDest = convoysThrough(graph, fleetSeaID, Number(key), toArmy);
+				if (Object.keys(byDest).length) convoys[unit.id][key] = byDest;
+			});
 		});
 
-		return { vias: vias, convoys: convoys };
+		/** A path carrying an army to a coast which keeps out of a province, or null */
+		var routeWithout = {};
+		var route = function (army, destProvinceID, withoutProvinceID) {
+			var path = (routes[army.id] || {})[destProvinceID];
+			if (!path || path.indexOf(withoutProvinceID) === -1) return path || null;
+			var key = army.id + ' ' + withoutProvinceID;
+			if (!routeWithout[key]) routeWithout[key] = convoyRoutes(variant, graph, variant.provinceID(army.terrID), withoutProvinceID);
+			return routeWithout[key][destProvinceID] || null;
+		};
+
+		return { vias: vias, convoys: convoys, route: route };
 	}
 
-	function supportOrders(variant, units, isOwn, moveDests, vias) {
+	function supportOrders(variant, units, isOwn, moveDests, convoyRoute) {
 		var supports = {};
 		values(units).forEach(function (unit) {
 			if (!isOwn(unit)) return;
@@ -222,13 +359,10 @@ wD.LegalOrders = (function () {
 						add(otherProvince, destProvince, null); // Support hold
 					} else if ((moveDests[other.id] || []).some(function (terrID) { return variant.provinceID(terrID) === destProvince; })) {
 						add(otherProvince, destProvince, null); // Support move
-					} else if (vias[other.id]) {
+					} else if (other.type === 'Army') {
 						// Support a move by convoy, as long as the convoy doesn't run through this unit
-						var via = vias[other.id].filter(function (v) { return v.dest === destProvince; })[0];
-						if (via) {
-							var path = via.paths.filter(function (p) { return p.indexOf(unitProvince) === -1; })[0];
-							if (path) add(otherProvince, destProvince, path);
-						}
+						var path = convoyRoute(other, destProvince, unitProvince);
+						if (path) add(otherProvince, destProvince, path);
 					}
 				});
 			});
@@ -255,7 +389,7 @@ wD.LegalOrders = (function () {
 			var convoy = convoyOrders(variant, units, provinceStatus, isOwn);
 			result.vias = convoy.vias;
 			result.convoys = convoy.convoys;
-			result.supports = supportOrders(variant, units, isOwn, result.moveDests, result.vias);
+			result.supports = supportOrders(variant, units, isOwn, result.moveDests, convoy.route);
 		} else if (board.phase === 'Retreats') {
 			result.retreatDests = retreatDestinations(variant, units, provinceStatus, isOwn);
 		} else if (board.phase === 'Builds') {

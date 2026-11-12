@@ -185,7 +185,10 @@ wd/variantmap.js
 		rules).
 wd/legalorders.js
 	- wD.LegalOrders: which orders each unit may be given this phase, for any variant (builds on any
-		owned centre where variant.json's rules.buildAnywhere says so).
+		owned centre where variant.json's rules.buildAnywhere says so). Convoys are found by searching
+		the fleets at sea outwards, giving one path per destination (the shortest for an army; for a
+		fleet, one running through it), never by listing every chain: with twenty-odd fleets at sea
+		together, as in a World game, there are a million chains and the page took a minute to open.
 wd/mapcanvas.js
 	- wD.MapCanvas: draws the map on a canvas exactly as map.php / map/drawMap.php draw it (the same
 		images at their own size, the same colours, arrows, flags and markers), tints whole territories
