@@ -268,9 +268,22 @@ class libHome
 
 		return $buf;
 	}
+
+	/**
+	 * The upcoming bounty events (see lib/bounty.php), with their pools to enter once open
+	 */
+	static public function bountyEvents ()
+	{
+		require_once(l_r('lib/bounty.php'));
+		return libBounty::homePanels();
+	}
+
 	static public function joinableGames ()
 	{
 		global $User, $DB;
+
+		// Scheduled bounty events come first, as they're visible all week but only joinable at their time
+		$buf = self::bountyEvents();
 
 		$tabl=$DB->sql_tabl("SELECT g.* 
 			FROM wD_Games g
@@ -278,7 +291,6 @@ class libHome
 				AND ".$User->reliabilityRating." >= g.minimumReliabilityRating
 				AND g.gameOver = 'No' AND playerTypes <> 'MemberVsBots' 
 				AND g.password IS NULL");
-		$buf = '';
 		$count=0;
 		while($game=$DB->tabl_hash($tabl))
 		{

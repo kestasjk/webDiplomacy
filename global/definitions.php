@@ -24,7 +24,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-define("VERSION", 184);
+define("VERSION", 185);
 
 // The most no-press bot games botgamecreate.php lets run at once: play-now (anonymous) games, and
 // registered users' games. status.php reports against the same numbers. A server can set either in
