@@ -32,8 +32,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * What is the same for everyone is in the game's public JSON files (lib/gamefiles.php), whose URLs and versions
  * this gives out.
  *
- * It reads the game's row and its member rows and nothing else unless orders or messages are asked for; no Game,
- * Members or Variant objects are built. Those two reads also tell it whether the public files are up to date, and
+ * It reads the game's row and its member rows and nothing else unless orders or messages are asked for, or the caller
+ * might join or leave the game; no Game or Members objects are built. Those two reads also tell it whether the public files are up to date, and
  * it rewrites them if they aren't, so a change which forgot to refresh them is put right by the next request.
  *
  * Nothing private is read until the caller has been matched to a member row by user ID. The country is always
@@ -200,11 +200,88 @@ class PlayerContext
 			$context['viewer']['isTempBanned'] = true;
 		}
 
+		$context['join'] = null;
+		$context['leave'] = null;
+		if( !$isSandbox && $gameRow['phase'] != 'Finished' )
+		{
+			if( count($ownRows) )
+				$context['leave'] = self::leave($gameRow, $memberRows);
+			else
+				$context['join'] = self::join($gameRow, $memberRows, $userID);
+		}
+
 		// A moderator who isn't playing, and the game's directors, see who the players of an anonymous game are
 		if( libGameFiles::identitiesHidden($gameRow) && ( ( $isModerator && !count($ownRows) ) || $isDirector ) )
 			$context['hiddenMembers'] = self::hiddenMembers($gameID, $memberRows);
 
 		return $context;
+	}
+
+	/**
+	 * Whether someone not in the game may join it, by Game::isJoinable()'s rules. Null if the game has no place for
+	 * them: a full pre-game game, a started game with no country in civil disorder, or one they left.
+	 */
+	private static function join(array $gameRow, array $memberRows, $userID)
+	{
+		global $DB;
+
+		list($leftBefore) = $DB->sql_row("SELECT COUNT(*) FROM wD_CivilDisorders WHERE gameID = ".intval($gameRow['id'])." AND userID = ".intval($userID));
+		if( $leftBefore > 0 ) return null;
+
+		$civilDisorderCountryIDs = array();
+		if( $gameRow['phase'] == 'Pre-game' )
+		{
+			$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
+			if( count($memberRows) >= count($Variant->countries) ) return null;
+		}
+		else
+		{
+			foreach($memberRows as $memberRow)
+				if( $memberRow['status'] == 'Left' )
+					$civilDisorderCountryIDs[] = intval($memberRow['countryID']);
+
+			if( !count($civilDisorderCountryIDs) ) return null;
+		}
+
+		$userRow = $DB->sql_hash("SELECT type, points, reliabilityRating, tempBan FROM wD_Users WHERE id = ".intval($userID));
+		if( !$userRow || !in_array('User', explode(',', $userRow['type'])) ) return null;
+
+		$minimumRR = intval($gameRow['minimumReliabilityRating']);
+
+		// In the order board.php gives them
+		$cantJoinReason = null;
+		if( intval($userRow['tempBan']) > time() )
+			$cantJoinReason = l_t('Due to a temporary ban you cannot join games.');
+		elseif( round($userRow['reliabilityRating']) < $minimumRR )
+			$cantJoinReason = l_t('You are not reliable enough to join this game.');
+		elseif( is_null($gameRow['minimumBet']) || intval($userRow['points']) < intval($gameRow['minimumBet']) )
+			$cantJoinReason = l_t('You have too few points to join this game.');
+
+		return array(
+			'canJoin' => is_null($cantJoinReason),
+			'cantJoinReason' => $cantJoinReason,
+			// Taking over a country from civil disorder is free (Member::pointsValueInTakeover())
+			'bet' => $gameRow['phase'] == 'Pre-game' ? intval($gameRow['minimumBet']) : 0,
+			'needsInviteCode' => (bool)$gameRow['isPrivate'],
+			'minimumReliabilityRating' => $minimumRR,
+			'civilDisorderCountryIDs' => $civilDisorderCountryIDs,
+		);
+	}
+
+	/**
+	 * Whether a member may leave the game. Null once it has started, when they can't at all.
+	 */
+	private static function leave(array $gameRow, array $memberRows)
+	{
+		if( $gameRow['phase'] != 'Pre-game' ) return null;
+
+		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
+		$cantLeaveReason = \Members::preGameLeaveReason(count($memberRows), count($Variant->countries), intval($gameRow['processTime']));
+
+		return array(
+			'canLeave' => !$cantLeaveReason,
+			'cantLeaveReason' => $cantLeaveReason ? $cantLeaveReason : null,
+		);
 	}
 
 	/**

@@ -9,6 +9,7 @@ import { useAppSelector, useAppDispatch } from "../../../state/hooks";
 import Position from "../../../enums/Position";
 
 import WDBuildCounts from "../WDBuildCounts";
+import WDJoinPanel from "../WDJoinPanel";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
 import PhaseSelectorSimple from "../phase-selector/PhaseSelectorSimple";
@@ -79,7 +80,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
   const [lastPhase, setLastPhase] = useState<number>(-1);
-  const { members } = useAppSelector(gameOverview);
+  const { members, join } = useAppSelector(gameOverview);
 
   useEffect(() => {
     if (
@@ -109,6 +110,12 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       position={Position.BOTTOM_MIDDLE}
       bottom={width < 500 ? 14 : 4}
     >
+      {/* Pre-game, joining is offered by WDGameProgressOverlay */}
+      {join && join.civilDisorderCountryIDs.length > 0 && (
+        <div className="bg-white rounded-xl p-3 mb-2 mx-auto w-fit">
+          <WDJoinPanel />
+        </div>
+      )}
       <WDBuildCounts />
       {width > 650 && (
         <div className="bg-[#1C2B33] text-white items-center p-1 m-2 font-medium uppercase text-xs">

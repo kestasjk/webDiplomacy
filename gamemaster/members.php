@@ -467,6 +467,18 @@ class processMembers extends Members
 	 */
 	function join($password="", $countryID=-1)
 	{
+		$this->joinWithoutRedirect($password, $countryID);
+
+		libHTML::analyticsEvent(libHTML::analyticsGameEventName('join_game', $this->Game), array('variant'=>$this->Game->Variant->name));
+
+		$this->joinedRedirect();
+	}
+
+	/**
+	 * join() without the redirect. The caller must commit and run libGameFiles::runDeferred().
+	 */
+	function joinWithoutRedirect($password="", $countryID=-1)
+	{
 		global $DB, $User;
 
 		$countryID=(int)$countryID;
@@ -561,12 +573,8 @@ class processMembers extends Members
 
 		//$this->Game->gamelog(l_t('New member joined'));
 
-		libHTML::analyticsEvent(libHTML::analyticsGameEventName('join_game', $this->Game), array('variant'=>$this->Game->Variant->name));
-
-		// The redirect below ends the page, which commits; the game's public JSON files then get the new member
+		// Once the page commits, the game's public JSON files get the new member
 		libGameFiles::refreshAfterCommit($this->Game->id, array('game', 'status'));
-
-		$this->joinedRedirect();
 	}
 
 	/**

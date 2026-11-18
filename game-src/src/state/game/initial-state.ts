@@ -52,6 +52,8 @@ const initialState: GameState = {
     gameID: 0,
     gameOver: "No",
     isTempBanned: false,
+    join: null,
+    leave: null,
     members: [],
     minimumBet: 5,
     name: "",
