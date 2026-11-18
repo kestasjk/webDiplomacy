@@ -291,18 +291,109 @@ function sbToken(): string | null {
   return new URLSearchParams(window.location.search).get("sbToken");
 }
 
+// Set once game/playercontext has refused this board for not being logged on; see guestContext()
+let isGuest = false;
+
+/**
+ * Where gamefile.php is asked for one of a game's files. It needs no log-on, and redirects to the file itself,
+ * writing it first if it isn't in the cache.
+ */
+function publicFileURL(query: { [key: string]: string }): string {
+  return `gamefile.php?${new URLSearchParams(query).toString()}`;
+}
+
+/**
+ * The context of a logged-out visitor. game/playercontext says what depends on who is looking, so it has no answer
+ * for someone it can't identify (a 401), and until this was added such a visitor, who board.php sends here like
+ * anyone else without a map option set, was shown the empty map this board starts with. Everything a spectator is
+ * shown is in the game's public files though, so this is a spectator's context built from game.json: no country,
+ * orders or private messages, and no token for the SSE server, so the board doesn't update until it is reloaded.
+ */
+async function guestContext(gameID: string): Promise<PlayerContext> {
+  const { data } = await http.get(
+    `${siteRoot}${publicFileURL({ gameID, file: "game" })}`,
+    { timeout: 60000 },
+  );
+  const game = data as GameFile;
+  loadedFiles.game = { version: game.version, contents: game };
+  versions.game = game.version;
+
+  const file = (name: GameFileName): FileRef => ({
+    url: publicFileURL({ gameID, file: name }),
+    version: null,
+  });
+  const guest: PlayerContext = {
+    schema: 1,
+    game: {
+      gameID: Number(gameID),
+      realGameID: Number(gameID),
+      variantID: game.variant.id,
+      name: game.name,
+      turn: game.turn,
+      phase: game.phase,
+      gameOver: game.gameOver,
+      processTime: game.processTime,
+      processStatus: game.processStatus,
+      pressType: game.pressType,
+      potType: game.potType,
+      phaseMinutes: game.phaseMinutes,
+    },
+    files: {
+      variant: {
+        url: publicFileURL({
+          variantID: game.variant.id.toString(),
+          file: "variant",
+        }),
+        version: game.variant.version,
+      },
+      game: file("game"),
+      status: file("status"),
+      history: file("history"),
+      messages: file("messages"),
+    },
+    viewer: {
+      userID: 0,
+      isMember: false,
+      isModerator: false,
+      isDirector: false,
+      isSandboxOwner: false,
+    },
+    member: null,
+    sseAuth: null,
+    orders: null,
+    messages: null,
+  };
+  fileURLs = guest.files;
+  return guest;
+}
+
 async function requestContext(
   gameID: string,
   params: { [key: string]: string },
 ): Promise<PlayerContext> {
+  if (isGuest) return guestContext(gameID);
   const query = new URLSearchParams({ gameID, ...params });
   const token = sbToken();
   if (token) query.set("sbToken", token);
   const started = performance.now();
-  const { data } = await http.get(
-    `${siteRoot}api.php?route=game/playercontext&${query.toString()}`,
-    { timeout: 60000 },
-  );
+  let data;
+  try {
+    ({ data } = await http.get(
+      `${siteRoot}api.php?route=game/playercontext&${query.toString()}`,
+      { timeout: 60000 },
+    ));
+  } catch (error) {
+    // Only while loading the game: a player whose log-on ends with the board open keeps what they have
+    if (
+      context === null &&
+      axios.isAxiosError(error) &&
+      error.response?.status === 401
+    ) {
+      isGuest = true;
+      return guestContext(gameID);
+    }
+    throw error;
+  }
   reportClientMetric("BOARD_CONTEXT", performance.now() - started);
   const newContext = data as PlayerContext;
   fileURLs = newContext.files;
@@ -352,9 +443,12 @@ async function getFile<T>(file: GameFileName | "variant"): Promise<T> {
   if (loaded && loaded.version === version) return loaded.contents as T;
 
   const started = performance.now();
-  const { data } = await http.get(`${siteRoot}${ref.url}?v=${version}`, {
-    timeout: 60000,
-  });
+  // A logged-out visitor's URLs are gamefile.php's, which have a query already
+  const separator = ref.url.includes("?") ? "&" : "?";
+  const { data } = await http.get(
+    `${siteRoot}${ref.url}${separator}v=${version}`,
+    { timeout: 60000 },
+  );
   reportClientMetric("BOARD_FILES", performance.now() - started);
   // The file says which version it is, which is newer than the one asked for if it was rewritten in between
   const contents = data as { version?: string };
@@ -698,6 +792,8 @@ export async function loadMessages(
 }
 
 export async function loadActiveGames(): Promise<{ games: PlayerActiveGames }> {
+  // A logged-out visitor has none, and the route would only refuse them again
+  if (isGuest) return { games: [] };
   const { data } = await http.get(
     `${siteRoot}api.php?route=game/playercontext`,
     { timeout: 60000 },

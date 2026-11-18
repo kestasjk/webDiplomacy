@@ -521,8 +521,14 @@ P = `game/playercontext`, X = dropped (no consumer reads it).
    is still how production runs.
 4. **Moderators in the new board.** `hiddenMembers` is specified but could be left out of the first
    version, leaving moderators on board.php.
-5. **Guests.** Files are world-readable, so logged-out visitors could get a read-only board with
-   no API call and no live updates. Wanted?
+5. **Guests.** Done for the `/game/` board on 2026-11-18. board.php has sent logged-out visitors
+   to that board since 2023, where the API refused them and they were left looking at an empty map.
+   When `game/playercontext` answers 401 while a game is loading, the board (`guestContext()` in
+   `game-src/src/utils/api/gameSource.ts`) now builds a spectator's context from `game.json` and
+   reads the four files through `gamefile.php`: a read-only board with no orders, no private
+   messages and no live updates, as a logged-in spectator sees it. The route itself still refuses
+   them. Still open: board.php's canvas board (`Game::useCanvasBoard()` sends guests to the map
+   image), and sandbox games, which a guest can only see through board.php with the `sbToken` link.
 
 ## 10. Status, 2026-09-19
 
