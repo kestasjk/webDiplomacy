@@ -91,6 +91,10 @@ class InstallCache {
 	{
 		$javascript = "function loadTerritories() {\n".'Territories = $H('.json_encode(self::terrJSONData($mapID)).');'."\n}\n";
 
+		$directory = dirname($jsonFileLocation);
+		if( !is_dir($directory) && !@mkdir($directory, 0775, true) && !is_dir($directory) )
+			throw new Exception(l_t("Couldn't make cache directory '%s'.", $directory));
+
 		file_put_contents($jsonFileLocation, $javascript);
 	}
 }
