@@ -255,6 +255,11 @@ if( $User->type['User'] )
 		'sbToken' => isset($_REQUEST['sbToken']) ? (string)$_REQUEST['sbToken'] : null,
 		'turn' => (int)$Game->turn,
 		'phase' => $Game->phase,
+		// For the page refreshing itself when the game moves on: reloading a page drawn for a form's POST would post
+		// the form again, so that loads the board instead
+		'reloadURL' => ( $_SERVER['REQUEST_METHOD'] === 'POST' ) ? 'board.php?gameID='.(int)$Game->id
+			.( ( isset($_REQUEST['view']) && in_array($_REQUEST['view'], array('dropDown', 'canvas'), true) ) ? '&view='.$_REQUEST['view'] : '' )
+			.( isset($_REQUEST['sbToken']) ? '&sbToken='.urlencode((string)$_REQUEST['sbToken']) : '' ) : null,
 		'chat' => isset($chatConfig) ? $chatConfig : null,
 		'canvas' => isset($canvasConfig) ? $canvasConfig : null,
 	);

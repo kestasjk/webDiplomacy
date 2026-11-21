@@ -206,6 +206,13 @@ wd/canvasboard.js
 		being entered, unsaved or only part-way entered, unless the phase changed). Save is grey unless there are
 		changes to save, a Builds phase says how many builds or disbands there are and how many are
 		placed, and a finished game's latest map is its last turn from history.json (game.json has no
-		board by then).
+		board by then). In Diplomacy and Retreats the player's units which have no order yet are
+		circled in orange, with a line under the icons counting them, until the orders are readied.
+		As the server makes every Diplomacy order a Hold, "no order yet" means not ordered on this
+		page and not saved from this browser this phase (localStorage wdGivenOrders.<gameID>); a
+		phase saved from elsewhere counts as all ordered.
 wd/board.js
-	- wD.Board: wires the above up for board.php; exposes wD.page for the console.
+	- wD.Board: wires the above up for board.php; exposes wD.page for the console. When the game
+		moves on to a new phase it refreshes the page after a few seconds (a toast offers to stay),
+		waiting while the user is writing in any text field; a page drawn for a POST is refreshed
+		by loading board.php?gameID=N (config.reloadURL), not by posting the form again.

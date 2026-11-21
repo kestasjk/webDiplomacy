@@ -45,6 +45,8 @@
  *       province isn't the unit's country's, as map.php does)
  *     { op: 'dislodgedUnit', terrID, type, countryID }  a dislodged unit, drawn on its dislodgement marker to the
  *       upper right of the territory, so that it can be seen and clicked beside the unit which took its place
+ *     { op: 'unordered', terrID, dislodged }  a circle around a unit which needs an order, drawn before (under) the
+ *       units; dislodged for a dislodged unit, drawn on its marker
  *     { op: 'destroyed', terrID }   { op: 'dislodged', terrID }   { op: 'created', terrID, unitType }
  *     { op: 'caption', text }
  *
@@ -71,6 +73,7 @@ wD.MapCanvas = (function () {
 	var BORDER = [0, 0, 0];
 	var STANDOFF = [200, 20, 20];
 	var NEUTRAL = [226, 198, 158];
+	var UNORDERED = [255, 128, 0]; // The ring around a unit which needs an order
 
 	// The tints laid over a whole territory
 	var TINTS = {
@@ -525,6 +528,7 @@ wD.MapCanvas = (function () {
 			case 'destroyed': this.drawDestroyed(ctx, this.position(op.terrID)); break;
 			case 'dislodged': if (this.isLarge()) this.drawDislodgedMarker(ctx, this.position(op.terrID), false); break;
 			case 'created': this.drawCreated(ctx, op); break;
+			case 'unordered': this.drawUnordered(ctx, op); break;
 			case 'caption': this.drawCaption(ctx, op.text); break;
 			default: break;
 		}
@@ -682,6 +686,36 @@ wD.MapCanvas = (function () {
 		var flag = op.flag === undefined ? this.needsFlag(op.terrID, op.countryID) : !!op.flag;
 		if (flag) this.drawFlag(ctx, op.countryID, pos.x, pos.y);
 		this.drawUnitIcon(ctx, op.type, pos.x, pos.y);
+	};
+
+	/**
+	 * A unit which needs an order: a bright ring with a dark edge, and a pale disc inside it to lift the unit off the
+	 * territory's colour. Drawn before the units, so they sit on top of it.
+	 */
+	MapCanvas.prototype.drawUnordered = function (ctx, op) {
+		var pos = this.position(op.terrID);
+		var army = this.images.army;
+		var x = pos.x;
+		var y = pos.y;
+		if (op.dislodged) {
+			x += army.width / 2;
+			y -= army.height / 2;
+		}
+		var large = this.isLarge();
+		var radius = Math.max(army.width, army.height) * (large ? 0.62 : 0.7) + (large ? 3 : 2);
+		var ring = large ? 3.5 : 2.2;
+		ctx.save();
+		ctx.beginPath();
+		ctx.arc(x, y, radius, 0, Math.PI * 2);
+		ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+		ctx.fill();
+		ctx.lineWidth = ring + (large ? 3 : 2);
+		ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+		ctx.stroke();
+		ctx.lineWidth = ring;
+		ctx.strokeStyle = rgb(UNORDERED);
+		ctx.stroke();
+		ctx.restore();
 	};
 
 	/** drawMap.php's drawPolygon(): filled, about a position, optionally at the "small" offset to the upper right */

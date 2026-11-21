@@ -31,6 +31,12 @@
  *
  * orders are game/playercontext's orders[]: { id, countryID, unitID, unitType, terrID, type, toTerrID, fromTerrID,
  * viaConvoy }. legal is wD.LegalOrders.compute()'s result for the same board.
+ *
+ * Which units still need an order (unorderedUnits(), circled on the map): the server makes every Diplomacy order a
+ * Hold, so a Hold from it can't be told from one the player chose. A unit has been given an order once its order is
+ * anything but that Hold, or it was ordered on this page, or it is in givenOrderIDs (those this browser saved earlier
+ * in the phase); if nothing is known of what was saved (allGiven, the player saved from elsewhere) every saved order
+ * counts as given. In Retreats an order needs a retreat or a disband, as the server says.
  */
 var wD = window.wD || {};
 window.wD = wD;
@@ -49,6 +55,12 @@ wD.OrderEntry = (function () {
 		this.legal = options.legal;
 		this.current = null;
 		this.loadOrders(options.orders || []);
+		this.given = {};
+		var self = this;
+		(options.givenOrderIDs || []).forEach(function (orderID) { self.given[orderID] = true; });
+		this.orders.forEach(function (order) {
+			if (options.allGiven || order.type !== 'Hold') self.given[order.id] = true;
+		});
 	}
 
 	/* Orders as the server holds them */
@@ -207,6 +219,31 @@ wD.OrderEntry = (function () {
 		return marks;
 	};
 
+	/**
+	 * The units which still need an order: the own units the player hasn't given one yet this phase (see above)
+	 * @returns {[{unitID, terrID, retreating}]}
+	 */
+	OrderEntry.prototype.unorderedUnits = function () {
+		var self = this;
+		if (this.phase !== 'Diplomacy' && this.phase !== 'Retreats') return [];
+		var current = this.current;
+		return this.orders.filter(function (order) {
+			if (!order.unitID || !self.units[order.unitID]) return false;
+			if (current && current.unitID === order.unitID) return false; // Being ordered now: it is highlighted already
+			if (self.phase === 'Retreats') return !self.isEntered(order);
+			return !self.given[order.id];
+		}).map(function (order) {
+			var unit = self.units[order.unitID];
+			return { unitID: unit.id, terrID: unit.terrID, retreating: !!unit.retreating };
+		});
+	};
+
+	/** The orders which have been given something this phase, as known here (for keeping once saved) */
+	OrderEntry.prototype.givenOrderIDs = function () {
+		var self = this;
+		return this.orders.filter(function (order) { return self.given[order.id]; }).map(function (order) { return order.id; });
+	};
+
 	/** The order types the flyout offers for the selected unit */
 	OrderEntry.prototype.flyoutOptions = function () {
 		if (!this.current || this.current.type || this.phase !== 'Diplomacy') return [];
@@ -237,6 +274,7 @@ wD.OrderEntry = (function () {
 		if (this.phase === 'Diplomacy' && !update.viaConvoy) update.viaConvoy = 'No';
 		if (!update.convoyPath) delete update.convoyPath;
 		this.meta[orderID] = { saved: false, update: update };
+		this.given[orderID] = true;
 	};
 
 	OrderEntry.prototype.commit = function (update) {

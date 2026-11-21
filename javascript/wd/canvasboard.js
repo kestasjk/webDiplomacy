@@ -72,6 +72,7 @@ wD.CanvasBoard = (function () {
 		this.source = options.source;
 		this.live = options.live || null;
 		this.toast = options.toast || null;
+		this.onNewPhase = options.onNewPhase || null;
 		this.config = options.config || {};
 		this.siteRoot = this.config.siteRoot || '';
 		this.turnText = (typeof this.config.turnText === 'function') ? this.config.turnText
@@ -303,6 +304,36 @@ wD.CanvasBoard = (function () {
 		return { units: units, provinceStatus: provinceStatus, ownership: ownership, standoffs: standoffs };
 	};
 
+	/* The orders given this phase, as saved from this browser (see wD.OrderEntry.unorderedUnits) */
+
+	var GIVEN_KEY_PREFIX = 'wdGivenOrders.';
+
+	CanvasBoard.prototype.phaseKey = function () {
+		return this.game.turn + '|' + this.game.phase;
+	};
+
+	/** The order IDs saved from this browser this phase, or null if none were */
+	CanvasBoard.prototype.readGiven = function () {
+		try {
+			var stored = JSON.parse(window.localStorage.getItem(GIVEN_KEY_PREFIX + this.source.gameID) || 'null');
+			return (stored && stored.phase === this.phaseKey() && stored.ids) ? stored.ids : null;
+		} catch (e) {
+			return null;
+		}
+	};
+
+	CanvasBoard.prototype.writeGiven = function () {
+		if (!this.entry) return;
+		var self = this;
+		// Only what the server now has: an order entered and not saved is lost with the page
+		var ids = this.entry.givenOrderIDs().filter(function (orderID) { return self.entry.meta[orderID] && self.entry.meta[orderID].saved; });
+		var known = this.readGiven() || [];
+		known.forEach(function (orderID) { if (ids.indexOf(orderID) === -1) ids.push(orderID); });
+		try {
+			window.localStorage.setItem(GIVEN_KEY_PREFIX + this.source.gameID, JSON.stringify({ phase: this.phaseKey(), ids: ids }));
+		} catch (e) { /* the circles come back after a reload then */ }
+	};
+
 	CanvasBoard.prototype.setupOrderEntry = function () {
 		this.entry = null;
 		this.legal = null;
@@ -312,6 +343,8 @@ wD.CanvasBoard = (function () {
 
 		var board = this.liveBoard();
 		var ownCountryIDs = this.ownCountryIDs();
+		var given = this.readGiven();
+		var status = this.context.member.orderStatus || [];
 		this.legal = wD.LegalOrders.compute({
 			variant: this.variant,
 			phase: this.game.phase,
@@ -330,7 +363,10 @@ wD.CanvasBoard = (function () {
 			members: this.game.members,
 			isSandbox: this.game.isSandbox,
 			orders: this.context.orders.orders,
-			legal: this.legal
+			legal: this.legal,
+			givenOrderIDs: given || [],
+			// Saved from somewhere else: what was saved can't be told from the server's Holds, so take it all as given
+			allGiven: !given && ['Saved', 'Completed', 'Ready'].some(function (s) { return status.indexOf(s) !== -1; })
 		});
 		this.orderContext = { context: this.context.orders.context, contextKey: this.context.orders.contextKey };
 		this.orderStatus = this.context.member.orderStatus.slice();
@@ -348,6 +384,14 @@ wD.CanvasBoard = (function () {
 		if (this.previewChoice !== null) return this.previewChoice;
 		var status = this.orderStatus || [];
 		return this.entry.hasUnsaved() || ['Saved', 'Completed', 'Ready'].some(function (s) { return status.indexOf(s) !== -1; });
+	};
+
+	/** The circles drawn under the player's units which have no order yet, unless their orders are readied */
+	CanvasBoard.prototype.unorderedOps = function () {
+		if (!this.entry || !this.isLatestView() || (this.orderStatus || []).indexOf('Ready') !== -1) return [];
+		return this.entry.unorderedUnits().map(function (unit) {
+			return { op: 'unordered', terrID: unit.terrID, dislodged: unit.retreating };
+		});
 	};
 
 	/** What a map is to draw for the turn being viewed, as map.php would draw that turn */
@@ -384,7 +428,7 @@ wD.CanvasBoard = (function () {
 				// The dislodged units themselves are drawn, so their bare markers aren't needed
 				if (dislodged.length) ops = ops.filter(function (op) { return op.op !== 'dislodged'; });
 			}
-			scene.ops = units.concat(ops, dislodged);
+			scene.ops = this.unorderedOps().concat(units, ops, dislodged);
 			if (this.entry && this.isLatestView()) scene.highlights = this.entry.highlights();
 			return scene;
 		}
@@ -499,13 +543,21 @@ wD.CanvasBoard = (function () {
 	};
 
 	/**
-	 * In a Builds phase, how many units each of the viewer's countries may build or has to destroy, and how many of
-	 * them have been placed: the server gives a country one order for each.
+	 * In Diplomacy and Retreats, how many units are circled for having no order yet. In a Builds phase, how many units
+	 * each of the viewer's countries may build or has to destroy, and how many of them have been placed: the server
+	 * gives a country one order for each.
 	 * @returns {string[]} A line per country, naming the country where the viewer has several (a sandbox)
 	 */
 	CanvasBoard.prototype.buildSummary = function () {
 		var self = this;
 		var entry = this.entry;
+		if (entry && entry.orders.length && this.game.phase !== 'Builds') {
+			var unordered = this.unorderedOps().length;
+			if (!unordered) return [];
+			var one = (unordered === 1);
+			var fate = this.game.phase === 'Retreats' ? (one ? 'it will be disbanded' : 'they will be disbanded') : (one ? 'it will hold' : 'they will hold');
+			return [(one ? '1 unit, circled on the map, has' : unordered + ' units, circled on the map, have') + ' no order yet; if left, ' + fate];
+		}
 		if (!entry || this.game.phase !== 'Builds') return [];
 		var byCountry = {};
 		entry.orders.forEach(function (order) {
@@ -769,6 +821,7 @@ wD.CanvasBoard = (function () {
 		this.source.saveOrders(submission).then(function (result) {
 			self.saving = null;
 			var outcome = self.entry.applySaveResult(result);
+			self.writeGiven();
 
 			if (result.newContext && result.newContextKey) {
 				self.orderContext = { context: JSON.stringify(result.newContext), contextKey: result.newContextKey };
@@ -854,9 +907,12 @@ wD.CanvasBoard = (function () {
 				self.previewChoice = null;
 				self.setServerNotice('');
 				self.setupOrderEntry();
-				if (self.toast) {
-					var text = 'The game has been processed: it is now ' + (self.game.turnText || '') + ', ' + self.game.phase + '.';
-					if (self.game.phase === 'Finished') text = 'The game has finished.';
+				var text = 'The game has been processed: it is now ' + (self.game.turnText || '') + ', ' + self.game.phase + '.';
+				if (self.game.phase === 'Finished') text = 'The game has finished.';
+				if (self.onNewPhase) {
+					// The rest of the page is board.php's, so it is refreshed
+					self.onNewPhase(text, after);
+				} else if (self.toast) {
 					self.toast.show({
 						text: text, key: 'processed', timeout: 0, kind: 'success',
 						actions: [{ label: 'Refresh page', onClick: function () { window.location.reload(); } }]
