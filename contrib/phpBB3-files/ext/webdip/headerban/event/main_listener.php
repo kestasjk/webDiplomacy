@@ -9,8 +9,9 @@ class main_listener implements EventSubscriberInterface
 	// The relative path from phpBB3 to the webDip root. Since it should be in contrib/phpBB3 the default should work:
 	private $RELATIVEPATH = '../../';
 	
-	// The URL path to the root webDip location, for finding images etc
-	private $WEBDIPPATH = '../../';
+	// The URL path to the root webDip location, for finding images etc. Absolute, because phpBB's app.php/... pages
+	// sit deeper than contrib/phpBB3/, where '../../' pointed into /contrib/
+	private $WEBDIPPATH = '/';
 	
 	// Contains an array of the notices to be displayed
 	protected $noticeBar;
@@ -123,7 +124,7 @@ class main_listener implements EventSubscriberInterface
 			$variantCSS=array();
 			foreach(\Config::$variants as $variantName)
 				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/darkMode/style.css').'" type="text/css" />';
-			//$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />';
+			//$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('css/darkMode/global.css').'" type="text/css" />';
 			return implode("\n",$variantCSS);
 		}
 		else 
@@ -169,7 +170,7 @@ class main_listener implements EventSubscriberInterface
 			if ($finalTheme == 'dark')
 			{
 				$this->template->assign_vars(array(
-				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('css/darkMode/global.css').'" type="text/css" />',
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
 				'U_WD_PROFILE' => $this->WEBDIPPATH.'userprofile.php?userID='.$wdID
