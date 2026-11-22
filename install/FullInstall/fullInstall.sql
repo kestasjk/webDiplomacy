@@ -2605,3 +2605,12 @@ ALTER TABLE `wD_Games` ADD INDEX `playerTypesPhasePot` (`playerTypes`, `phase`, 
 -- ALTER TABLE `phpbb_posts_likes` ADD INDEX `user_id` (`user_id`);
 
 UPDATE `wD_Misc` SET `value` = '184' WHERE `name` = 'Version';
+
+-- Primary keys for the tables that had none and hold FLOAT columns, so binlog replay after restoring a
+-- dump can find their rows; see install/1.84-1.85/update.sql.
+ALTER TABLE `wD_GhostRatings` ADD PRIMARY KEY (`userID`, `categoryID`);
+ALTER TABLE `wD_GhostRatingsHistory` ADD PRIMARY KEY (`userID`, `categoryID`, `yearMonth`);
+ALTER TABLE `wD_TournamentScoring` MODIFY `round` tinyint(3) unsigned NOT NULL, ADD PRIMARY KEY (`tournamentID`, `userID`, `round`);
+ALTER TABLE `wD_Backup_Games` ADD PRIMARY KEY (`id`);
+
+UPDATE `wD_Misc` SET `value` = '185' WHERE `name` = 'Version';

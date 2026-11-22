@@ -158,7 +158,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              if ($inDB < 1)
              {
                $DB->sql_put("INSERT INTO wD_GhostRatings(userID, categoryID, rating, peakrating, yearMonth) VALUES(".$userID.", ".$categoryID.", ".$rating.", ".$peakRating.", ".$date.")");
-               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$rating.")");
+               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$rating.") ON DUPLICATE KEY UPDATE rating=VALUES(rating)");
              }
              else
              {
@@ -380,7 +380,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              if ($date <> $yearMonth[$userID])
              {
                $sqlUpdate = $sqlUpdate. ", yearMonth=".$date;
-               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$newRating.")");
+               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$newRating.") ON DUPLICATE KEY UPDATE rating=VALUES(rating)");
              }
              else
              {

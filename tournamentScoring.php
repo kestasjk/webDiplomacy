@@ -70,7 +70,8 @@ if(isset($_REQUEST['tournamentID']))
         if (strpos('x'.$updateID,'new') == 1 && $value <> '')
         {
           $DB->sql_put("INSERT INTO wD_TournamentScoring (tournamentID, userID, round, score)
-          VALUES (".(int)$tournamentID.", ".(int)substr($updateID,3).", ".(int)$updateRound.", ".floatval($value).")");
+          VALUES (".(int)$tournamentID.", ".(int)substr($updateID,3).", ".(int)$updateRound.", ".floatval($value).")
+          ON DUPLICATE KEY UPDATE score=VALUES(score)");
         }
         elseif ($value <> '')
         {
@@ -117,7 +118,7 @@ if(isset($_REQUEST['tournamentID']))
         }
         else
         {
-          $DB->sql_put("INSERT INTO wD_TournamentScoring (tournamentID, userID, round, score)
+          $DB->sql_put("INSERT IGNORE INTO wD_TournamentScoring (tournamentID, userID, round, score)
           VALUES ($tournamentID, $curIDexpected, $i, 0);");
         }
       }
