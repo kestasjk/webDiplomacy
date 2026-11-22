@@ -398,7 +398,8 @@ class libError
 	}
 
 	/**
-	 * Whether a browser's error report is one of the kinds that can't be acted on, and which kind
+	 * Whether a browser's error report is one of the kinds that can't be acted on, and which kind. These are still
+	 * counted in status.php's client error counters; api.php's isNoise() drops the ones that shouldn't even be counted.
 	 *
 	 * @return string|false script-error, extension, prototype-missing or resize-observer; false for a real error
 	 */
@@ -408,10 +409,9 @@ class libError
 		if( preg_match('/^(Uncaught )?Script error\.?$/i', trim($message)) && !$source && !$line )
 			return 'script-error';
 
-		// Browser extensions and the scripts they inject into the page
-		if( preg_match('#^(chrome|moz|safari|safari-web|ms-browser)-extension://#i', $source)
-			|| preg_match('#(chrome|moz|safari|safari-web)-extension://#i', $stack)
-			|| preg_match('/runtime\.sendMessage|contentScriptData|Distributor\.getValue/', $message.' '.$stack) )
+		// Browser extensions whose errors carry no extension URL (the client/error route's isNoise() in api.php has
+		// already dropped crawlers and anything with one, before it is counted)
+		if( preg_match('/runtime\.sendMessage|contentScriptData|Distributor\.getValue/', $message.' '.$stack) )
 			return 'extension';
 
 		// A legacy page whose prototype.js never loaded or was cut short (mostly a scraper), so every script
