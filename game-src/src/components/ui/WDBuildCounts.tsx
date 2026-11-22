@@ -40,8 +40,8 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
         .filter(
           (o) =>
             !(
-              ordersMeta[o.id].update?.type.startsWith("Build") ||
-              ordersMeta[o.id].update?.type.startsWith("Destroy")
+              ordersMeta[o.id]?.update?.type.startsWith("Build") ||
+              ordersMeta[o.id]?.update?.type.startsWith("Destroy")
             ),
         )
         .map((o) => {

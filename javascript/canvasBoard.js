@@ -186,6 +186,9 @@
 
 	function drawHighlight()
 	{
+		// getImageData throws on a canvas with no size, which the map has before its image has loaded
+		if( !map.width || !map.height )
+			return;
 		const imageData = ctxOptions.getImageData(0, 0, map.width, map.height)
 		ctx.putImageData(imageData, 0, 0);
 

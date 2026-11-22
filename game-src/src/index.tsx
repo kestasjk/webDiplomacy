@@ -9,9 +9,11 @@ import App from "./App";
 import { store } from "./state/store";
 import ErrorBoundary from "./components/miscellaneous/ErrorBoundary";
 import { installClientErrorReporting } from "./utils/clientLog";
+import installTranslationGuard from "./utils/translationGuard";
 
 // Before anything else renders, so that an error while it does is reported
 installClientErrorReporting();
+installTranslationGuard();
 
 ReactGA.initialize("G-MC45SZ2JEC"); // Replace with your Measurement ID
 ReactGA.send("pageview"); // Optional: Send initial pageview

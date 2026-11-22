@@ -53,7 +53,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
 
   return (
     <div className="flex flex-col space-y-2">
-      {user && (
+      {user?.member?.country && (
         <div
           className={`py-1 px-2 rounded-md w-fit font-medium select-none text-white bg-${user.member.country.toLocaleLowerCase()}-main`}
         >

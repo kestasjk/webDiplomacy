@@ -297,6 +297,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// If the name isn't unique or is too long the database will stop it
 		$input['name'] = $DB->escape($input['name']);
 		if ( !$input['name'] ) { throw new Exception(l_t("No name entered.")); }
+		// The database connection is utf8 (3 bytes), so an emoji or other 4-byte character is stored as '?'
+		if ( preg_match('/[\x{10000}-\x{10FFFF}]/u', $input['name']) ) { throw new Exception(l_t("Game names can't contain emoji or other special symbols.")); }
 
 		list($countryCount) = $DB->sql_row("SELECT countryCount FROM wD_VariantInfo WHERE variantID=".$input['variantID']);
 		

@@ -1,7 +1,16 @@
+// localStorage throws when the browser blocks site storage (some privacy settings and embedded views), and
+// without these the page's scripts stop at the first read
+function wdStorageGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function wdStorageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) {}
+}
+
 //Set whether or not to use desktop mode and call it when the client loads the utility JS file.
 function setDesktopMode(){
-    var toggle = localStorage.getItem("desktopEnabled");
-    var dark = localStorage.getItem("darkModeEnabled");
+    var toggle = wdStorageGet("desktopEnabled");
+    var dark = wdStorageGet("darkModeEnabled");
     var toggleElem = document.getElementById('js-desktop-mode');
     if (toggle == "true") {
         if (dark == "true") {
@@ -27,11 +36,11 @@ setDesktopMode();
 
 //This is called when a user clicks the Enable/Disabled desktop mode
 function toggleDesktopMode() {
-    var toggle = localStorage.getItem("desktopEnabled");
+    var toggle = wdStorageGet("desktopEnabled");
     if (toggle == "true") {
-        localStorage.setItem("desktopEnabled", false);
+        wdStorageSet("desktopEnabled", false);
     } else {
-        localStorage.setItem("desktopEnabled", true);
+        wdStorageSet("desktopEnabled", true);
     }
     setDesktopMode();
 }

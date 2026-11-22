@@ -1562,15 +1562,15 @@ class libHTML
 					}
 				}, this);
 			}
-			var toggle = localStorage.getItem("desktopEnabled");
-			var darkMode = localStorage.getItem("darkModeEnabled");
+			var toggle = null;
+			try { toggle = localStorage.getItem("desktopEnabled"); } catch(e) {}
 			var dark = User.darkMode;
 			if (dark == "Yes") {
 				dark = true;
 			} else {
 				dark = false;
 			}
-			localStorage.setItem("darkModeEnabled", dark);
+			try { localStorage.setItem("darkModeEnabled", dark); } catch(e) {}
 			var toggleElem = document.getElementById(\'js-desktop-mode\');
             if (toggle == "true") {
                 if(toggleElem !== null) {

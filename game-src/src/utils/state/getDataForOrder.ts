@@ -13,7 +13,7 @@ export default function getDataForOrder(
     fromTerrID,
     orderID:
       orderID ||
-      gameData.currentOrders.find((order) => order.unitID === unitID)?.id,
+      gameData?.currentOrders?.find((order) => order.unitID === unitID)?.id,
     toTerrID,
     unitID,
     type,

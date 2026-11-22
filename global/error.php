@@ -359,6 +359,14 @@ class libError
 		$source = $field('source', 500);
 		$line = intval($error['line'] ?? 0);
 
+		// Errors nothing here can fix are only counted, in .dedup/noise-<kind>.json, so the real ones stand out
+		$noise = self::clientErrorNoise($message, $source, $line, $field('stack', 4000));
+		if( $noise )
+		{
+			self::recordOccurrence($dir, 'noise-'.$noise, '(not logged)');
+			return false;
+		}
+
 		// Prefixed so a client error and a server error can never share a signature, and de-duplicated on
 		// the message and where it was raised, not the page it happened on: one broken script is one error
 		// however many pages it breaks
@@ -387,6 +395,38 @@ class libError
 			$log .= "Component stack:\n".$field('componentStack', 4000)."\n";
 
 		return (bool)@file_put_contents($logFile, $log);
+	}
+
+	/**
+	 * Whether a browser's error report is one of the kinds that can't be acted on, and which kind
+	 *
+	 * @return string|false script-error, extension, prototype-missing or resize-observer; false for a real error
+	 */
+	public static function clientErrorNoise($message, $source, $line, $stack)
+	{
+		// The browser hides everything about an error in a script from another origin (iOS Safari does it most)
+		if( preg_match('/^(Uncaught )?Script error\.?$/i', trim($message)) && !$source && !$line )
+			return 'script-error';
+
+		// Browser extensions and the scripts they inject into the page
+		if( preg_match('#^(chrome|moz|safari|safari-web|ms-browser)-extension://#i', $source)
+			|| preg_match('#(chrome|moz|safari|safari-web)-extension://#i', $stack)
+			|| preg_match('/runtime\.sendMessage|contentScriptData|Distributor\.getValue/', $message.' '.$stack) )
+			return 'extension';
+
+		// A legacy page whose prototype.js never loaded or was cut short (mostly a scraper), so every script
+		// after it fails on Prototype's globals
+		if( preg_match('/(\bdocument\.observe\b|\$A\b|\$H\b|\$\$|script\.aculo\.us).*(not a function|not defined|undefined|requires)/i', $message)
+			|| preg_match('/Can\'t find variable: \$[AH$]?$/', $message)
+			|| preg_match('/script\.aculo\.us/i', $message)
+			|| trim($message) === '[object Event]' )
+			return 'prototype-missing';
+
+		// A benign layout notice some browsers raise as an error
+		if( stripos($message, 'ResizeObserver loop') !== false )
+			return 'resize-observer';
+
+		return false;
 	}
 
 	/**

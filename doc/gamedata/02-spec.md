@@ -279,7 +279,7 @@ caller is the creator or a moderator, or supplies `sbToken`.
   "messages": {
     "messages": [ { "id": 88120400, "turn": 7, "phase": "Diplomacy", "timeSent": 1789769000,
                     "fromCountryID": 3, "toCountryID": 7, "message": "…" } ],
-    "cursor": 1789775990
+    "cursor": 1789775990, "truncated": false, "fromTurn": null
   },
   "hiddenMembers": null
 }
@@ -303,7 +303,10 @@ caller is the creator or a moderator, or supplies `sbToken`.
   messages addressed to the country. Global messages are in `messages.json`. Membership is checked
   **before** the Redis last-message-time short-circuit. Clients pass `cursor` as the next
   `messagesSince` and dedupe by `id`; `cursor` trails the clock by a few seconds so a message
-  committed late is not skipped.
+  committed late is not skipped. At most `PlayerContext::MESSAGE_LIMIT` (2,000) messages are
+  returned, the newest. When there were more, `truncated` is `true` and the list holds only
+  whole turns from `fromTurn` on (unless one turn alone is over the limit, which is then kept in
+  part); otherwise `truncated` is `false` and `fromTurn` is `null`.
 - API-key callers read `wD_GameMessages_Redacted` unless
   `Config::$allowBotsAccessToUnredactedMessages`, as `game/status` does today (open question 9.3).
 - `hiddenMembers`: for a moderator who is not in the game, or a director, in a game whose

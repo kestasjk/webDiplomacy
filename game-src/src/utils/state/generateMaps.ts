@@ -20,6 +20,9 @@ export default function generateMaps(
 
   Object.values(territories).forEach(({ id, name, coastParentID }) => {
     const territory = webdipNameToTerritory[name];
+    // A territory the Classic map doesn't have (another variant's game, which gameSource sends back to
+    // board.php) is left out rather than thrown on
+    if (!territory || !TerritoryMap[territory]) return;
     territoryToTerrID[territory] = id;
     terrIDToTerritory[id] = territory;
     terrIDToProvinceID[id] = coastParentID || id;

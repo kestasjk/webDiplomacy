@@ -35,10 +35,14 @@ elseif( isset($_REQUEST['searchUser']) )
 {
 	libAuth::resourceLimiter('user search',1);
 
-	if( !is_array($_REQUEST['searchUser']) )
-		throw new Exception(l_t("Invalid search data submitted."));
-
-	$searchUser = $_REQUEST['searchUser'];
+	if( is_array($_REQUEST['searchUser']) )
+		$searchUser = $_REQUEST['searchUser'];
+	else
+	{
+		// A malformed search shows the search form with a notice, rather than an error page
+		$searchUser = array();
+		$searchReturn = l_t("Invalid search data submitted.");
+	}
 
 	$searchUserValid=array();
 	if ( isset($searchUser['id']) && $searchUser['id'] && strlen($searchUser['id']) )

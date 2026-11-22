@@ -97,7 +97,13 @@ export interface PlayerContext {
       viaConvoy: boolean;
     }[];
   };
-  messages: null | { messages: NewMessage[]; cursor: number };
+  // truncated: there were more than the server returns in one call, and only the newest are here, from fromTurn on
+  messages: null | {
+    messages: NewMessage[];
+    cursor: number;
+    truncated?: boolean;
+    fromTurn?: number | null;
+  };
 }
 
 interface NewMessage {
@@ -404,6 +410,9 @@ async function requestContext(
   return newContext;
 }
 
+/** The variants drawn on the Classic map, the only map this board has (variants/Classic*, variant.php's $id) */
+const CLASSIC_VARIANT_IDS = [1, 15, 23];
+
 /**
  * The player's context with their orders, fetched again only if something has happened which changes it. Several
  * callers asking at once share one request.
@@ -417,6 +426,20 @@ export async function getContext(gameID: string): Promise<PlayerContext> {
       isFirst ? { orders: "1", messages: "1" } : { orders: "1" },
     )
       .then((newContext) => {
+        // This board only has the Classic map (Game::isClassicGame(): Classic, ClassicFvA, ClassicGvI). board.php
+        // only sends Classic games here, but a bookmark, shared link or browser history can open any game, and the
+        // board then crashes building its maps, so another variant goes back to board.php's own map
+        if (
+          isFirst &&
+          !CLASSIC_VARIANT_IDS.includes(newContext.game.variantID)
+        ) {
+          window.location.replace(
+            `/board.php?gameID=${encodeURIComponent(gameID)}&view=dropDown`,
+          );
+          return new Promise<PlayerContext>(() => {
+            // Never settles: the page is leaving, and nothing should draw or report in the meantime
+          });
+        }
         // What the player waited through before the board had a game to draw: everything since they opened
         // the page, not just this request
         if (isFirst) reportClientMetricOnce("BOARD_LOAD", performance.now());

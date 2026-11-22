@@ -46,7 +46,8 @@ export function saveOrdersCommon(state: GameState, action): void {
       }
     }
     Object.entries(orders).forEach(([id, value]) => {
-      if (value.status === "Complete") {
+      // An order saved just before a phase change can come back after the sweep that cleared ordersMeta
+      if (value.status === "Complete" && state.ordersMeta[id]) {
         state.ordersMeta[id].saved = true;
       }
     });

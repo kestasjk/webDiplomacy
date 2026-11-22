@@ -20,7 +20,8 @@
 
 // Set user online green/blue icons to actual values, via "onlineUsers" array of online user IDs  
  function setUserOnlineIcons() {
- 	if( !Object.isUndefined(onlineUsers) )
+ 	// onlineUsers comes from a separate script, which may not have loaded
+ 	if( typeof onlineUsers !== 'undefined' && onlineUsers )
  		onlineUsers.map(function(userID) {
  			$$('img[userID="'+userID+'"].userOnlineImg').invoke('show');
  		});

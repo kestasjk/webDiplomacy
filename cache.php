@@ -24,6 +24,13 @@
 
 require_once('header.php');
 
+// Scanners request this page without a URI
+if( !isset($_GET['URI']) || !is_string($_GET['URI']) )
+{
+	http_response_code(404);
+	exit;
+}
+
 $cachemiss = explode('/',strtolower($_GET['URI']));
 
 ?>

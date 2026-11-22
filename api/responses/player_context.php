@@ -51,6 +51,12 @@ class PlayerContext
 	const MESSAGE_CURSOR_LAG = 10;
 
 	/**
+	 * The most private messages one call returns, newest kept. A long full-press game can have tens of thousands
+	 * between a country and the others, and reading them all ran calls on old games past PHP's memory limit.
+	 */
+	const MESSAGE_LIMIT = 2000;
+
+	/**
 	 * @param \ApiEntry $apiEntry For multiplexing game IDs
 	 * @param int $userID The authenticated user
 	 * @param bool $isSessionAuth Whether the caller is a logged-in user's browser rather than an API key
@@ -350,7 +356,8 @@ class PlayerContext
 			WHERE gameID = ".$gameID." AND toCountryID <> 0 AND ( toCountryID = ".$countryID." OR fromCountryID = ".$countryID." )"
 			.( is_null($since) ? "" : " AND timeSent >= ".$since )
 			.( is_null($turns) ? "" : " AND turn >= ".max(0, intval($gameRow['turn']) - max(0, $turns)) )."
-			ORDER BY id");
+			ORDER BY id DESC
+			LIMIT ".(self::MESSAGE_LIMIT + 1));
 		while( $row = $DB->tabl_hash($tabl) )
 			$messages[] = array(
 				'id' => intval($row['id']),
@@ -361,8 +368,27 @@ class PlayerContext
 				'toCountryID' => intval($row['toCountryID']),
 				'message' => $row['message'],
 			);
+		$messages = array_reverse($messages);
 
-		return array('messages' => $messages, 'cursor' => $cursor);
+		// Over the limit: keep the newest, and only whole turns of them, so the caller can say which turn its
+		// messages start from (unless one turn alone is over the limit, when that turn is kept in part)
+		$fromTurn = null;
+		$truncated = ( count($messages) > self::MESSAGE_LIMIT );
+		if( $truncated )
+		{
+			array_shift($messages);
+			$fromTurn = $messages[0]['turn'];
+			$wholeTurns = array_values(array_filter($messages, function($message) use ($fromTurn) {
+				return $message['turn'] > $fromTurn;
+			}));
+			if( count($wholeTurns) )
+			{
+				$messages = $wholeTurns;
+				$fromTurn = $messages[0]['turn'];
+			}
+		}
+
+		return array('messages' => $messages, 'cursor' => $cursor, 'truncated' => $truncated, 'fromTurn' => $fromTurn);
 	}
 
 	/**

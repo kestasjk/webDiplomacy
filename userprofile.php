@@ -1093,7 +1093,10 @@ print '</div>';
 			gridlineColor: '<?php echo $chartLineColor; ?>'				
 		}; 
 
-		var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+		// The chart's div is only printed for a player with more than two Ghost Rating trend points
+		var chartElement = document.getElementById('line_chart');
+		if( !chartElement ) return;
+		var chart = new google.visualization.LineChart(chartElement);
 		chart.draw(data, options);
 	}
 </script>

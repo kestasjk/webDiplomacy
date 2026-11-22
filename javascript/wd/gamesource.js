@@ -406,7 +406,12 @@ wD.GameSource = (function () {
 
 			return Promise.all([publicPromise, privatePromise]).then(function (results) {
 				var own = results[1];
-				if (own && own.messages) cache.private = mergeByID(cache.private, own.messages);
+				if (own && own.truncated) {
+					// More than the server returns at once: these are the newest, complete from own.fromTurn on, so
+					// the cache can't claim to reach further back than that
+					cache.private = own.messages || [];
+					cache.fromTurn = Math.max(wantFromTurn, own.fromTurn || 0);
+				} else if (own && own.messages) cache.private = mergeByID(cache.private, own.messages);
 				if (own && own.cursor) cache.cursor = own.cursor;
 				if (cache.fromTurn === null) cache.fromTurn = wantFromTurn;
 				self.writeMessageCache(countryID, cache);

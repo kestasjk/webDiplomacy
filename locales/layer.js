@@ -81,7 +81,8 @@ Locale = {
 		
 		// Reporting a failed lookup (log it if in debug mode)
 		failedLookup : function(text) {
-			if( WEBDIP_DEBUG && !this.failedLookups.include(text) ) {
+			// WEBDIP_DEBUG is defined in the page footer, after some scripts have already started translating
+			if( typeof WEBDIP_DEBUG !== 'undefined' && WEBDIP_DEBUG && !this.failedLookups.include(text) ) {
 				this.failedLookups.push(text);
 			}
 		}
