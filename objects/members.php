@@ -228,9 +228,10 @@ class Members
 			WHERE m.gameID = ".$this->Game->id."
 			ORDER BY m.status ASC, m.supplyCenterNo DESC, ".
 			($this->Game->anon=='Yes' ? "m.countryID ASC, " : "u.points DESC, " ).
-			"m.id ASC", // Ordering by ID ensures the ordering is consistent across requests, which unfortunately 
+			"m.id ASC" // Ordering by ID ensures the ordering is consistent across requests, which unfortunately
 			// matters for e.g. sandbox games where the country that's loaded for authentication depends on this load order.
-			$this->Game->lockMode
+			// No lock mode here: FOR UPDATE on this join would lock the wD_Users rows too. A game loaded for
+			// processing locks its member rows on their own first, in processGame::loadMembers().
 			);
 
 		$this->ByOrder = array();

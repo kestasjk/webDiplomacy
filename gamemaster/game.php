@@ -410,9 +410,22 @@ class processGame extends Game
 
 	/**
 	 * Load a new processMembers() into $this->Members (overrides Game::loadMembers, which loads Members())
+	 *
+	 * Processing updates the members' rows, so lock them here, straight after the game row (Game::load()
+	 * locks that) and before anything else in the transaction touches them. Otherwise a request updating
+	 * one member row (e.g. timeLoggedIn in game/playercontext) can queue between a shared lock taken by
+	 * a processing query (the builds wD_Orders/wD_Members join) and the later UPDATE of the same row,
+	 * which deadlocks. With the rows locked up front such requests just wait for processing to finish.
+	 * This is a separate query because Members::load() joins wD_Users, and FOR UPDATE on that join would
+	 * lock every player's user row too. Always game row first, then members, so the order is consistent.
 	 */
 	function loadMembers()
 	{
+		global $DB;
+
+		if( $this->lockMode == UPDATE )
+			$DB->sql_tabl("SELECT id FROM wD_Members WHERE gameID = ".$this->id." FOR UPDATE");
+
 		$this->Members = $this->Variant->processMembers($this);
 	}
 
