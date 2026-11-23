@@ -61,6 +61,11 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 - Because that loop now runs on the web server, a call to it no longer proves the site is reachable from
   outside. `Config::$gamemasterRequiresStatusCheckMinutes` puts that back: with it set, processing only
   happens while something outside the network is requesting `status.php`. Off by default.
+- **It also runs the monthly data export** (see "The monthly data export" in `server.js`): with `HF_TOKEN` and
+  `HF_DATASET` in `.env`, it runs `scripts/exportGames.php` under nice once a month, writing every finished
+  non-sandbox game to `data-export/` beside the webroot, then uploads it with `scripts/dataset/README.md` to that
+  Hugging Face dataset. Players are hashed IDs keyed from `Config::$secret`; only messages to everyone go in. Only the
+  live site sets these. Run the script by hand with `--limit=N` to try it.
 
 ## Deploying to Production
 

@@ -870,6 +870,38 @@ class libGameFiles
 	}
 
 	/**
+	 * A finished game's game.json, history.json and messages.json contents, without their headers, for the monthly
+	 * data export (scripts/exportGames.php). Nothing is written: most finished games are never looked at again, and
+	 * their files would fill the cache folder. A history.json already in the game's folder is used instead of being
+	 * built again, as a finished game's history doesn't change.
+	 *
+	 * @return array|false array('game' => .., 'history' => .., 'messages' => ..), or false if the history couldn't be built
+	 */
+	public static function buildForExport(array $gameRow, array $memberRows)
+	{
+		$history = false;
+
+		// Not path(), which would create the folder of every game asked about
+		$path = 'cache/games/'.floor(intval($gameRow['id'])/100).'/'.intval($gameRow['id']).'/'.self::filename($gameRow, 'history');
+		if( file_exists($path) )
+		{
+			$file = json_decode(file_get_contents($path), true);
+			if( is_array($file) && isset($file['phases']) && count($file['phases'])
+				&& end($file['phases'])['phase'] == 'Finished' )
+				$history = array('phases' => $file['phases']);
+		}
+
+		if( $history === false ) $history = self::buildHistory($gameRow, $memberRows);
+		if( $history === false ) return false;
+
+		return array(
+			'game' => self::buildGame($gameRow, $memberRows),
+			'history' => $history,
+			'messages' => self::buildMessages($gameRow, $memberRows),
+		);
+	}
+
+	/**
 	 * When variant.json last gained fields (Unix time). A file written before then is rewritten by variantURL(), so a
 	 * deploy which changes the format doesn't need every variant's cache wiping. Move it forward when the format changes.
 	 * 2026-10-23: large-map coordinates, the map images and the country colours, for the canvas board.

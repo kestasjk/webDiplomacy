@@ -495,6 +495,128 @@ if (!gamemasterUrl) {
   gamemasterLoop();
 }
 
+// ---------------------------------------------------------------------------
+// The monthly data export
+//
+// Once a month scripts/exportGames.php writes every finished game to one gzipped JSON Lines file, and
+// this uploads it to a Hugging Face dataset, so that anyone can download the site's games to analyse
+// them without loading the site. It is here for the same reason the gamemaster driver is: this is the
+// one process that is looked after, and what it runs is deployed with it.
+//
+// The export runs as a separate process under nice, never in gamemaster.php, because it can take
+// hours and processing has to carry on meanwhile. It holds a lock of its own, so if this server is
+// restarted while it runs, the export carries on alone and the restarted server waits for it, then
+// uploads what it wrote. Each step leaves a file in EXPORT_DIR saying it is done (the export's
+// manifest, then uploaded-<month>), so a step that fails is tried again at the next hourly check.
+//
+// Off unless HF_TOKEN and HF_DATASET are set, so only the live site exports.
+const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const { pathToFileURL } = require('url');
+
+const hfToken = process.env.HF_TOKEN || '';
+const hfDataset = process.env.HF_DATASET || '';
+// Beside the webroot, like this server's log, so the web server never serves it
+const exportDir = process.env.EXPORT_DIR || path.resolve(__dirname, '..', '..', 'data-export');
+const exportPhp = process.env.EXPORT_PHP || 'php';
+const webroot = path.resolve(__dirname, '..');
+
+let exportRunning = false;
+let exportUploading = false;
+
+function exportMonth() {
+  return new Date().toISOString().slice(0, 7);
+}
+
+function runExport(month) {
+  exportRunning = true;
+  const log = fs.openSync(path.join(exportDir, `export-${month}.log`), 'a');
+  console.log(`Data export: exporting the games finished before ${month}-01, logging to ${exportDir}/export-${month}.log`);
+
+  const child = spawn('nice', ['-n', '19', exportPhp, 'scripts/exportGames.php', `--dir=${exportDir}`, `--month=${month}`],
+    { cwd: webroot, stdio: ['ignore', log, log] });
+
+  child.on('error', (err) => {
+    console.error('Data export: could not start the export:', err);
+  });
+  child.on('close', (code) => {
+    fs.closeSync(log);
+    exportRunning = false;
+    if (code === 0) {
+      checkExport();
+    } else if (code === 2) {
+      // Another export holds the lock: one started by this server before it was restarted
+      console.log('Data export: an earlier export is still running; waiting for it');
+    } else {
+      console.error(`Data export: the export failed with exit code ${code}; see ${exportDir}/export-${month}.log. It will be tried again in an hour.`);
+    }
+  });
+}
+
+async function uploadExport(month, manifestPath) {
+  exportUploading = true;
+  try {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const { uploadFiles } = await import('@huggingface/hub');
+
+    console.log(`Data export: uploading ${manifest.file} (${manifest.games} games, ${manifest.bytes} bytes) to ${hfDataset}`);
+    // One commit with a fixed layout, so that load_dataset() and links to the files always get the
+    // latest export; earlier months stay in the dataset's history
+    await uploadFiles({
+      repo: { type: 'dataset', name: hfDataset },
+      accessToken: hfToken,
+      commitTitle: `Export ${month}: ${manifest.games} games finished before ${month}-01`,
+      files: [
+        { path: 'data/games.jsonl.gz', content: pathToFileURL(path.join(exportDir, manifest.file)) },
+        { path: 'data/variants.json', content: pathToFileURL(path.join(exportDir, 'variants.json')) },
+        { path: 'data/manifest.json', content: pathToFileURL(manifestPath) },
+        { path: 'README.md', content: pathToFileURL(path.join(webroot, 'scripts', 'dataset', 'README.md')) },
+      ],
+    });
+
+    fs.writeFileSync(path.join(exportDir, `uploaded-${month}`), `${unixTime()}\n`);
+    console.log(`Data export: ${month} uploaded`);
+
+    // Only this month's export is kept here; Hugging Face has the rest
+    for (const file of fs.readdirSync(exportDir)) {
+      if (/^games-\d{4}-\d{2}\.jsonl\.gz$/.test(file) && file !== manifest.file) {
+        fs.unlinkSync(path.join(exportDir, file));
+      }
+    }
+  } catch (err) {
+    console.error('Data export: the upload failed, and will be tried again in an hour:', err);
+  } finally {
+    exportUploading = false;
+  }
+}
+
+function checkExport() {
+  try {
+    if (exportRunning || exportUploading) return;
+
+    const month = exportMonth();
+    if (fs.existsSync(path.join(exportDir, `uploaded-${month}`))) return;
+
+    fs.mkdirSync(exportDir, { recursive: true });
+    const manifestPath = path.join(exportDir, `games-${month}.json`);
+    if (fs.existsSync(manifestPath)) {
+      uploadExport(month, manifestPath);
+    } else {
+      runExport(month);
+    }
+  } catch (err) {
+    console.error('Data export check failed:', err);
+  }
+}
+
+if (hfToken && hfDataset) {
+  console.log(`Data export: monthly, to the Hugging Face dataset ${hfDataset}, working in ${exportDir}`);
+  // A minute after starting, so that a restart doesn't compete with the clients reconnecting
+  setTimeout(checkExport, 60 * 1000);
+  setInterval(checkExport, 60 * 60 * 1000);
+}
+
 // Once a minute log how many clients are connected and how many messages were forwarded to them, as
 // individual messages aren't logged
 setInterval(() => {
